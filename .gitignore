@@ -1,0 +1,11 @@
+# dub generated
+.dub
+
+#docs
+docs.json
+__dummy.html
+
+# binaries
+bin/
+*.o
+*.obj

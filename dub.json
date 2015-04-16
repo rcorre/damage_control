@@ -1,0 +1,10 @@
+{
+	"name": "bampart",
+	"description": "A Rampart-like game",
+	"copyright": "Copyright © 2015, erethar",
+	"authors": ["erethar"],
+  "targetPath": "bin",
+	"dependencies": {
+    "dau" : { "path": "../dau" }
+	}
+}
