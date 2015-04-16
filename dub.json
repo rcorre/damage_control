@@ -1,6 +1,6 @@
 {
-	"name": "bampart",
-	"description": "A Rampart-like game",
+	"name": "Dampart",
+	"description": "A Rampart-like game written in D",
 	"copyright": "Copyright © 2015, erethar",
 	"authors": ["erethar"],
   "targetPath": "bin",
