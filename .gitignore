@@ -9,3 +9,6 @@ __dummy.html
 bin/
 *.o
 *.obj
+
+#content
+content/

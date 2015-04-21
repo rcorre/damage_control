@@ -1,0 +1,7 @@
+[
+  {
+    "sheets" : ["terrain"],
+    "defaultDepth": 0,
+    "frameSize": 32
+  }
+]
