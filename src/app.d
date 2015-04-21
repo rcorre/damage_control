@@ -1,4 +1,4 @@
-import dau.all;
+import dau;
 import states.start_match;
 
 int main(char[][] args) {
