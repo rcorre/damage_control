@@ -5,6 +5,7 @@
   "authors": ["erethar"],
   "targetPath": "bin",
   "dependencies": {
-    "dau" : { "path": "../dau" }
+    "dau" : { "path": "../dau" },
+    "tiled" : { "path": "../dtiled" }
   }
 }
