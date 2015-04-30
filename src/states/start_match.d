@@ -1,6 +1,7 @@
 module states.start_match;
 
 import dau;
+import tiled;
 import entities.tilemap;
 
 /// Start a new match.
@@ -10,7 +11,7 @@ class StartMatch : State!Game {
 
   override {
     void enter(Game game) {
-      auto mapData = loadTiledMap("./content/maps/map1.json");
+      auto mapData = TiledMap.load("./content/maps/map1.json");
       auto map = new TileMap(mapData, game.entities);
       game.entities.registerEntity(map);
     }

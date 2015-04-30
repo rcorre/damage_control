@@ -2,30 +2,40 @@ module entities.tilemap;
 
 import std.algorithm, std.string, std.math, std.file, std.path, std.conv;
 import dau;
+import tiled;
 import entities.tile;
 
 class TileMap : Entity {
   const {
     int numRows, numCols;
+    int tileWidth, tileHeight;
   }
 
-  this(MapData map, EntityManager entities) {
+  this(TiledMap map, EntityManager entities) {
     numCols = map.width;
     numRows = map.height;
-    auto terrain = map.layerTileData("terrain");
+    tileWidth = map.tilewidth;
+    tileHeight = map.tileheight;
     _tiles = new Tile[][numRows];
-    foreach(data ; terrain) {
-      auto tile = new Tile(data);
+
+    auto layer = map.getLayer("terrain");
+    foreach(idx, gid ; map.getLayer("terrain").data) {
+      // first figure out where the tile is positioned based on its index
+      int row = cast(int) layer.idxToRow(idx);
+      int col = cast(int) layer.idxToCol(idx);
+      auto pos = Vector2i(col * map.tilewidth, row * map.tileheight);
+
+      // now examine tile data from tileset
+      auto tileset = map.getTileset(gid);
+      auto sprite = new Sprite("terrain", tileset.tileRow(gid), tileset.tileCol(gid));
+      bool canBuild = tileset.tileProperties(gid).get("canBuild", "false").to!bool;
+      auto tile = new Tile(pos, row, col, sprite, canBuild);
       entities.registerEntity(tile);
       _tiles[tile.row] ~= tile;
     }
 
-    auto area = Rect2i(Vector2i.zero, Vector2i(map.width, map.height) * Tile.size);
+    auto area = Rect2i(0, 0, numCols * map.tilewidth, numRows * map.tileheight);
     super(area, "map");
-  }
-
-  @property {
-    auto totalSize() { return Vector2i(numCols, numRows) * Tile.size; }
   }
 
   auto tileAt(int row, int col) {
@@ -33,8 +43,8 @@ class TileMap : Entity {
   }
 
   auto tileAt(Vector2i pos) {
-    int row = pos.y / Tile.size;
-    int col = pos.x / Tile.size;
+    int row = pos.y / tileHeight;
+    int col = pos.x / tileWidth;
     return tileAt(row, col);
   }
 

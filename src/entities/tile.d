@@ -5,22 +5,16 @@ import std.math : abs;
 import dau;
 
 class Tile : Entity {
-  enum {
-    size = 32,
-  }
-
   const {
     int row, col;
     bool canBuild;
   }
 
-  this(TileData data) {
-    auto pos = Vector2i(data.col, data.row) * size + Vector2i(size, size) / 2;
-    auto sprite = new Sprite(getTexture(data.tilesetName), data.tilesetIdx);
+  this(Vector2i pos, int row, int col, Sprite sprite, bool canBuild) {
     super(pos, sprite, "tile");
-    row = data.row;
-    col = data.col;
-    canBuild = data.properties.get("canBuild", "false").to!bool;
+    this.row = row;
+    this.col = col;
+    this.canBuild = canBuild;
   }
 
   int distance(Tile other) {
