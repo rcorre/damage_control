@@ -28,6 +28,9 @@ class TileMap : Entity {
       // now examine tile data from tileset
       auto tileset = map.getTileset(gid);
       auto sprite = new Sprite("terrain", tileset.tileRow(gid), tileset.tileCol(gid));
+      if (gid & TiledFlag.flipHorizontal) {
+        sprite.flip = Texture.Flip.horizontal;
+      }
       bool canBuild = tileset.tileProperties(gid).get("canBuild", "false").to!bool;
       auto tile = new Tile(pos, row, col, sprite, canBuild);
       entities.registerEntity(tile);
