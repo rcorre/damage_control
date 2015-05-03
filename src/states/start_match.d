@@ -1,7 +1,7 @@
 module states.start_match;
 
 import dau;
-import tiled;
+import dtiled;
 import entities.tilemap;
 
 /// Start a new match.

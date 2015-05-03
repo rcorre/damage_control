@@ -6,6 +6,6 @@
   "targetPath": "bin",
   "dependencies": {
     "dau" : { "path": "../dau" },
-    "tiled" : { "path": "../dtiled" }
+    "dtiled" : "~>0.1.0"
   }
 }

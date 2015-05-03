@@ -2,7 +2,7 @@ module entities.tilemap;
 
 import std.algorithm, std.string, std.math, std.file, std.path, std.conv;
 import dau;
-import tiled;
+import dtiled;
 import entities.tile;
 
 class TileMap : Entity {
