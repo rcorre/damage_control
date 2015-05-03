@@ -1,8 +1,8 @@
 {
   "name": "Dampart",
   "description": "A Rampart-like game written in D",
-  "copyright": "Copyright © 2015, erethar",
-  "authors": ["erethar"],
+  "copyright": "Copyright © 2015, rcorre",
+  "authors": ["rcorre"],
   "targetPath": "bin",
   "dependencies": {
     "dau" : { "path": "../dau" },
