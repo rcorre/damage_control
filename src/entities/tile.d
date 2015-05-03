@@ -5,13 +5,16 @@ import std.math : abs;
 import dau;
 
 class Tile : Entity {
+  Entity wall;
+
   const {
     int row, col;
     bool canBuild;
   }
 
   this(Vector2i pos, int row, int col, Sprite sprite, bool canBuild) {
-    super(pos, sprite, "tile");
+    auto offset = Vector2i(sprite.width, sprite.height) / 2;
+    super(pos + offset, sprite, "tile");
     this.row = row;
     this.col = col;
     this.canBuild = canBuild;
