@@ -21,7 +21,15 @@ class PlaceWall : State!Game {
 
     void update(Game game) {
       auto mousePos = game.input.mousePos;
-      _wall.center = _map.tileAt(mousePos).center;
+      auto tile = _map.tileAt(mousePos);
+      _wall.center = tile.center;
+
+      if (game.input.mouseReleased(MouseButton.lmb) && (tile.wall is null)) {
+        // place wall and create a new wall
+        tile.wall = _wall;
+        _wall = new Wall(tile.center);
+        game.entities.registerEntity(_wall);
+      }
     }
   }
 }
