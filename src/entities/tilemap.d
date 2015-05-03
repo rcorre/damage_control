@@ -1,6 +1,6 @@
 module entities.tilemap;
 
-import std.algorithm, std.string, std.math, std.file, std.path, std.conv;
+import std.algorithm, std.range, std.string, std.math, std.file, std.path, std.conv;
 import dau;
 import dtiled;
 import entities.tile;
@@ -41,26 +41,49 @@ class TileMap : Entity {
     super(area, "map");
   }
 
-  auto tileAt(int row, int col) {
+  @property int numTiles() const { return numRows * numCols; }
+
+  Tile tileAt(ulong idx) {
+    return tileAt(idx / numCols, idx % numCols);
+  }
+
+  Tile tileAt(ulong row, ulong col) {
     return (row < 0 || col < 0 || row >= numRows || col >= numCols) ? null : _tiles[row][col];
   }
 
-  auto tileAt(Vector2i pos) {
+  Tile tileAt(Vector2i pos) {
     int row = pos.y / tileHeight;
     int col = pos.x / tileWidth;
     return tileAt(row, col);
   }
 
   /// return tiles adjacent to tile
-  auto neighbors(Tile tile) {
-    Tile[] neighbors;
+  auto adjacent(Tile tile) {
     int row = tile.row;
     int col = tile.col;
-    if (row > 0)           { neighbors ~= tileAt(row - 1, col); }
-    if (col > 0)           { neighbors ~= tileAt(row, col - 1); }
-    if (row < numRows - 1) { neighbors ~= tileAt(row + 1, col); }
-    if (col < numCols - 1) { neighbors ~= tileAt(row, col + 1); }
-    return neighbors;
+
+    return [
+      tileAt(row - 1, col),
+      tileAt(row, col - 1),
+      tileAt(row + 1, col),
+      tileAt(row, col + 1),
+    ]
+    .filter!(x => x !is null);
+  }
+
+  /// return tiles adjacent to or diagonal to tile
+  auto surrounding(Tile tile) {
+    int row = tile.row;
+    int col = tile.col;
+
+    return [
+      tileAt(row - 1, col - 1),
+      tileAt(row - 1, col + 1),
+      tileAt(row + 1, col - 1),
+      tileAt(row + 1, col + 1),
+    ]
+    .filter!(x => x !is null)
+    .chain(adjacent(tile));
   }
 
   auto tilesInRange(Tile center, int minRange, int maxRange) {
