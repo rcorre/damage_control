@@ -33,11 +33,11 @@ class PlaceWall : State!Game {
 
         // see if any surrounding tile is now part of an enclosed area
         foreach(neighbor ; _map.surrounding(tile)) {
-          auto enclosed = findEnclosure(_map, neighbor);
+          auto enclosure = findEnclosure(_map, neighbor);
 
-          if (enclosed !is null) {
-            foreach(idx, mark ; enclosed) {
-              if (mark) _map.tileAt(idx).sprite.tint = Color.red;
+          if (enclosure !is null) {
+            foreach(idx, isEnclosed ; enclosure) {
+              if (isEnclosed) _map.tileAt(idx).sprite.tint = Color.red;
             }
             break;
           }

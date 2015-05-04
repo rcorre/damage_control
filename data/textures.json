@@ -1,6 +1,6 @@
 [
   {
-    "sheets" : ["terrain"],
+    "sheets" : ["tileset"],
     "defaultDepth": 0,
     "frameSize": 32
   }

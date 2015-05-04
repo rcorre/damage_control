@@ -27,7 +27,7 @@ class TileMap : Entity {
 
       // now examine tile data from tileset
       auto tileset = map.getTileset(gid);
-      auto sprite = new Sprite("terrain", tileset.tileRow(gid), tileset.tileCol(gid));
+      auto sprite = new Sprite("tileset", tileset.tileRow(gid), tileset.tileCol(gid));
       if (gid & TiledFlag.flipHorizontal) {
         sprite.flip = Texture.Flip.horizontal;
       }
