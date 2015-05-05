@@ -30,9 +30,16 @@ class PlaceWall : State!Game {
       if (game.input.mouseReleased(MouseButton.lmb) && (tile.wall is null)) {
         // place wall
         tile.wall = _wall;
+        _wall.regenSprite(tile.row, tile.col, _map.adjacent(tile).array);
+
+        auto surroundingTiles = _map.surrounding(tile);
+
+        foreach(t ; surroundingTiles.filter!(x => x.wall !is null)) {
+          t.wall.regenSprite(t.row, t.col, _map.adjacent(t).array);
+        }
 
         // see if any surrounding tile is now part of an enclosed area
-        foreach(neighbor ; _map.surrounding(tile)) {
+        foreach(neighbor ; surroundingTiles) {
           auto enclosure = findEnclosure(_map, neighbor);
 
           if (enclosure !is null) {

@@ -3,9 +3,10 @@ module entities.tile;
 import std.conv;
 import std.math : abs;
 import dau;
+import entities.wall;
 
 class Tile : Entity {
-  Entity wall;
+  Wall wall;
 
   const {
     int row, col;
