@@ -9,7 +9,7 @@ import states.place_wall;
 class StartMatch : State!Game {
   override {
     void enter(Game game) {
-      auto mapData = TiledMap.load("./content/maps/map1.json");
+      auto mapData = TiledMap.load("./content/map/map1.json");
       auto map = new TileMap(mapData, game.entities);
       game.entities.registerEntity(map);
       game.states.push(new PlaceWall);

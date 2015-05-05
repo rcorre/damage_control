@@ -22,7 +22,7 @@ class PlaceWall : State!Game {
       game.entities.registerEntity(_wall);
     }
 
-    void update(Game game) {
+    void run(Game game) {
       auto mousePos = game.input.mousePos;
       auto tile = _map.tileAt(mousePos);
       _wall.center = tile.center;

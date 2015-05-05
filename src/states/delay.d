@@ -6,16 +6,14 @@ private enum defaultTime = 0.2f;
 
 /// Wait for a specified amount of time
 class Delay : State!Game {
-  private {
-    float _timer;
-  }
+  private float _timer;
 
   this(float time = defaultTime) {
     _timer = time;
   }
 
   override {
-    void update(Game game) {
+    void run(Game game) {
       _timer -= game.deltaTime;
 
       if (_timer <= 0) {

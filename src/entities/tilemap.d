@@ -18,8 +18,8 @@ class TileMap : Entity {
     tileHeight = map.tileheight;
     _tiles = new Tile[][numRows];
 
-    auto layer = map.getLayer("terrain");
-    foreach(idx, gid ; map.getLayer("terrain").data) {
+    auto layer = map.getLayer("ground");
+    foreach(idx, gid ; map.getLayer("ground").data) {
       // first figure out where the tile is positioned based on its index
       int row = cast(int) layer.idxToRow(idx);
       int col = cast(int) layer.idxToCol(idx);

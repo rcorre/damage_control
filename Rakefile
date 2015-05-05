@@ -2,14 +2,37 @@
 # resources/ contains media formats used while editing game content
 # content/ contains the target formats loaded by the game
 
-task :default => %w{images maps}
-task :images => %w{content/image/tileset.png}
-task :maps => %w{content/maps/map1.json}
+SOURCEDIR = 'resource'
+TARGETDIR = 'content'
 
-file 'content/maps/map1.json' => 'resources/maps/map1.tmx' do
-  sh "tiled resources/maps/map1.tmx --export-map content/maps/map1.json"
+task :default => %w{images maps}
+task :default => "#{TARGETDIR}"
+
+directory TARGETDIR
+directory "#{TARGETDIR}/image"
+directory "#{TARGETDIR}/map"
+directory "#{TARGETDIR}/sound"
+
+task :maps => "#{TARGETDIR}/map"
+FileList.new("#{SOURCEDIR}/map/*.tmx").each do |src| 
+  fname = File.basename(src, '.tmx')
+  target = File.join(TARGETDIR, 'map', fname + '.json') 
+
+  file target => src do
+    sh "tiled #{src} --export-map #{target}"
+  end
+
+  task :maps => target
 end
 
-file 'content/image/tileset.png' => 'resources/image/tileset.ase' do
-  sh "aseprite --batch resources/image/tileset.ase --sheet content/image/tileset.png"
+task :images => "#{TARGETDIR}/image"
+FileList.new("#{SOURCEDIR}/image/*.ase").each do |src| 
+  fname = File.basename(src, '.ase')
+  target = File.join(TARGETDIR, 'image', fname + '.png') 
+
+  file target => src do
+    sh "aseprite --batch #{src} --sheet #{target} --data /dev/null"
+  end
+
+  task :images => target
 end
