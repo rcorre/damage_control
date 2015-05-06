@@ -14,8 +14,8 @@ private enum {
 }
 
 class Wall : Entity {
-  this(Vector2i pos) {
-    auto sprite = new Sprite("tileset", 3, 2);
+  this(Vector2i pos, Sprite sprite = null) {
+    sprite = (sprite is null) ?  new Sprite("tileset", 3, 2) : sprite;
     super(pos, sprite, "wall");
   }
 
@@ -48,6 +48,7 @@ class Wall : Entity {
 }
 
 private:
+/// determines how a wall should be drawn based on its surroundings
 struct WallData {
   mixin JsonizeMe;
 
