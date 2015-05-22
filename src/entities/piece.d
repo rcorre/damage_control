@@ -3,8 +3,8 @@ module entities.piece;
 import std.random : randomSample;
 import dau;
 import jsonizer;
-import entities.wall;
 
+/*
 private enum {
   dataFile = "data/pieces.json",
   dataSize = 3,
@@ -54,3 +54,4 @@ PieceData[] _data;
 static this() {
   _data = dataFile.readJSON!(PieceData[]);
 }
+*/

@@ -1,3 +1,4 @@
+/*
 module entities.wall;
 
 import std.math      : abs;
@@ -64,3 +65,4 @@ WallData[] _wallData;
 static this() {
   _wallData = dataFile.readJSON!(WallData[]);
 }
+*/

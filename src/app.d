@@ -1,16 +1,21 @@
 import dau;
-import states.start_match;
+import states.battle;
 
 int main(char[][] args) {
-  GameSettings settings;
+  Game.Settings settings;
+
+  // general settings
   settings.fps = 60;
-  settings.screenWidth = 800;
-  settings.screenHeight = 600;
-  settings.numAudioSamples = 4;
-  settings.numAudioSamples = 4;
-  settings.bgColor = Color.black;
 
-  System[] systems;
+  // display settings
+  settings.display.windowSize = [800, 600];
+  settings.display.canvasSize = [800, 600];
+  settings.display.color = Color.black;
 
-  return runGame(new StartMatch(), settings, systems);
+  // content settings
+  settings.content.dir = "content";
+  settings.content.bitmapDir = "image";
+  settings.content.bitmapExt = ["png"];
+
+  return Game.run(new Battle(), settings);
 }

@@ -4,22 +4,17 @@ import std.range;
 import std.array;
 import std.algorithm;
 import dau;
-import entities.wall;
-import entities.tile;
-import entities.piece;
-import entities.tilemap;
 
 /// Player is holding a wall segment they can place with a mouse click
-class PlaceWall : State!Game {
+  /*
+class PlaceWall : State!Battle {
   private {
     Piece _piece;
-    TileMap _map;
   }
 
   override {
-    void start(Game game) {
-      _map = cast(TileMap) game.entities.findEntities("map").front;
-      _piece = new Piece(game.input.mousePos, game.entities);
+    void start(Battle battle) {
+      _piece = new Piece(battle.game.input.mousePos, game.entities);
     }
 
     void run(Game game) {
@@ -28,7 +23,6 @@ class PlaceWall : State!Game {
       _piece.center = tile.center;
 
       if (game.input.mouseReleased(MouseButton.lmb) && (tile.wall is null)) {
-        /*
         // place wall
         tile.wall = _wall;
         _wall.regenSprite(tile.row, tile.col, _map.adjacent(tile).array);
@@ -54,7 +48,6 @@ class PlaceWall : State!Game {
         // create a new wall
         _piece = new Piece(tile.center);
         game.entities.registerEntity(_wall);
-         */
       }
     }
   }
@@ -100,3 +93,4 @@ bool[] findEnclosure(TileMap map, Tile source) {
 
   return hitEdge ? null : visited;
 }
+*/

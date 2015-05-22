@@ -5,7 +5,7 @@ import dau;
 private enum defaultTime = 0.2f;
 
 /// Wait for a specified amount of time
-class Delay : State!Game {
+class Delay(T) : State!T {
   private float _timer;
 
   this(float time = defaultTime) {

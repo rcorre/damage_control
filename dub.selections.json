@@ -2,7 +2,7 @@
 	"fileVersion": 1,
 	"versions": {
 		"allegro": "2.0.3+5.0.10",
-		"jsonizer": "0.4.1",
+		"jsonizer": "0.5.0",
 		"dtiled": "0.1.0"
 	}
 }
