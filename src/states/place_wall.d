@@ -8,6 +8,7 @@ import dau;
 import jsonizer;
 import dtiled.map;
 import dtiled.coords;
+import dtiled.algorithm;
 import states.battle;
 
 private enum {
@@ -35,32 +36,27 @@ class PlaceWall : State!Battle {
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
 
-      auto coord = map.gridCoordAt(mousePos);
-      _piece.draw(map.tileCenter(coord).as!Vector2i, _tileAtlas, game.renderer);
-
-      if (!battle.map.contains(coord)) return;
-
-      auto tile = battle.map.tileAt(coord);
+      auto centerCoord = map.gridCoordAt(mousePos);
+      _piece.draw(map.tileCenter(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
       if (game.input.mouseReleased(MouseButton.lmb)) {
-        tile.hasWall = true;
+        auto wallTiles = map.tilesMasked(centerCoord, _piece.mask);
 
-        // see if any surrounding tile is now part of an enclosed area
-        foreach(neighbor ; battle.map.around(coord)) {
-          /*
-          auto enclosure = findEnclosure(battle.map, neighbor);
-
-          if (enclosure !is null) {
-            foreach(idx, isEnclosed ; enclosure) {
-              if (isEnclosed) battle.map.tileAt(idx).sprite.tint = Color.red;
-            }
-            break;
-          }
-          */
+        // If no wall segments conflict, ok to place the wall
+        if (wallTiles.all!(x => x.canBuild && !x.hasWall)) {
+          foreach(t ; wallTiles) t.hasWall = true;
         }
 
-        // create a new wall
-        _piece = Piece.random();
+        // check if any surrounding tile is now part of an enclosed area
+        foreach(coord ; battle.map.coordsAround(centerCoord)) {
+          auto enclosure = findEnclosure!(x => x.canBuild && !x.hasWall)(map.tiles, coord);
+
+          foreach(tile ; enclosure) {
+            tile.isEnclosed = true;
+          }
+        }
+
+        _piece = Piece.random(); // generate a new piece
       }
     }
   }
@@ -73,6 +69,10 @@ struct Piece {
 
   static Piece random() {
     return Piece(_data.randomSample(1).front);
+  }
+
+  @property auto mask() {
+    return layout[].chunks(3).map!(x => x.array).array;
   }
 
   void draw(Vector2i center, Bitmap bmp, Renderer renderer) {

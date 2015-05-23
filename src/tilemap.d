@@ -11,6 +11,8 @@ private enum tileDepth = 0;
 
 struct Tile {
   bool hasWall;
+  bool isEnclosed;
+
   const {
     bool canBuild;
     Rect2i textureRect;
