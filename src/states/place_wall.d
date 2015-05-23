@@ -37,7 +37,7 @@ class PlaceWall : State!Battle {
       auto map = battle.map;
 
       auto centerCoord = map.gridCoordAt(mousePos);
-      _piece.draw(map.tileCenter(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
+      _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
       if (game.input.mouseReleased(MouseButton.lmb)) {
         auto wallTiles = map.tilesMasked(centerCoord, _piece.mask);
