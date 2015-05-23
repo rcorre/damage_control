@@ -42,10 +42,10 @@ class PlaceWall : State!Battle {
       if (game.input.mouseReleased(MouseButton.lmb)) {
         auto wallTiles = map.tilesMasked(centerCoord, _piece.mask);
 
-        // If no wall segments conflict, ok to place the wall
-        if (wallTiles.all!(x => x.canBuild && !x.hasWall)) {
-          foreach(t ; wallTiles) t.hasWall = true;
-        }
+        // No room to place piece
+        if (wallTiles.any!(x => !x.canBuild && x.hasWall)) return;
+
+        foreach(tile ; wallTiles) tile.hasWall = true;
 
         // check if any surrounding tile is now part of an enclosed area
         foreach(coord ; battle.map.coordsAround(centerCoord)) {
