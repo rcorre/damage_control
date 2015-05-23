@@ -19,10 +19,13 @@ class Battle : State!Game {
     void start(Game game) {
       this.game = game;
       this.map = buildMap(MapData.load("./content/map/map1.json"));
+      this.states = new StateStack!Battle(this);
       _tileAtlas = game.content.bitmaps.get("tileset");
+      states.push(new PlaceWall);
     }
 
     void run(Game game) {
+      states.run();
       map.draw(_tileAtlas, game.renderer);
     }
   }

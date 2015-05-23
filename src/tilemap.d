@@ -26,14 +26,14 @@ alias TileMap = OrthoMap!Tile;
 
 void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
   RenderInfo ri;
-  ri.bmp = tileAtlas;
+  ri.bmp   = tileAtlas;
+  ri.depth = tileDepth;
 
   foreach(coord, tile; map) {
     auto pos = Vector2f(coord.col * map.tileWidth, coord.row * map.tileHeight);
 
     ri.region    = tile.textureRect;
     ri.transform = Transform!float(pos);
-    ri.depth     = tileDepth;
 
     render.draw(ri);
   }
