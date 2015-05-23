@@ -25,6 +25,10 @@ class Battle : State!Game {
     }
 
     void run(Game game) {
+      if (game.input.keyPressed(ALLEGRO_KEY_ESCAPE)) {
+        game.stop();
+      }
+
       states.run();
       map.draw(_tileAtlas, game.renderer);
     }
