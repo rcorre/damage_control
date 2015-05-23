@@ -6,13 +6,15 @@ import std.random;
 import std.algorithm;
 import dau;
 import jsonizer;
+import dtiled.map;
+import dtiled.coords;
 import states.battle;
 
 private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 3,
   spriteSize = 32,
-  wallDepth  = -1,
+  wallDepth  = 1,
 }
 
 /// Player is holding a wall segment they can place with a mouse click
@@ -31,16 +33,16 @@ class PlaceWall : State!Battle {
     void run(Battle battle) {
       auto game = battle.game;
       auto mousePos = game.input.mousePos;
+      auto map = battle.map;
 
-      _piece.draw(game.input.mousePos, _tileAtlas, game.renderer);
+      auto coord = map.gridCoordAt(mousePos);
+      _piece.draw(map.tileCenter(coord).as!Vector2i, _tileAtlas, game.renderer);
 
-      auto coord = battle.map.gridCoordAt(mousePos);
       if (!battle.map.contains(coord)) return;
 
       auto tile = battle.map.tileAt(coord);
 
-      if (game.input.mouseReleased(MouseButton.lmb) && !tile.hasWall) {
-        // place wall
+      if (game.input.mouseReleased(MouseButton.lmb)) {
         tile.hasWall = true;
 
         // see if any surrounding tile is now part of an enclosed area
@@ -65,48 +67,6 @@ class PlaceWall : State!Battle {
 }
 
 private:
-/*
-bool[] findEnclosure(TileMap map, Tile source) {
-  static bool[] visited;
-  static bool hitEdge;
-
-  if (visited.length != map.numTiles) {
-    visited = new bool[map.numTiles];
-  }
-
-  void flood(int row, int col) {
-    auto idx = row * map.numRows + col;
-    auto tile = map.tileAt(idx);
-    hitEdge = hitEdge || (tile is null);
-
-    if (hitEdge || visited[idx] || tile.wall !is null) {
-      return;
-    }
-
-    visited[idx] = true;
-
-    // cardinal directions
-    flood(row - 1 , col);
-    flood(row + 1 , col);
-    flood(row     , col - 1);
-    flood(row     , col + 1);
-
-    // diagonals
-    flood(row - 1 , col - 1);
-    flood(row - 1 , col + 1);
-    flood(row + 1 , col - 1);
-    flood(row + 1 , col + 1);
-  }
-
-  visited.fill(false);
-  hitEdge = false;
-
-  flood(source.row, source.col);
-
-  return hitEdge ? null : visited;
-}
-*/
-
 /// A group of walls the player can place during the building stage
 struct Piece {
   PieceLayout layout;
