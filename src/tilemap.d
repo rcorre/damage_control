@@ -41,22 +41,22 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 
     ri.region    = tile.textureRect;
     ri.transform = Transform!float(pos);
+    ri.color     = tile.isEnclosed ? Color.red : Color.white;
 
     render.draw(ri);
 
     if (tile.hasWall) {
       uint[3][3] layout;
-      assert(map.tileAt(coord).hasWall);
       map.createMask!(x => x.hasWall ? 1 : 0)(coord, layout);
+
       ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
+      ri.color = Color.white;
       render.draw(ri);
     }
   }
 }
 
 auto buildMap(MapData data) {
-  auto layer = data.getLayer("ground");
-
   auto buildTile(TiledGid gid) {
     auto tileset = data.getTileset(gid);
 
@@ -70,6 +70,8 @@ auto buildMap(MapData data) {
 
     return new Tile(region, canBuild);
   }
+
+  auto layer = data.getLayer("ground");
 
   auto tiles = layer.data.map!buildTile.chunks(layer.numCols).map!(x => x.array).array;
 

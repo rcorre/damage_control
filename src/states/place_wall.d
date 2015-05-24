@@ -40,25 +40,29 @@ class PlaceWall : State!Battle {
       _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
       if (game.input.mouseReleased(MouseButton.lmb)) {
-        auto wallTiles = map.tilesMasked(centerCoord, _piece.mask);
+        auto wallCoords = map.coordsMasked(centerCoord, _piece.mask);
+        auto wallTiles = wallCoords.map!(x => map.tileAt(x));
 
         // No room to place piece
-        if (wallTiles.any!(x => !x.canBuild && x.hasWall)) return;
+        if (wallTiles.any!(x => !x.canBuild || x.hasWall)) return;
 
-        foreach(tile ; wallTiles) tile.hasWall = true;
+        foreach(coord ; wallCoords) {
+          map.tileAt(coord).hasWall = true;
 
-        // check if any surrounding tile is now part of an enclosed area
-        foreach(coord ; battle.map.coordsAround(centerCoord)) {
-          auto enclosure = findEnclosure!(x => x.canBuild && !x.hasWall)(map.tiles, coord);
+          // check if any surrounding tile is now part of an enclosed area
+          foreach(neighbor ; battle.map.coordsAround(coord)) {
+            auto enclosure = findEnclosure!(x => x.hasWall)(map.tiles, neighbor);
 
-          foreach(tile ; enclosure) {
-            tile.isEnclosed = true;
+            foreach(tile ; enclosure) {
+              tile.isEnclosed = true;
+            }
           }
         }
 
         _piece = Piece.random(); // generate a new piece
       }
     }
+
   }
 }
 
