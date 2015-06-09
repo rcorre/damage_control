@@ -51,7 +51,7 @@ class PlaceWall : State!Battle {
 
           // check if any surrounding tile is now part of an enclosed area
           foreach(neighbor ; coord.adjacent(Diagonals.yes)) {
-            foreach(tile ; map.enclosedTiles!(x => x.hasWall)(neighbor)) {
+            foreach(tile ; map.enclosedTiles!(x => x.hasWall)(neighbor, Diagonals.yes)) {
               tile.isEnclosed = true;
             }
           }
