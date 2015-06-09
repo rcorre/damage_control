@@ -47,7 +47,7 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 
     if (tile.hasWall) {
       uint[3][3] layout;
-      map.createMask!(x => x.hasWall ? 1 : 0)(coord, layout);
+      map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
 
       ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
       ri.color = Color.white;

@@ -36,11 +36,11 @@ class PlaceWall : State!Battle {
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
 
-      auto centerCoord = map.gridCoordAt(mousePos);
+      auto centerCoord = map.coordAtPoint(mousePos);
       _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
       if (game.input.mouseReleased(MouseButton.lmb)) {
-        auto wallCoords = map.coordsMasked(centerCoord, _piece.mask);
+        auto wallCoords = map.maskCoordsAround(centerCoord, _piece.mask);
         auto wallTiles = wallCoords.map!(x => map.tileAt(x));
 
         // No room to place piece
@@ -50,10 +50,8 @@ class PlaceWall : State!Battle {
           map.tileAt(coord).hasWall = true;
 
           // check if any surrounding tile is now part of an enclosed area
-          foreach(neighbor ; battle.map.coordsAround(coord)) {
-            auto enclosure = findEnclosure!(x => x.hasWall)(map.tiles, neighbor);
-
-            foreach(tile ; enclosure) {
+          foreach(neighbor ; coord.adjacent(Diagonals.yes)) {
+            foreach(tile ; map.enclosedTiles!(x => x.hasWall)(neighbor)) {
               tile.isEnclosed = true;
             }
           }
@@ -62,7 +60,6 @@ class PlaceWall : State!Battle {
         _piece = Piece.random(); // generate a new piece
       }
     }
-
   }
 }
 
