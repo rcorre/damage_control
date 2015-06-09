@@ -6,16 +6,18 @@ import std.random;
 import std.algorithm;
 import dau;
 import jsonizer;
-import dtiled.map;
 import dtiled.coords;
 import dtiled.algorithm;
+import tilemap;
 import states.battle;
+import states.place_cannons;
 
 private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 3,
   spriteSize = 32,
   wallDepth  = 1,
+  phaseTime  = 1,
 }
 
 /// Player is holding a wall segment they can place with a mouse click
@@ -23,18 +25,26 @@ class PlaceWall : State!Battle {
   private {
     Piece _piece;
     Bitmap _tileAtlas;
+    float _timer;
   }
 
   override {
     void start(Battle battle) {
       _piece = Piece.random;
       _tileAtlas = battle.game.content.bitmaps.get("tileset");
+      _timer = phaseTime;
     }
 
     void run(Battle battle) {
       auto game = battle.game;
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
+
+      _timer -= game.deltaTime;
+
+      if (_timer < 0) {
+        battle.states.replace(new PlaceCannons);
+      }
 
       auto centerCoord = map.coordAtPoint(mousePos);
       _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
@@ -44,10 +54,10 @@ class PlaceWall : State!Battle {
         auto wallTiles = wallCoords.map!(x => map.tileAt(x));
 
         // No room to place piece
-        if (wallTiles.any!(x => !x.canBuild || x.hasWall)) return;
+        if (wallTiles.any!(x => !x.canBuild || x.isObstructed)) return;
 
         foreach(coord ; wallCoords) {
-          map.tileAt(coord).hasWall = true;
+          map.tileAt(coord).construct = Construct.wall;
 
           // check if any surrounding tile is now part of an enclosed area
           foreach(neighbor ; coord.adjacent(Diagonals.yes)) {

@@ -11,17 +11,29 @@ import jsonizer;
 
 private enum {
   tileDepth = 0,
-  wallLayoutFile = "./data/walls.json"
+  wallLayoutFile = "./data/walls.json",
+  cannonSpriteRow = 6,
+  cannonSpriteCol = 0,
+}
+
+enum Construct {
+  none,
+  wall,
+  cannon,
 }
 
 class Tile {
-  bool hasWall;
+  Construct construct;
   bool isEnclosed;
 
   const {
     bool canBuild;
     Rect2i textureRect;
   }
+
+  @property bool hasWall() { return construct == Construct.wall; }
+  @property bool hasCannon() { return construct == Construct.cannon; }
+  @property bool isObstructed() { return construct != Construct.none; }
 
   this(Rect2i textureRect, bool canBuild) {
     this.textureRect = textureRect;
@@ -45,13 +57,28 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 
     render.draw(ri);
 
-    if (tile.hasWall) {
-      uint[3][3] layout;
-      map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
+    // don't shade in the construct on top of the tile
+    ri.color = Color.white;
 
-      ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
-      ri.color = Color.white;
-      render.draw(ri);
+    final switch (tile.construct) with (Construct) {
+      case wall:
+        uint[3][3] layout;
+        map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
+
+        ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
+        render.draw(ri);
+        break;
+      case cannon:
+        ri.region = Rect2i(
+            cannonSpriteCol * map.tileWidth,
+            cannonSpriteRow * map.tileHeight,
+            map.tileWidth,
+            map.tileHeight);
+
+        render.draw(ri);
+        break;
+      case none:
+        break;
     }
   }
 }
