@@ -106,7 +106,6 @@ auto buildMap(MapData data) {
   return TileMap(data.tileWidth, data.tileHeight, tiles);
 }
 
-private:
 auto getWallSpriteRegion(uint[3][3] mask, int width, int height) {
   // don't care about corners
   mask[0][0] = 0;
@@ -121,6 +120,7 @@ auto getWallSpriteRegion(uint[3][3] mask, int width, int height) {
   return Rect2i(width * layout.col, height * layout.row, width, height);
 }
 
+private:
 struct WallLayout {
   mixin JsonizeMe;
   @jsonize {

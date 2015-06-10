@@ -5,9 +5,8 @@ import std.array;
 import std.random;
 import std.algorithm;
 import dau;
+import dtiled;
 import jsonizer;
-import dtiled.coords;
-import dtiled.algorithm;
 import tilemap;
 import states.battle;
 import states.place_cannons;
@@ -50,7 +49,7 @@ class PlaceWall : State!Battle {
       _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
       if (game.input.mouseReleased(MouseButton.lmb)) {
-        auto wallCoords = map.maskCoordsAround(centerCoord, _piece.mask);
+        auto wallCoords = map.maskCoordsAround(centerCoord, _piece.layout);
         auto wallTiles = wallCoords.map!(x => map.tileAt(x));
 
         // No room to place piece
@@ -79,7 +78,7 @@ class PlaceWall : State!Battle {
 private:
 /// A group of walls the player can place during the building stage
 struct Piece {
-  PieceLayout mask;
+  PieceLayout layout;
 
   static Piece random() {
     return Piece(_data.randomSample(1).front);
@@ -91,36 +90,34 @@ struct Piece {
     ri.depth = wallDepth;
 
     foreach(coord ; RowCol(0,0).span(dataSize, dataSize)) {
-      auto spriteIdx = mask[coord.row][coord.col];
-      if (spriteIdx == 0) continue;
+      // no wall at this slot
+      if (!layout[coord.row][coord.col]) continue;
 
       auto offset = Vector2i(cast(int) coord.col - 1, cast(int) coord.row - 1) * spriteSize;
       ri.transform = center + offset;
-      ri.region = spriteRect(spriteIdx, bmp);
+
+      uint[3][3] mask;
+
+      auto grid = TileGrid!uint(layout[].map!(x => x.array).array);
+      grid.createMaskAround!(x => x)(coord, mask);
+      ri.region = getWallSpriteRegion(mask, spriteSize, spriteSize);
 
       renderer.draw(ri);
     }
   }
 
   void rotate() {
-    PieceLayout newMask;
+    PieceLayout newLayout;
     foreach(row ; 0..dataSize) {
       foreach(col ; 0..dataSize) {
-        newMask[row][col] = mask[col][dataSize - 1 - row];
+        newLayout[row][col] = layout[col][dataSize - 1 - row];
       }
     }
-    mask = newMask;
-  }
-
-  auto spriteRect(uint idx, Bitmap bmp) {
-    int nCols = bmp.width / spriteSize;
-    int row = idx / nCols;
-    int col = idx % nCols;
-    return Rect2i(col * spriteSize, row * spriteSize, spriteSize, spriteSize);
+    layout = newLayout;
   }
 }
 
-alias PieceLayout = uint[dataSize][dataSize];
+alias PieceLayout = uint[3][3];
 
 PieceLayout[] _data;
 
