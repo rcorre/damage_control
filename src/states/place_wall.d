@@ -13,7 +13,7 @@ import states.place_cannons;
 
 private enum {
   dataFile   = "data/pieces.json",
-  dataSize   = 3,
+  dataSize   = 5,
   spriteSize = 32,
   wallDepth  = 1,
   phaseTime  = 10,
@@ -93,7 +93,7 @@ struct Piece {
       // no wall at this slot
       if (!layout[coord.row][coord.col]) continue;
 
-      auto offset = Vector2i(cast(int) coord.col - 1, cast(int) coord.row - 1) * spriteSize;
+      auto offset = Vector2i(cast(int) coord.col - 2, cast(int) coord.row - 2) * spriteSize;
       ri.transform = center + offset;
 
       uint[3][3] mask;
@@ -117,7 +117,7 @@ struct Piece {
   }
 }
 
-alias PieceLayout = uint[3][3];
+alias PieceLayout = uint[dataSize][dataSize];
 
 PieceLayout[] _data;
 
