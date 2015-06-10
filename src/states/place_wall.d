@@ -69,6 +69,9 @@ class PlaceWall : State!Battle {
 
         _piece = Piece.random(); // generate a new piece
       }
+      else if (game.input.keyReleased(ALLEGRO_KEY_E)) {
+        _piece.rotate();
+      }
     }
   }
 }
@@ -100,6 +103,13 @@ struct Piece {
   }
 
   void rotate() {
+    PieceLayout newMask;
+    foreach(row ; 0..dataSize) {
+      foreach(col ; 0..dataSize) {
+        newMask[row][col] = mask[col][dataSize - 1 - row];
+      }
+    }
+    mask = newMask;
   }
 
   auto spriteRect(uint idx, Bitmap bmp) {
