@@ -76,14 +76,10 @@ class PlaceWall : State!Battle {
 private:
 /// A group of walls the player can place during the building stage
 struct Piece {
-  PieceLayout layout;
+  PieceLayout mask;
 
   static Piece random() {
     return Piece(_data.randomSample(1).front);
-  }
-
-  @property auto mask() {
-    return layout[].chunks(3).map!(x => x.array).array;
   }
 
   void draw(Vector2i center, Bitmap bmp, Renderer renderer) {
@@ -91,24 +87,22 @@ struct Piece {
     ri.bmp = bmp;
     ri.depth = wallDepth;
 
-    foreach(i, spriteIdx ; layout) {
+    foreach(coord ; RowCol(0,0).span(dataSize, dataSize)) {
+      auto spriteIdx = mask[coord.row][coord.col];
       if (spriteIdx == 0) continue;
 
-      ri.transform = center + wallOffset(i);
+      auto offset = Vector2i(cast(int) coord.col - 1, cast(int) coord.row - 1) * spriteSize;
+      ri.transform = center + offset;
       ri.region = spriteRect(spriteIdx, bmp);
 
       renderer.draw(ri);
     }
   }
 
-  private auto wallOffset(ulong idx) {
-    int relRow = ((cast(int) idx) / dataSize) - 1;
-    int relCol = ((cast(int) idx) % dataSize) - 1;
-
-    return Vector2i(relCol, relRow) * spriteSize;
+  void rotate() {
   }
 
-  private auto spriteRect(uint idx, Bitmap bmp) {
+  auto spriteRect(uint idx, Bitmap bmp) {
     int nCols = bmp.width / spriteSize;
     int row = idx / nCols;
     int col = idx % nCols;
@@ -116,7 +110,7 @@ struct Piece {
   }
 }
 
-alias PieceLayout = uint[dataSize * dataSize];
+alias PieceLayout = uint[dataSize][dataSize];
 
 PieceLayout[] _data;
 
