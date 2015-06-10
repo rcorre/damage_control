@@ -17,7 +17,7 @@ private enum {
   dataSize   = 3,
   spriteSize = 32,
   wallDepth  = 1,
-  phaseTime  = 1,
+  phaseTime  = 10,
 }
 
 /// Player is holding a wall segment they can place with a mouse click

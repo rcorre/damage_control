@@ -32,7 +32,7 @@ class PlaceCannons : State!Battle {
       auto mouseCoord = map.coordAtPoint(mousePos);
       //_piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
-      if (game.input.mouseReleased(MouseButton.lmb) && !map.tileAt(mouseCoord).isObstructed) {
+      if (game.input.mouseReleased(MouseButton.lmb) && map.tileAt(mouseCoord).canPlaceCannon) {
         map.tileAt(mouseCoord).construct = Construct.cannon;
       }
     }

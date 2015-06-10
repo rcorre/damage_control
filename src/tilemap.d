@@ -34,6 +34,7 @@ class Tile {
   @property bool hasWall() { return construct == Construct.wall; }
   @property bool hasCannon() { return construct == Construct.cannon; }
   @property bool isObstructed() { return construct != Construct.none; }
+  @property bool canPlaceCannon() { return !isObstructed && isEnclosed; }
 
   this(Rect2i textureRect, bool canBuild) {
     this.textureRect = textureRect;
