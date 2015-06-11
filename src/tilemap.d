@@ -18,6 +18,7 @@ private enum {
 
 enum Construct {
   none,
+  node,
   wall,
   cannon,
 }
@@ -31,6 +32,7 @@ class Tile {
     Rect2i textureRect;
   }
 
+  @property bool hasNode() { return construct == Construct.node; }
   @property bool hasWall() { return construct == Construct.wall; }
   @property bool hasCannon() { return construct == Construct.cannon; }
   @property bool isObstructed() { return construct != Construct.none; }
@@ -62,6 +64,8 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
     ri.color = Color.white;
 
     final switch (tile.construct) with (Construct) {
+      case node:
+        break;
       case wall:
         uint[3][3] layout;
         map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
