@@ -69,7 +69,10 @@ class PlaceWall : State!Battle {
         _piece = Piece.random(); // generate a new piece
       }
       else if (game.input.keyReleased(ALLEGRO_KEY_E)) {
-        _piece.rotate();
+        _piece.rotate(false);
+      }
+      else if (game.input.keyReleased(ALLEGRO_KEY_Q)) {
+        _piece.rotate(true);
       }
     }
   }
@@ -106,11 +109,14 @@ struct Piece {
     }
   }
 
-  void rotate() {
+  void rotate(bool clockwise) {
     PieceLayout newLayout;
     foreach(row ; 0..dataSize) {
       foreach(col ; 0..dataSize) {
-        newLayout[row][col] = layout[col][dataSize - 1 - row];
+        if (clockwise)
+          newLayout[row][col] = layout[col][dataSize - 1 - row];
+        else
+          newLayout[col][dataSize - 1 - row] = layout[row][col];
       }
     }
     layout = newLayout;
