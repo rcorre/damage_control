@@ -54,7 +54,7 @@ class PlaceWall : State!Battle {
         auto wallTiles = wallCoords.map!(x => map.tileAt(x));
 
         // No room to place piece
-        if (wallTiles.any!(x => !x.canBuild || x.isObstructed)) return;
+        if (!wallTiles.all!(x => x.canPlaceWall)) return;
 
         foreach(coord ; wallCoords) {
           map.tileAt(coord).construct = Construct.wall;

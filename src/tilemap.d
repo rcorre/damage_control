@@ -14,12 +14,15 @@ private enum {
   wallLayoutFile = "./data/walls.json",
   cannonSpriteRow = 6,
   cannonSpriteCol = 0,
+  nodeSpriteRow = 6,
+  nodeSpriteCol = 1,
 }
 
 enum Construct {
   none,
   wall,
   cannon,
+  node,
 }
 
 class Tile {
@@ -33,8 +36,9 @@ class Tile {
 
   @property bool hasWall() { return construct == Construct.wall; }
   @property bool hasCannon() { return construct == Construct.cannon; }
-  @property bool isObstructed() { return construct != Construct.none; }
-  @property bool canPlaceCannon() { return !isObstructed && isEnclosed; }
+  @property bool isEmpty() { return construct == Construct.none; }
+  @property bool canPlaceWall() { return isEmpty && canBuild; }
+  @property bool canPlaceCannon() { return isEmpty && canBuild && isEnclosed; }
 
   this(Rect2i textureRect, bool canBuild) {
     this.textureRect = textureRect;
@@ -78,6 +82,15 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 
         render.draw(ri);
         break;
+      case node:
+        ri.region = Rect2i(
+            nodeSpriteCol * map.tileWidth,
+            nodeSpriteRow * map.tileHeight,
+            map.tileWidth,
+            map.tileHeight);
+
+        render.draw(ri);
+        break;
       case none:
         break;
     }
@@ -85,23 +98,34 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 }
 
 auto buildMap(MapData data) {
-  auto buildTile(TiledGid gid) {
-    auto tileset = data.getTileset(gid);
+  auto buildTile(TiledGid groundGid, TiledGid featureGid) {
+    auto tileset = data.getTileset(groundGid);
 
     auto region = Rect2i(
-        tileset.tileOffsetX(gid),
-        tileset.tileOffsetY(gid),
+        tileset.tileOffsetX(groundGid),
+        tileset.tileOffsetY(groundGid),
         tileset.tileWidth,
         tileset.tileHeight);
 
-    bool canBuild = tileset.tileProperties(gid).get("canBuild", "false").to!bool;
+    bool canBuild = tileset.tileProperties(groundGid).get("canBuild", "false").to!bool;
 
-    return new Tile(region, canBuild);
+    auto tile = new Tile(region, canBuild);
+
+    if (featureGid != 0 && tileset.tileProperties(featureGid).get("type", "") == "node") {
+      tile.construct = Construct.node;
+    }
+
+    return tile;
   }
 
-  auto layer = data.getLayer("ground");
+  auto ground = data.getLayer("ground").data;
+  auto features = data.getLayer("features").data;
 
-  auto tiles = layer.data.map!buildTile.chunks(layer.numCols).map!(x => x.array).array;
+  auto tiles = zip(ground, features)  // pair the ground gid and feature gid for each tile
+    .map!(x => buildTile(x[0], x[1])) // build the tile at that coord
+    .chunks(data.numCols)             // chunk into rows
+    .map!(x => x.array)               // create an array from each row
+    .array;                           // create an array of all the row arrays
 
   return TileMap(data.tileWidth, data.tileHeight, tiles);
 }
