@@ -11,11 +11,15 @@ import jsonizer;
 
 private enum {
   tileDepth = 0,
+  featureDepth = 1,
+  nodeDepth = 1,
   wallLayoutFile = "./data/walls.json",
   cannonSpriteRow = 6,
   cannonSpriteCol = 0,
   nodeSpriteRow = 6,
-  nodeSpriteCol = 1,
+  nodeSpriteCol = 2,
+  cannonSize = 32, // width and height of cannon sprite in pixels
+  nodeSize = 32,   // width and height of node sprite in pixels
 }
 
 enum Construct {
@@ -34,8 +38,10 @@ class Tile {
     Rect2i textureRect;
   }
 
-  @property bool hasNode() { return construct == Construct.node; }
   @property bool hasWall() { return construct == Construct.wall; }
+  /// only true if the tile is the top-left of a node (which covers 4 tiles)
+  @property bool hasNode() { return construct == Construct.node; }
+  /// only true if the tile is the top-left of a cannon (which covers 4 tiles)
   @property bool hasCannon() { return construct == Construct.cannon; }
   @property bool isEmpty() { return construct == Construct.none; }
   @property bool canPlaceWall() { return isEmpty && canBuild; }
@@ -52,11 +58,11 @@ alias TileMap = OrthoMap!Tile;
 void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
   RenderInfo ri;
   ri.bmp   = tileAtlas;
-  ri.depth = tileDepth;
 
   foreach(coord, tile; map) {
     auto pos = Vector2f(coord.col * map.tileWidth, coord.row * map.tileHeight);
 
+    ri.depth     = tileDepth;
     ri.region    = tile.textureRect;
     ri.transform = Transform!float(pos);
     ri.color     = tile.isEnclosed ? Color.red : Color.white;
@@ -65,6 +71,8 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 
     // don't shade in the construct on top of the tile
     ri.color = Color.white;
+    // draw constructs above tiles
+    ri.depth = featureDepth;
 
     final switch (tile.construct) with (Construct) {
       case wall:
@@ -78,8 +86,8 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
         ri.region = Rect2i(
             cannonSpriteCol * map.tileWidth,
             cannonSpriteRow * map.tileHeight,
-            map.tileWidth,
-            map.tileHeight);
+            cannonSize,
+            cannonSize);
 
         render.draw(ri);
         break;
@@ -87,8 +95,8 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
         ri.region = Rect2i(
             nodeSpriteCol * map.tileWidth,
             nodeSpriteRow * map.tileHeight,
-            map.tileWidth,
-            map.tileHeight);
+            nodeSize,
+            nodeSize);
 
         render.draw(ri);
         break;
@@ -113,6 +121,7 @@ auto buildMap(MapData data) {
     return new Tile(region, canBuild);
   }
 
+  // build ground
   auto tiles = data.getLayer("ground") // grab the layer named ground
     .data                              // iterate over the GIDs in that layer
     .map!(x => buildTile(x))           // use the gid to build a tile at that coord
@@ -120,7 +129,16 @@ auto buildMap(MapData data) {
     .map!(x => x.array)                // create an array from each row
     .array;                            // create an array of all the row arrays
 
-  return TileMap(data.tileWidth, data.tileHeight, tiles);
+  auto tileMap = TileMap(data.tileWidth, data.tileHeight, tiles);
+
+  // create nodes
+  foreach(rect ; data.getLayer("nodes").objects) {
+    // each node is represented by a rect whose top-left corner is in the top-left tile of that node
+    auto coord = RowCol(rect.y / data.tileHeight - 1, rect.x / data.tileWidth - 1);
+    tileMap.tileAt(coord).construct = Construct.node;
+  }
+
+  return tileMap;
 }
 
 auto getWallSpriteRegion(uint[3][3] mask, int width, int height) {
