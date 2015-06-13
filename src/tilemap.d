@@ -23,7 +23,6 @@ enum Construct {
   node,
   wall,
   cannon,
-  node,
 }
 
 class Tile {
@@ -68,8 +67,6 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
     ri.color = Color.white;
 
     final switch (tile.construct) with (Construct) {
-      case node:
-        break;
       case wall:
         uint[3][3] layout;
         map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
