@@ -15,7 +15,7 @@ private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 5,
   spriteSize = 16,
-  wallDepth  = 1,
+  wallDepth  = 2,
   phaseTime  = 10,
 }
 
@@ -68,10 +68,10 @@ class PlaceWall : State!Battle {
 
         _piece = Piece.random(); // generate a new piece
       }
-      else if (game.input.keyReleased(ALLEGRO_KEY_E)) {
+      else if (game.input.keyPressed(ALLEGRO_KEY_E)) {
         _piece.rotate(false);
       }
-      else if (game.input.keyReleased(ALLEGRO_KEY_Q)) {
+      else if (game.input.keyPressed(ALLEGRO_KEY_Q)) {
         _piece.rotate(true);
       }
     }
