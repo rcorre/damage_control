@@ -14,7 +14,7 @@ import states.place_cannons;
 private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 5,
-  spriteSize = 32,
+  spriteSize = 16,
   wallDepth  = 1,
   phaseTime  = 10,
 }

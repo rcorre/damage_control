@@ -99,7 +99,7 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
 }
 
 auto buildMap(MapData data) {
-  auto buildTile(TiledGid groundGid, TiledGid featureGid) {
+  auto buildTile(TiledGid groundGid) {
     auto tileset = data.getTileset(groundGid);
 
     auto region = Rect2i(
@@ -110,23 +110,15 @@ auto buildMap(MapData data) {
 
     bool canBuild = tileset.tileProperties(groundGid).get("canBuild", "false").to!bool;
 
-    auto tile = new Tile(region, canBuild);
-
-    if (featureGid != 0 && tileset.tileProperties(featureGid).get("type", "") == "node") {
-      tile.construct = Construct.node;
-    }
-
-    return tile;
+    return new Tile(region, canBuild);
   }
 
-  auto ground = data.getLayer("ground").data;
-  auto features = data.getLayer("features").data;
-
-  auto tiles = zip(ground, features)  // pair the ground gid and feature gid for each tile
-    .map!(x => buildTile(x[0], x[1])) // build the tile at that coord
-    .chunks(data.numCols)             // chunk into rows
-    .map!(x => x.array)               // create an array from each row
-    .array;                           // create an array of all the row arrays
+  auto tiles = data.getLayer("ground") // grab the layer named ground
+    .data                              // iterate over the GIDs in that layer
+    .map!(x => buildTile(x))           // use the gid to build a tile at that coord
+    .chunks(data.numCols)              // chunk into rows
+    .map!(x => x.array)                // create an array from each row
+    .array;                            // create an array of all the row arrays
 
   return TileMap(data.tileWidth, data.tileHeight, tiles);
 }
