@@ -12,7 +12,7 @@ private enum {
   cannonDepth     = 2,
   cannonsPerRound = 1,
   cannonsPerNode  = 1,
-  tilesPerCannon  = 10
+  tilesPerCannon  = 30
 }
 
 /// Player may place cannons within wall bounds
