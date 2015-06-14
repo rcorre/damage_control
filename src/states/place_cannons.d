@@ -8,11 +8,11 @@ import states.battle;
 import tilemap;
 
 private enum {
-  phaseTime   = 10,
-  cannonDepth = 1,
-  cannonsPerRound         = 1,
-  cannonsPerNode          = 1,
-  territoryForExtraCannon = 5
+  phaseTime       = 10,
+  cannonDepth     = 2,
+  cannonsPerRound = 1,
+  cannonsPerNode  = 1,
+  tilesPerCannon  = 10
 }
 
 /// Player may place cannons within wall bounds
@@ -28,9 +28,9 @@ class PlaceCannons : State!Battle {
       auto numNodes = territory.count!(x => x.hasNode);
 
       _cannons =
-        cannonsPerRound +                               // base cannon count
-        numNodes * cannonsPerNode +                     // node bonus
-        territory.walkLength / territoryForExtraCannon; // territory bonus
+        cannonsPerRound +                      // base cannon count
+        numNodes * cannonsPerNode +            // node bonus
+        territory.walkLength / tilesPerCannon; // territory bonus
     }
 
     void run(Battle battle) {
@@ -47,9 +47,12 @@ class PlaceCannons : State!Battle {
       auto mouseCoord = map.coordAtPoint(mousePos);
       //game.renderer.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
-      if (game.input.mouseReleased(MouseButton.lmb) &&
-          map.tileAt(mouseCoord).canPlaceCannon     &&
-          _cannons > 0)
+      if (game.input.mouseReleased(MouseButton.lmb)   &&
+          _cannons > 0                                &&
+          map.tileAt(mouseCoord).canPlaceCannon       &&
+          map.tileAt(mouseCoord.south).canPlaceCannon &&
+          map.tileAt(mouseCoord.east).canPlaceCannon  &&
+          map.tileAt(mouseCoord.south.east).canPlaceCannon)
       {
         --_cannons;
         map.tileAt(mouseCoord).construct = Construct.cannon;
