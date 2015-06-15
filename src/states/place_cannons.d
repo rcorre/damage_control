@@ -9,7 +9,7 @@ import tilemap;
 
 private enum {
   phaseTime       = 10,
-  cannonDepth     = 2,
+  cannonDepth     = 3,
   cannonsPerRound = 1,
   cannonsPerNode  = 1,
   tilesPerCannon  = 30
@@ -17,8 +17,8 @@ private enum {
 
 /// Player may place cannons within wall bounds
 class PlaceCannons : State!Battle {
-  private float _timer;
-  private ulong _cannons;
+  private float  _timer;
+  private ulong  _cannons;
 
   override {
     void start(Battle battle) {
@@ -47,6 +47,10 @@ class PlaceCannons : State!Battle {
       auto mouseCoord = map.coordAtPoint(mousePos);
       //game.renderer.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
+      // draw cannon at current tile under mouse
+      battle.drawCannon(mouseCoord, cannonDepth);
+
+      // try to place cannon if LMB clicked
       if (game.input.mouseReleased(MouseButton.lmb)   &&
           _cannons > 0                                &&
           map.tileAt(mouseCoord).canPlaceCannon       &&

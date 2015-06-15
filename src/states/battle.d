@@ -5,6 +5,16 @@ import dtiled;
 import tilemap;
 import states.place_wall;
 
+private enum {
+  cannonSpriteRow = 6,
+  cannonSpriteCol = 0,
+  cannonSize      = 32, // width and height of cannon sprite in pixels
+
+  nodeSpriteRow = 6,
+  nodeSpriteCol = 2,
+  nodeSize      = 32,   // width and height of node sprite in pixels
+}
+
 /// Start a new match.
 class Battle : State!Game {
   TileMap map;
@@ -32,5 +42,22 @@ class Battle : State!Game {
       states.run();
       map.draw(_tileAtlas, game.renderer);
     }
+  }
+
+  void drawCannon(RowCol coord, int depth) {
+    RenderInfo ri;
+
+    ri.bmp       = _tileAtlas;
+    ri.color     = Color.white;
+    ri.depth     = depth;
+    ri.transform = map.tileOffset(coord).as!Vector2f;
+
+    ri.region = Rect2i(
+        cannonSpriteCol * map.tileWidth,
+        cannonSpriteRow * map.tileHeight,
+        cannonSize,
+        cannonSize);
+
+    game.renderer.draw(ri);
   }
 }
