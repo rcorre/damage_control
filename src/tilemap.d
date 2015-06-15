@@ -60,11 +60,9 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
   ri.bmp   = tileAtlas;
 
   foreach(coord, tile; map.tiles) {
-    auto pos = Vector2f(coord.col * map.tileWidth, coord.row * map.tileHeight);
-
     ri.depth     = tileDepth;
     ri.region    = tile.textureRect;
-    ri.transform = Transform!float(pos);
+    ri.transform = map.tileOffset(coord).as!Vector2f;
     ri.color     = tile.isEnclosed ? Color.red : Color.white;
 
     render.draw(ri);
