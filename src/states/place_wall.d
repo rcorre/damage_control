@@ -101,8 +101,7 @@ struct Piece {
 
       uint[3][3] mask;
 
-      auto grid = TileGrid!uint(layout[].map!(x => x.array).array);
-      grid.createMaskAround!(x => x)(coord, mask);
+      layout.createMaskAround!(x => x)(coord, mask);
       ri.region = getWallSpriteRegion(mask, spriteSize, spriteSize);
 
       renderer.draw(ri);

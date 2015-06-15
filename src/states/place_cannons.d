@@ -3,7 +3,7 @@ module states.place_cannons;
 import std.range     : walkLength;
 import std.algorithm : count, filter;
 import dau;
-import dtiled.coords;
+import dtiled;
 import states.battle;
 import tilemap;
 

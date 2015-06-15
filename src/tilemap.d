@@ -59,7 +59,7 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
   RenderInfo ri;
   ri.bmp   = tileAtlas;
 
-  foreach(coord, tile; map) {
+  foreach(coord, tile; map.tiles) {
     auto pos = Vector2f(coord.col * map.tileWidth, coord.row * map.tileHeight);
 
     ri.depth     = tileDepth;
@@ -129,7 +129,7 @@ auto buildMap(MapData data) {
     .map!(x => x.array)                // create an array from each row
     .array;                            // create an array of all the row arrays
 
-  auto tileMap = TileMap(data.tileWidth, data.tileHeight, tiles);
+  auto tileMap = TileMap(tiles, data.tileWidth, data.tileHeight);
 
   // create nodes
   foreach(rect ; data.getLayer("nodes").objects) {
