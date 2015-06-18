@@ -59,7 +59,7 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
   RenderInfo ri;
   ri.bmp   = tileAtlas;
 
-  foreach(coord, tile; map.tiles) {
+  foreach(coord, tile; map) {
     ri.depth     = tileDepth;
     ri.region    = tile.textureRect;
     ri.transform = map.tileOffset(coord).as!Vector2f;

@@ -24,7 +24,7 @@ class PlaceCannons : State!Battle {
     void start(Battle battle) {
       _timer = phaseTime;
 
-      auto territory = battle.map.tiles.filter!(x => x.isEnclosed);
+      auto territory = battle.map.allTiles.filter!(x => x.isEnclosed);
       auto numNodes = territory.count!(x => x.hasNode);
 
       _cannons =

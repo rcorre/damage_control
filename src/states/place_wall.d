@@ -101,7 +101,7 @@ struct Piece {
 
       uint[3][3] mask;
 
-      layout.createMaskAround!(x => x)(coord, mask);
+      rectGrid(layout).createMaskAround!(x => x)(coord, mask);
       ri.region = getWallSpriteRegion(mask, spriteSize, spriteSize);
 
       renderer.draw(ri);
