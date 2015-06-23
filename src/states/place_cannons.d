@@ -5,6 +5,7 @@ import std.algorithm : count, filter;
 import dau;
 import dtiled;
 import states.battle;
+import states.fight;
 import tilemap;
 
 private enum {
@@ -41,7 +42,7 @@ class PlaceCannons : State!Battle {
       _timer -= game.deltaTime;
 
       if (_timer < 0) {
-        //game.states.pop();
+        battle.states.replace(new Fight);
       }
 
       auto mouseCoord = map.coordAtPoint(mousePos);

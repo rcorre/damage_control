@@ -3,7 +3,9 @@ module states.battle;
 import dau;
 import dtiled;
 import tilemap;
+import player;
 import states.place_wall;
+import states.fight;
 
 private enum {
   cannonSpriteRow = 6,
@@ -20,6 +22,7 @@ class Battle : State!Game {
   TileMap map;
   Game game;
   StateStack!Battle states;
+  Player player;
 
   private {
     Bitmap _tileAtlas;
@@ -31,7 +34,9 @@ class Battle : State!Game {
       this.map = buildMap(MapData.load("./content/map/map1.json"));
       this.states = new StateStack!Battle(this);
       _tileAtlas = game.content.bitmaps.get("tileset");
-      states.push(new PlaceWall);
+      player = new Player(Color(0, 0, 0.8));
+      states.push(new Fight);
+      //states.push(new PlaceWall);
     }
 
     void run(Game game) {
