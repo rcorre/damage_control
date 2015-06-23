@@ -5,7 +5,6 @@ import dtiled;
 import tilemap;
 import player;
 import states.place_wall;
-import states.fight;
 
 private enum {
   cannonSpriteRow = 6,
@@ -35,8 +34,7 @@ class Battle : State!Game {
       this.states = new StateStack!Battle(this);
       _tileAtlas = game.content.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
-      states.push(new Fight);
-      //states.push(new PlaceWall);
+      states.push(new PlaceWall);
     }
 
     void run(Game game) {
