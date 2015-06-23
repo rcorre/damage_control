@@ -67,7 +67,6 @@ class Fight : State!Battle {
 
       RenderInfo ri;
       ri.bmp    = _projectileBmp;
-      ri.color  = Color.white;
       ri.depth  = projectileDepth;
       ri.region = Rect2i(0,0,8,8);
 
@@ -75,7 +74,12 @@ class Fight : State!Battle {
         proj.position += proj.velocity * game.deltaTime;
 
         ri.transform = proj.position;
-        game.renderer.draw(ri);
+        ri.color  = Color.white;
+        while (ri.color.a > 0) {
+          game.renderer.draw(ri);
+          ri.color.a -= 0.2;
+          ri.transform.pos -= proj.velocity * game.deltaTime;
+        }
       }
 
       foreach(ref cannon ; _cannons) {
