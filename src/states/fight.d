@@ -12,21 +12,25 @@ private enum {
   phaseTime       = 10,
   projectileDepth = 3,
   projectileSpeed = 350,
-  cannonCooldown = 5,
+  cannonCooldown  = 4,
 }
 
 /// Player may place cannons within wall bounds
 class Fight : State!Battle {
-  private float  _timer;
-  private Projectile[] _projectiles;
-  private Cannon[] _cannons;
-  private Bitmap _projectileBmp;
+  private {
+    alias ProjectileList = DropList!(Projectile, x => x.duration < 0);
+    private float  _timer;
+    private ProjectileList _projectiles;
+    private Cannon[] _cannons;
+    private Bitmap _projectileBmp;
+  }
 
   override {
     void start(Battle battle) {
       _timer = phaseTime;
 
       _projectileBmp = al_create_bitmap(8,8);
+      _projectiles = new ProjectileList;
 
       al_set_target_bitmap(_projectileBmp);
       al_clear_to_color(Color.white);
@@ -51,17 +55,20 @@ class Fight : State!Battle {
 
       // try to place cannon if LMB clicked
       if (game.input.mouseReleased(MouseButton.lmb)) {
+        // place the cannons with the lowest cooldowns first
         _cannons.sort!((a,b) => a.cooldown < b.cooldown);
+
         if (_cannons.front.cooldown < 0) {
           _cannons.front.cooldown = cannonCooldown;
 
           auto startPos = _cannons.front.position;
-          auto tragectory = ((cast(Vector2f) mousePos) - startPos).normalized;
+          auto tragectory = ((cast(Vector2f) mousePos) - startPos);
 
           Projectile proj;
           proj.position = _cannons.front.position;
-          proj.velocity = tragectory * projectileSpeed;
-          _projectiles ~= proj;
+          proj.velocity = tragectory.normalized * projectileSpeed;
+          proj.duration = tragectory.len / projectileSpeed;
+          _projectiles.insert(proj);
         }
       }
 
@@ -71,6 +78,7 @@ class Fight : State!Battle {
       ri.region = Rect2i(0,0,8,8);
 
       foreach(ref proj ; _projectiles) {
+        proj.duration -= game.deltaTime;
         proj.position += proj.velocity * game.deltaTime;
 
         ri.transform = proj.position;
@@ -97,6 +105,7 @@ private:
 struct Projectile {
   Vector2f position;
   Vector2f velocity;
+  float duration;
 }
 
 struct Cannon {
