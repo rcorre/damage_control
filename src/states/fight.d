@@ -12,9 +12,9 @@ private enum {
   phaseTime       = 10,
   cannonCooldown  = 4,
 
-  projectileSize  = 8,
+  projectileSize  = Vector2i(12, 5),
   projectileTint  = Color(1, 1, 1, 0.5),
-  projectileSpeed = 350,
+  projectileSpeed = 400,
   projectileDepth = 3,
 
   explosionTime  = 0.10f,
@@ -46,7 +46,7 @@ class Fight : State!Battle {
       scope(exit) al_set_target_backbuffer(battle.game.display.display);
 
       // create the projectile bitmap
-      _projectileBmp = al_create_bitmap(projectileSize, projectileSize);
+      _projectileBmp = al_create_bitmap(projectileSize.x, projectileSize.y);
       al_set_target_bitmap(_projectileBmp);
       al_clear_to_color(projectileTint);
 
@@ -114,7 +114,7 @@ class Fight : State!Battle {
     RenderInfo ri;
     ri.bmp    = _projectileBmp;
     ri.depth  = projectileDepth;
-    ri.region = Rect2i(0, 0, projectileSize, projectileSize);
+    ri.region = Rect2i(Vector2i.zero, projectileSize);
 
     foreach(ref proj ; _projectiles) {
       proj.duration -= game.deltaTime;
@@ -127,11 +127,12 @@ class Fight : State!Battle {
 
       proj.position += proj.velocity * game.deltaTime;
 
-      ri.transform = proj.position;
-      ri.color  = Color.white;
+      ri.transform       = proj.position;
+      ri.color           = Color.white;
+      ri.transform.angle = proj.velocity.angle;
       while (ri.color.a > 0) {
         game.renderer.draw(ri);
-        ri.color.a -= 0.2;
+        ri.color.a -= 0.15;
         ri.transform.pos -= proj.velocity * game.deltaTime;
       }
     }

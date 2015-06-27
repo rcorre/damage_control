@@ -9,7 +9,7 @@ import states.fight;
 import tilemap;
 
 private enum {
-  phaseTime       = 10,
+  phaseTime       = 5,
   cannonDepth     = 3,
   cannonsPerRound = 1,
   cannonsPerNode  = 1,
