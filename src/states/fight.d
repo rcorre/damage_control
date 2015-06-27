@@ -17,9 +17,9 @@ private enum {
   projectileSpeed = 350,
   projectileDepth = 3,
 
-  explosionTime  = 0.15f,
-  explosionSize  = 30,
-  explosionTint  = Color(1, 1, 1, 0.5),
+  explosionTime  = 0.10f,
+  explosionSize  = 40,
+  explosionTint  = Color(1, 1, 1, 1.0),
   explosionDepth = 3,
 }
 
@@ -53,7 +53,10 @@ class Fight : State!Battle {
       // create the explosion bitmap
       _explosionBmp = al_create_bitmap(explosionSize, explosionSize);
       al_set_target_bitmap(_explosionBmp);
-      al_clear_to_color(explosionTint);
+      al_draw_filled_ellipse(
+          explosionSize / 2, explosionSize / 2, // center x,y
+          explosionSize / 2, explosionSize / 2, // radius x,y
+          explosionTint);                       // color
 
       // create an entry in the cannon list for each cannon in player territory
       _cannons = battle.map.allCoords
@@ -117,7 +120,9 @@ class Fight : State!Battle {
       proj.duration -= game.deltaTime;
 
       if (proj.duration < 0) {
+        // turn this projectile into an explosion
         _explosions.insert(Explosion(proj.position));
+        continue;
       }
 
       proj.position += proj.velocity * game.deltaTime;
@@ -141,11 +146,14 @@ class Fight : State!Battle {
     foreach(ref expl ; _explosions) {
       expl.duration -= game.deltaTime;
 
+      // scale about the center
       auto scale = Vector2f(1,1) * (1 - expl.duration / explosionTime);
       ri.transform.pos = expl.position - (scale * explosionSize) / 2;
       ri.transform.scale = scale;
 
-      ri.color  = Color.white;
+      // fade as time passes
+      ri.color = Color.black.lerp(Color.white, expl.duration / explosionTime);
+
       game.renderer.draw(ri);
     }
   }
