@@ -23,8 +23,8 @@ private enum {
   explosionDepth = 3,
 }
 
-/// Player may place cannons within wall bounds
-class Fight : State!Battle {
+/// Base battle state for fight vs ai or fight vs player.
+abstract class Fight : State!Battle {
   private {
     alias ProjectileList = DropList!(Projectile, x => x.duration < 0);
     alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
@@ -157,15 +157,6 @@ class Fight : State!Battle {
 
       game.renderer.draw(ri);
     }
-  }
-
-  bool testProjectile(Projectile proj) {
-    if (proj.duration < 0) {
-      _explosions.insert(Explosion(proj.position));
-      return true;
-    }
-
-    return false;
   }
 }
 

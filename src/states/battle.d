@@ -1,5 +1,8 @@
 module states.battle;
 
+import std.array     : array;
+import std.string    : startsWith;
+import std.algorithm : sort;
 import dau;
 import dtiled;
 import tilemap;
@@ -19,6 +22,7 @@ private enum {
 /// Start a new match.
 class Battle : State!Game {
   TileMap map;
+  BattleData data;
   Game game;
   StateStack!Battle states;
   Player player;
@@ -30,7 +34,9 @@ class Battle : State!Game {
   override {
     void start(Game game) {
       this.game = game;
-      this.map = buildMap(MapData.load("./content/map/map1.json"));
+      auto mapData = MapData.load("./content/map/map1.json");
+      this.map = buildMap(mapData);
+      this.data = BattleData(mapData);
       this.states = new StateStack!Battle(this);
       _tileAtlas = game.content.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
@@ -62,5 +68,28 @@ class Battle : State!Game {
         cannonSize);
 
     game.renderer.draw(ri);
+  }
+}
+
+private:
+struct BattleData {
+  private Vector2f[][] _enemyWaves;
+
+  this(MapData data) {
+    auto parseWave(LayerData layer) {
+      return layer.objects
+        .map!(obj => Vector2f(obj.x, obj.y))
+        .array;
+    }
+
+    _enemyWaves ~= data
+      .layers
+      .filter!(x => x.name.startsWith("enemies"))
+      .map!(wave => parseWave(wave))
+      .array;
+  }
+
+  auto getEnemyWave(int round) {
+    return _enemyWaves[round];
   }
 }
