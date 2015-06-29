@@ -109,6 +109,8 @@ abstract class Fight : State!Battle {
     al_destroy_bitmap(_explosionBmp);
   }
 
+  abstract void onProjectileExplode(Vector2f position, float radius);
+
   private:
   void processProjectiles(Game game) {
     RenderInfo ri;
@@ -122,6 +124,7 @@ abstract class Fight : State!Battle {
       if (proj.duration < 0) {
         // turn this projectile into an explosion
         _explosions.insert(Explosion(proj.position));
+        onProjectileExplode(proj.position, explosionSize);
         continue;
       }
 
