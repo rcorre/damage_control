@@ -38,6 +38,14 @@ class ChooseBase : State!Battle {
         // register the current coord as the selected node
         _currentCoord = newCoord;
       }
+
+      if (game.input.mouseReleased(MouseButton.lmb) && map.tileAt(_currentCoord).hasNode) {
+        // mark all tiles in selected base area as enclosed
+        foreach(tile ; map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
+          tile.isEnclosed = true;
+        }
+        battle.states.replace(new PlaceWall);
+      }
     }
   }
 }
