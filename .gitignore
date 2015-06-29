@@ -2,6 +2,7 @@
 .dub
 
 #docs
+docs/
 docs.json
 __dummy.html
 
