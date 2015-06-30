@@ -1,7 +1,7 @@
 module states.fight_ai;
 
 import std.array     : array;
-import std.random    : uniform;
+import std.random    : uniform, randomSample;
 import dau;
 import dtiled;
 import states.battle;
@@ -12,6 +12,8 @@ private enum {
   maxEnemyFireCooldown = 5,
   enemyDepth = 3,
   enemySize = Vector2i(32,32),
+
+  enemyAccuracy = 0.5
 }
 
 class FightAI : Fight {
@@ -21,6 +23,7 @@ class FightAI : Fight {
     EnemyList _enemies;
     Bitmap _enemyBmp;
     int _round;
+    RowCol[] _targets;  // coordinates enemies should target
   }
 
   this(int round) {
@@ -38,6 +41,9 @@ class FightAI : Fight {
           battle.data
           .getEnemyWave(_round)  // get the wave data for this round
           .map!(x => Enemy(x))); // create an enemy at each location
+
+      // consider all tiles with walls as targets
+      _targets = battle.map.allCoords.filter!(x => battle.map.tileAt(x).hasWall).array;
     }
 
     void run(Battle battle) {
@@ -64,7 +70,6 @@ class FightAI : Fight {
   private:
   void processEnemies(Battle battle) {
     auto game = battle.game;
-    auto map = battle.map;
 
     RenderInfo ri;
     ri.bmp    = _enemyBmp;
@@ -76,10 +81,12 @@ class FightAI : Fight {
       enemy.fireCooldown -= game.deltaTime;
 
       if (enemy.fireCooldown < 0) {
+        auto target = _targets.randomSample(1).front;
+
         enemy.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
         // just pick a totally random coordinate for now
-        auto target = RowCol(uniform(0, map.numRows), uniform(0, map.numCols));
-        spawnProjectile(enemy.position, map.tileCenter(target).as!Vector2f);
+        //auto target = RowCol(uniform(0, map.numRows), uniform(0, map.numCols));
+        spawnProjectile(enemy.position, battle.map.tileCenter(target).as!Vector2f);
       }
 
       // draw
