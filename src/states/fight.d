@@ -84,18 +84,11 @@ abstract class Fight : State!Battle {
         if (_cannons.front.cooldown < 0) {
           _cannons.front.cooldown = cannonCooldown;
 
-          auto startPos = _cannons.front.position;
-          auto tragectory = ((cast(Vector2f) mousePos) - startPos);
-
-          Projectile proj;
-          proj.position = _cannons.front.position;
-          proj.velocity = tragectory.normalized * projectileSpeed;
-          proj.duration = tragectory.len / projectileSpeed;
-          _projectiles.insert(proj);
+          spawnProjectile(_cannons.front.position, (cast(Vector2f) mousePos));
         }
       }
 
-      processProjectiles(game);
+      processProjectiles(battle);
       processExplosions(game);
 
       foreach(ref cannon ; _cannons) {
@@ -109,34 +102,48 @@ abstract class Fight : State!Battle {
     al_destroy_bitmap(_explosionBmp);
   }
 
-  abstract void onProjectileExplode(Vector2f position, float radius);
+  void onProjectileExplode(Battle battle, Vector2f position, float radius) {
+    if (battle.map.tileAtPoint(position).hasWall) {
+      battle.map.tileAtPoint(position).construct = Construct.none;
+    }
+  }
+
+  void spawnProjectile(Vector2f origin, Vector2f target) {
+    auto path = target - origin; // path along which projectile will travel
+
+    Projectile proj;
+    proj.position = origin;
+    proj.velocity = path.normalized * projectileSpeed;
+    proj.duration = path.len / projectileSpeed;
+    _projectiles.insert(proj);
+  }
 
   private:
-  void processProjectiles(Game game) {
+  void processProjectiles(Battle battle) {
     RenderInfo ri;
     ri.bmp    = _projectileBmp;
     ri.depth  = projectileDepth;
     ri.region = Rect2i(Vector2i.zero, projectileSize);
 
     foreach(ref proj ; _projectiles) {
-      proj.duration -= game.deltaTime;
+      proj.duration -= battle.game.deltaTime;
 
       if (proj.duration < 0) {
         // turn this projectile into an explosion
         _explosions.insert(Explosion(proj.position));
-        onProjectileExplode(proj.position, explosionSize);
+        onProjectileExplode(battle, proj.position, explosionSize);
         continue;
       }
 
-      proj.position += proj.velocity * game.deltaTime;
+      proj.position += proj.velocity * battle.game.deltaTime;
 
       ri.transform       = proj.position;
       ri.color           = Color.white;
       ri.transform.angle = proj.velocity.angle;
       while (ri.color.a > 0) {
-        game.renderer.draw(ri);
+        battle.game.renderer.draw(ri);
         ri.color.a -= 0.15;
-        ri.transform.pos -= proj.velocity * game.deltaTime;
+        ri.transform.pos -= proj.velocity * battle.game.deltaTime;
       }
     }
   }
@@ -163,13 +170,13 @@ abstract class Fight : State!Battle {
   }
 }
 
-private:
 struct Projectile {
   Vector2f position;
   Vector2f velocity;
   float duration;
 }
 
+private:
 struct Explosion {
   Vector2f position;
   float duration;

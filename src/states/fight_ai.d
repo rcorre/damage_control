@@ -45,7 +45,8 @@ class FightAI : Fight {
       processEnemies(battle.game);
     }
 
-    void onProjectileExplode(Vector2f pos, float radius) {
+    void onProjectileExplode(Battle battle, Vector2f pos, float radius) {
+      super.onProjectileExplode(battle, pos, radius);
       foreach(ref enemy ; _enemies) {
         auto center = enemy.position + enemySize / 2;
         if (center.distance(pos) < radius) {
@@ -68,6 +69,13 @@ class FightAI : Fight {
     ri.region = Rect2i(Vector2i.zero, enemySize);
 
     foreach(ref enemy ; _enemies) {
+      enemy.fireCooldown -= game.deltaTime;
+
+      if (enemy.fireCooldown < 0) {
+
+      }
+
+      // draw
       ri.transform = enemy.position;
       game.renderer.draw(ri);
     }
