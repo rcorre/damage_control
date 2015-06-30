@@ -83,9 +83,13 @@ class FightAI : Fight {
       if (enemy.fireCooldown < 0) {
         auto target = _targets.randomSample(1).front;
 
+        if (uniform(0f, 1f) > enemyAccuracy) {
+          // simulate a 'miss' by targeting an adjacent tile
+          target = target.adjacent(Diagonals.yes).randomSample(1).front;
+        }
+
         enemy.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
-        // just pick a totally random coordinate for now
-        //auto target = RowCol(uniform(0, map.numRows), uniform(0, map.numCols));
+
         spawnProjectile(enemy.position, battle.map.tileCenter(target).as!Vector2f);
       }
 
