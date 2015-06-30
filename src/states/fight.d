@@ -103,8 +103,9 @@ abstract class Fight : State!Battle {
   }
 
   void onProjectileExplode(Battle battle, Vector2f position, float radius) {
-    if (battle.map.tileAtPoint(position).hasWall) {
-      battle.map.tileAtPoint(position).construct = Construct.none;
+    auto coord = battle.map.coordAtPoint(position);
+    if (battle.map.tileAt(coord).hasWall) {
+      destroyWall(battle, coord);
     }
   }
 
@@ -166,6 +167,23 @@ abstract class Fight : State!Battle {
       ri.color = Color.black.lerp(Color.white, expl.duration / explosionTime);
 
       game.renderer.draw(ri);
+    }
+  }
+
+  void destroyWall(Battle battle, RowCol wallCoord) {
+    auto map = battle.map;
+    map.tileAt(wallCoord).construct = Construct.none;
+
+    foreach(neighbor ; wallCoord.adjacent(Diagonals.yes)) {
+      if (map.tileAt(neighbor).isEnclosed &&
+          map.enclosedCoords!(x => x.hasWall)(neighbor, Diagonals.yes).empty)
+      {
+        // the tile was previously enclosed but no longer is.
+        // clear the enclosed state of all connected tiles with a flood fill
+        foreach(ref tile ; map.floodTiles!(x => x.isEnclosed)(neighbor, Diagonals.yes)) {
+          tile.isEnclosed = false;
+        }
+      }
     }
   }
 }
