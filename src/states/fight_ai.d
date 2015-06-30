@@ -3,6 +3,7 @@ module states.fight_ai;
 import std.array     : array;
 import std.random    : uniform;
 import dau;
+import dtiled;
 import states.battle;
 import states.fight;
 
@@ -42,7 +43,7 @@ class FightAI : Fight {
     void run(Battle battle) {
       super.run(battle);
 
-      processEnemies(battle.game);
+      processEnemies(battle);
     }
 
     void onProjectileExplode(Battle battle, Vector2f pos, float radius) {
@@ -61,7 +62,10 @@ class FightAI : Fight {
   }
 
   private:
-  void processEnemies(Game game) {
+  void processEnemies(Battle battle) {
+    auto game = battle.game;
+    auto map = battle.map;
+
     RenderInfo ri;
     ri.bmp    = _enemyBmp;
     ri.depth  = enemyDepth;
@@ -72,7 +76,10 @@ class FightAI : Fight {
       enemy.fireCooldown -= game.deltaTime;
 
       if (enemy.fireCooldown < 0) {
-
+        enemy.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
+        // just pick a totally random coordinate for now
+        auto target = RowCol(uniform(0, map.numRows), uniform(0, map.numCols));
+        spawnProjectile(enemy.position, map.tileCenter(target).as!Vector2f);
       }
 
       // draw
