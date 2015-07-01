@@ -57,7 +57,9 @@ abstract class Fight : State!Battle {
           explosionSize / 2, explosionSize / 2, // center x,y
           explosionSize / 2, explosionSize / 2, // radius x,y
           explosionTint);                       // color
+    }
 
+    void enter(Battle battle) {
       // create an entry in the cannon list for each cannon in player territory
       _cannons = battle.map.allCoords
         .filter!(x => battle.map.tileAt(x).hasCannon)

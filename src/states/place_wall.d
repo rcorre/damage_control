@@ -9,7 +9,6 @@ import dtiled;
 import jsonizer;
 import tilemap;
 import states.battle;
-import states.place_cannons;
 
 private enum {
   dataFile   = "data/pieces.json",
@@ -28,7 +27,7 @@ class PlaceWall : State!Battle {
   }
 
   override {
-    void start(Battle battle) {
+    void enter(Battle battle) {
       _piece = Piece.random;
       _tileAtlas = battle.game.content.bitmaps.get("tileset");
       _timer = phaseTime;
@@ -38,12 +37,6 @@ class PlaceWall : State!Battle {
       auto game = battle.game;
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
-
-      _timer -= game.deltaTime;
-
-      if (_timer < 0) {
-        battle.states.replace(new PlaceCannons);
-      }
 
       auto centerCoord = map.coordAtPoint(mousePos);
       _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
@@ -74,6 +67,11 @@ class PlaceWall : State!Battle {
       else if (game.input.keyPressed(ALLEGRO_KEY_Q)) {
         _piece.rotate(true);
       }
+
+      _timer -= game.deltaTime;
+
+      // timer ran out, this state is done
+      if (_timer < 0) battle.states.pop();
     }
   }
 }

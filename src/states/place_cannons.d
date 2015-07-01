@@ -5,7 +5,6 @@ import std.algorithm : count, filter;
 import dau;
 import dtiled;
 import states.battle;
-import states.fight_ai;
 import tilemap;
 
 private enum {
@@ -22,7 +21,7 @@ class PlaceCannons : State!Battle {
   private ulong  _cannons;
 
   override {
-    void start(Battle battle) {
+    void enter(Battle battle) {
       _timer = phaseTime;
 
       auto territory = battle.map.allTiles.filter!(x => x.isEnclosed);
@@ -38,12 +37,6 @@ class PlaceCannons : State!Battle {
       auto game = battle.game;
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
-
-      _timer -= game.deltaTime;
-
-      if (_timer < 0 || _cannons == 0) {
-        battle.states.replace(new FightAI(0));
-      }
 
       auto mouseCoord = map.coordAtPoint(mousePos);
 
@@ -61,6 +54,10 @@ class PlaceCannons : State!Battle {
         --_cannons;
         map.tileAt(mouseCoord).construct = Construct.cannon;
       }
+
+      // tick down the timer; if it hits 0 or we are done placing cannons, pop the state
+      _timer -= game.deltaTime;
+      if (_timer < 0 || _cannons == 0) battle.states.pop();
     }
   }
 }

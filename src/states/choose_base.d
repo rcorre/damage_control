@@ -9,7 +9,6 @@ import dtiled;
 import jsonizer;
 import tilemap;
 import states.battle;
-import states.place_cannons;
 
 /// Player is holding a wall segment they can place with a mouse click
 class ChooseBase : State!Battle {
@@ -44,7 +43,10 @@ class ChooseBase : State!Battle {
         foreach(tile ; map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
           tile.isEnclosed = true;
         }
-        battle.states.replace(new PlaceCannons);
+
+        // base is chosen, end ths state and start the next round
+        battle.states.pop();
+        battle.startNewRound();
       }
     }
   }

@@ -6,7 +6,6 @@ import dau;
 import dtiled;
 import states.battle;
 import states.fight;
-import states.place_wall;
 
 private enum {
   minEnemyFireCooldown = 2,
@@ -40,7 +39,10 @@ class FightAI : Fight {
           battle.data
           .getEnemyWave(_round)  // get the wave data for this round
           .map!(x => Enemy(x))); // create an enemy at each location
+    }
 
+    void enter(Battle battle) {
+      super.enter(battle);
       // consider all tiles with walls as targets
       _targets = battle.map.allCoords.filter!(x => battle.map.tileAt(x).hasWall).array;
     }
@@ -66,9 +68,8 @@ class FightAI : Fight {
   void processEnemies(Battle battle) {
     auto game = battle.game;
 
-    if (_enemies[].empty) {
-      battle.states.replace(new PlaceWall);
-    }
+    // when no enemies are left, the battle is over
+    if (_enemies.empty) battle.states.pop();
 
     foreach(ref enemy ; _enemies) {
       enemy.fireCooldown -= game.deltaTime;
