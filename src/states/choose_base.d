@@ -44,9 +44,8 @@ class ChooseBase : State!Battle {
           tile.isEnclosed = true;
         }
 
-        // base is chosen, end ths state and start the next round
+        // base is chosen, end this state
         battle.states.pop();
-        battle.startNewRound();
       }
     }
   }

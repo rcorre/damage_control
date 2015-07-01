@@ -8,9 +8,7 @@ import dtiled;
 import tilemap;
 import player;
 import states.choose_base;
-import states.place_wall;
-import states.place_cannons;
-import states.fight_ai;
+import states.start_round;
 
 private enum {
   cannonSpriteRow = 6,
@@ -43,7 +41,6 @@ class Battle : State!Game {
     float _animationTimer;
     int _numAnimationFrames;
     int _animationCounter;
-    int _currentRound; // the round to start on the next startNewRound()
   }
 
   @property auto animationOffset() {
@@ -59,7 +56,7 @@ class Battle : State!Game {
       this.states = new StateStack!Battle(this);
       _tileAtlas = game.content.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
-      states.push(new ChooseBase);
+      states.push(new ChooseBase, new StartRound);
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
     }
@@ -113,10 +110,6 @@ class Battle : State!Game {
         enemySize);
 
     game.renderer.draw(ri);
-  }
-
-  void startNewRound() {
-    states.push(new PlaceCannons, new FightAI(_currentRound++), new PlaceWall);
   }
 }
 
