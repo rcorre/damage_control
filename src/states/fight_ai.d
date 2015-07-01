@@ -6,6 +6,7 @@ import dau;
 import dtiled;
 import states.battle;
 import states.fight;
+import states.place_wall;
 
 private enum {
   minEnemyFireCooldown = 2,
@@ -65,6 +66,9 @@ class FightAI : Fight {
   void processEnemies(Battle battle) {
     auto game = battle.game;
 
+    if (_enemies[].empty) {
+      battle.states.replace(new PlaceWall);
+    }
 
     foreach(ref enemy ; _enemies) {
       enemy.fireCooldown -= game.deltaTime;
