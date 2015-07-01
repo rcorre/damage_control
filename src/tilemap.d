@@ -55,7 +55,7 @@ class Tile {
 
 alias TileMap = OrthoMap!Tile;
 
-void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
+void draw(TileMap map, Bitmap tileAtlas, Renderer render, Vector2i animationOffset) {
   RenderInfo ri;
   ri.bmp   = tileAtlas;
 
@@ -78,12 +78,14 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
         map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
 
         ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
+        ri.region.x += animationOffset.x;
+        ri.region.y += animationOffset.y;
         render.draw(ri);
         break;
       case cannon:
         ri.region = Rect2i(
-            cannonSpriteCol * map.tileWidth,
-            cannonSpriteRow * map.tileHeight,
+            cannonSpriteCol * map.tileWidth + animationOffset.x,
+            cannonSpriteRow * map.tileHeight + animationOffset.y,
             cannonSize,
             cannonSize);
 
@@ -91,8 +93,8 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render) {
         break;
       case node:
         ri.region = Rect2i(
-            nodeSpriteCol * map.tileWidth,
-            nodeSpriteRow * map.tileHeight,
+            nodeSpriteCol * map.tileWidth + animationOffset.x,
+            nodeSpriteRow * map.tileHeight + animationOffset.y,
             nodeSize,
             nodeSize);
 

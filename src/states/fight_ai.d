@@ -21,7 +21,6 @@ class FightAI : Fight {
     alias EnemyList = DropList!(Enemy, x => x.destroyed);
 
     EnemyList _enemies;
-    Bitmap _enemyBmp;
     int _round;
     RowCol[] _targets;  // coordinates enemies should target
   }
@@ -33,7 +32,6 @@ class FightAI : Fight {
   override {
     void start(Battle battle) {
       super.start(battle);
-      _enemyBmp = battle.game.content.bitmaps.get("enemy");
 
       _enemies = new EnemyList;
 
@@ -63,19 +61,10 @@ class FightAI : Fight {
     }
   }
 
-  ~this() {
-    al_destroy_bitmap(_enemyBmp);
-  }
-
   private:
   void processEnemies(Battle battle) {
     auto game = battle.game;
 
-    RenderInfo ri;
-    ri.bmp    = _enemyBmp;
-    ri.depth  = enemyDepth;
-    ri.color  = Color.white;
-    ri.region = Rect2i(Vector2i.zero, enemySize);
 
     foreach(ref enemy ; _enemies) {
       enemy.fireCooldown -= game.deltaTime;
@@ -93,9 +82,7 @@ class FightAI : Fight {
         spawnProjectile(enemy.position, battle.map.tileCenter(target).as!Vector2f);
       }
 
-      // draw
-      ri.transform = enemy.position;
-      game.renderer.draw(ri);
+      battle.drawEnemy(enemy.position, enemyDepth);
     }
   }
 }

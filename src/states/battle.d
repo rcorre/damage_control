@@ -17,6 +17,14 @@ private enum {
   nodeSpriteRow = 6,
   nodeSpriteCol = 2,
   nodeSize      = 32,   // width and height of node sprite in pixels
+
+  enemySpriteRow = 6,
+  enemySpriteCol = 4,
+  enemySize      = 32,
+
+  animationTime = 0.06,            // seconds per frame of tilesheet animation
+  tilesetSize   = Vector2i(96, 0), // size of the tileset image for one frame of animation
+
 }
 
 /// Start a new match.
@@ -29,6 +37,13 @@ class Battle : State!Game {
 
   private {
     Bitmap _tileAtlas;
+    float _animationTimer;
+    int _numAnimationFrames;
+    int _animationCounter;
+  }
+
+  @property auto animationOffset() {
+    return tilesetSize * _animationCounter;
   }
 
   override {
@@ -41,6 +56,8 @@ class Battle : State!Game {
       _tileAtlas = game.content.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
       states.push(new ChooseBase);
+      _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
+      _animationTimer = animationTime;
     }
 
     void run(Game game) {
@@ -49,7 +66,14 @@ class Battle : State!Game {
       }
 
       states.run();
-      map.draw(_tileAtlas, game.renderer);
+      map.draw(_tileAtlas, game.renderer, animationOffset);
+
+      // animation
+      _animationTimer -= game.deltaTime;
+      if (_animationTimer < 0) {
+        _animationTimer = animationTime;
+        _animationCounter = (_animationCounter + 1) % _numAnimationFrames;
+      }
     }
   }
 
@@ -62,10 +86,27 @@ class Battle : State!Game {
     ri.transform = map.tileOffset(coord).as!Vector2f;
 
     ri.region = Rect2i(
-        cannonSpriteCol * map.tileWidth,
-        cannonSpriteRow * map.tileHeight,
+        cannonSpriteCol * map.tileWidth + animationOffset.x,
+        cannonSpriteRow * map.tileHeight + animationOffset.y,
         cannonSize,
         cannonSize);
+
+    game.renderer.draw(ri);
+  }
+
+  void drawEnemy(Vector2f pos, int depth) {
+    RenderInfo ri;
+
+    ri.bmp       = _tileAtlas;
+    ri.color     = Color.white;
+    ri.depth     = depth;
+    ri.transform = pos;
+
+    ri.region = Rect2i(
+        enemySpriteCol * map.tileWidth  + animationOffset.x,
+        enemySpriteRow * map.tileHeight + animationOffset.y,
+        enemySize,
+        enemySize);
 
     game.renderer.draw(ri);
   }
