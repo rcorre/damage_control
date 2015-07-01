@@ -41,15 +41,14 @@ class PlaceCannons : State!Battle {
 
       _timer -= game.deltaTime;
 
-      if (_timer < 0) {
+      if (_timer < 0 || _cannons == 0) {
         battle.states.replace(new FightAI(0));
       }
 
       auto mouseCoord = map.coordAtPoint(mousePos);
-      //game.renderer.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
 
-      // draw cannon at current tile under mouse
-      battle.drawCannon(mouseCoord, cannonDepth);
+      // draw cannon at current tile under mouse if the player has another cannon to place
+      if (_cannons > 0) battle.drawCannon(mouseCoord, cannonDepth);
 
       // try to place cannon if LMB clicked
       if (game.input.mouseReleased(MouseButton.lmb)   &&

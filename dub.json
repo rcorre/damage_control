@@ -4,6 +4,7 @@
   "copyright": "Copyright © 2015, rcorre",
   "authors": ["rcorre"],
   "targetPath": "bin",
+  "preBuildCommands": [ "rake" ],
   "dependencies": {
     "dau" : { "path": "../dau" },
     "dtiled" : { "path": "../dtiled" }
