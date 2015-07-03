@@ -95,13 +95,13 @@ class Battle : State!Game {
     game.renderer.draw(ri);
   }
 
-  void drawEnemy(Vector2f pos, int depth) {
+  void drawEnemy(Transform!float transform, int depth) {
     RenderInfo ri;
 
     ri.bmp       = _tileAtlas;
     ri.color     = Color.white;
     ri.depth     = depth;
-    ri.transform = pos;
+    ri.transform = transform;
 
     ri.region = Rect2i(
         enemySpriteCol * map.tileWidth  + animationOffset.x,

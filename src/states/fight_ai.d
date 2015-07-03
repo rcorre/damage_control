@@ -1,7 +1,8 @@
 module states.fight_ai;
 
-import std.array     : array;
-import std.random    : uniform, randomSample;
+import std.math   : PI, sgn, approxEqual;
+import std.array  : array;
+import std.random : uniform, randomSample;
 import dau;
 import dtiled;
 import states.battle;
@@ -13,7 +14,10 @@ private enum {
   enemyDepth = 3,
   enemySize = Vector2i(32,32),
 
-  enemyAccuracy = 0.5
+  enemyAccuracy = 0.5,
+  enemySpeed = 60,
+  enemyRotationSpeed = 1,
+  enemyRange = 160,
 }
 
 class FightAI : Fight {
@@ -56,7 +60,7 @@ class FightAI : Fight {
     void onProjectileExplode(Battle battle, Vector2f pos, float radius) {
       super.onProjectileExplode(battle, pos, radius);
       foreach(ref enemy ; _enemies) {
-        auto center = enemy.position + enemySize / 2;
+        auto center = enemy.pos + enemySize / 2;
         if (center.distance(pos) < radius) {
           enemy.destroyed = true;
         }
@@ -74,32 +78,53 @@ class FightAI : Fight {
     foreach(ref enemy ; _enemies) {
       enemy.fireCooldown -= game.deltaTime;
 
-      if (enemy.fireCooldown < 0) {
-        auto target = _targets.randomSample(1).front;
+      if (battle.map.tileAt(enemy.target).hasWall) {
+        auto targetPos = battle.map.tileCenter(enemy.target).as!Vector2f;
 
-        if (uniform(0f, 1f) > enemyAccuracy) {
-          // simulate a 'miss' by targeting an adjacent tile
-          target = target.adjacent(Diagonals.yes).randomSample(1).front;
+        // rotate towards the target
+        auto angleDiff = enemy.transform.angle - (targetPos - enemy.pos).angle;
+        if (!angleDiff.approxEqual(0, 0.1)) {
+          enemy.transform.angle -= angleDiff.sgn * enemyRotationSpeed * game.deltaTime;
         }
 
-        enemy.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
+        if (enemy.pos.distance(targetPos) > enemyRange) {
+          // not in range, so move towards the target
+          enemy.pos.moveTo(targetPos, game.deltaTime * enemySpeed);
+        }
+        else if (enemy.fireCooldown < 0) {
+          // in range and weapons ready, so fire!
+          auto target = enemy.target;
+          if (uniform(0f, 1f) > enemyAccuracy) {
+            // simulate a 'miss' by targeting an adjacent tile
+            target = target.adjacent(Diagonals.yes).randomSample(1).front;
+          }
 
-        spawnProjectile(enemy.position, battle.map.tileCenter(target).as!Vector2f);
+          enemy.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
+          spawnProjectile(enemy.pos, battle.map.tileCenter(target).as!Vector2f);
+        }
+      }
+      else {
+        // target tile no longer holds a wall, pick a new target
+        enemy.target = _targets.randomSample(1).front;
+        assert(battle.map.contains(enemy.target));
       }
 
-      battle.drawEnemy(enemy.position, enemyDepth);
+      battle.drawEnemy(enemy.transform, enemyDepth);
     }
   }
 }
 
 private:
 struct Enemy {
-  Vector2f position;
+  Transform!float transform;
   float fireCooldown;
+  RowCol target;
   bool destroyed;
 
   this(Vector2f position) {
-    this.position = position;
+    this.transform = position;
     this.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
   }
+
+  ref auto pos() { return transform.pos; }
 }
