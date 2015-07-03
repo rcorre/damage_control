@@ -21,7 +21,10 @@ class ChooseBase : State!Battle {
 
       auto newCoord = map.coordAtPoint(game.input.mousePos);
 
-      if (newCoord != _currentCoord && map.tileAt(newCoord).hasNode) {
+      if (newCoord != _currentCoord &&
+          map.contains(newCoord)    &&
+          map.tileAt(newCoord).hasNode)
+      {
         // clear old walls
         if (map.tileAt(_currentCoord).hasNode) {
           foreach(coord ; battle.data.getWallCoordsForNode(_currentCoord)) {
