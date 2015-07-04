@@ -11,8 +11,10 @@ import states.choose_base;
 import states.start_round;
 
 private enum {
-  cannonSpriteRow = 6,
-  cannonSpriteCol = 0,
+  cannonBaseRow   = 6,
+  cannonBaseCol   = 0,
+  cannonBarrelRow = 8,
+  cannonBarrelCol = 0,
   cannonSize      = 32, // width and height of cannon sprite in pixels
 
   nodeSpriteRow = 6,
@@ -35,6 +37,7 @@ class Battle : State!Game {
   Game game;
   StateStack!Battle states;
   Player player;
+  Vector2f cannonTarget = Vector2f.zero;
 
   private {
     Bitmap _tileAtlas;
@@ -67,7 +70,7 @@ class Battle : State!Game {
       }
 
       states.run();
-      map.draw(_tileAtlas, game.renderer, animationOffset);
+      map.draw(_tileAtlas, this, animationOffset, cannonTarget);
 
       // animation
       _animationTimer -= game.deltaTime;
@@ -78,19 +81,30 @@ class Battle : State!Game {
     }
   }
 
-  void drawCannon(RowCol coord, int depth) {
+  void drawCannon(RowCol coord, float angle, int depth) {
     RenderInfo ri;
 
     ri.bmp       = _tileAtlas;
     ri.color     = Color.white;
     ri.depth     = depth;
+    ri.centered  = true;
+
+    // draw the base
     ri.transform = map.tileOffset(coord).as!Vector2f;
 
     ri.region = Rect2i(
-        cannonSpriteCol * map.tileWidth + animationOffset.x,
-        cannonSpriteRow * map.tileHeight + animationOffset.y,
+        cannonBaseCol * map.tileWidth + animationOffset.x,
+        cannonBaseRow * map.tileHeight + animationOffset.y,
         cannonSize,
         cannonSize);
+
+    game.renderer.draw(ri);
+
+    // draw the barrel
+    ri.transform.angle = angle;
+
+    ri.region.x = cannonBarrelCol * map.tileWidth + animationOffset.x;
+    ri.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
 
     game.renderer.draw(ri);
   }

@@ -41,7 +41,7 @@ class PlaceCannons : State!Battle {
       auto mouseCoord = map.coordAtPoint(mousePos);
 
       // draw cannon at current tile under mouse if the player has another cannon to place
-      if (_cannons > 0) battle.drawCannon(mouseCoord, cannonDepth);
+      if (_cannons > 0) battle.drawCannon(mouseCoord, 0, cannonDepth);
 
       // try to place cannon if LMB clicked
       if (game.input.mouseReleased(MouseButton.lmb)   &&

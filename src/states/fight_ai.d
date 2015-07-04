@@ -54,6 +54,8 @@ class FightAI : Fight {
     void run(Battle battle) {
       super.run(battle);
 
+      battle.cannonTarget = battle.game.input.mousePos;
+
       processEnemies(battle);
     }
 

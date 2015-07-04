@@ -8,6 +8,7 @@ import std.algorithm : map;
 import dau;
 import dtiled;
 import jsonizer;
+import states.battle;
 
 private enum {
   tileDepth = 0,
@@ -55,7 +56,10 @@ class Tile {
 
 alias TileMap = OrthoMap!Tile;
 
-void draw(TileMap map, Bitmap tileAtlas, Renderer render, Vector2i animationOffset) {
+void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset,
+          Vector2f cannonTarget)
+{
+  auto render = battle.game.renderer;
   RenderInfo ri;
   ri.bmp   = tileAtlas;
 
@@ -83,13 +87,8 @@ void draw(TileMap map, Bitmap tileAtlas, Renderer render, Vector2i animationOffs
         render.draw(ri);
         break;
       case cannon:
-        ri.region = Rect2i(
-            cannonSpriteCol * map.tileWidth + animationOffset.x,
-            cannonSpriteRow * map.tileHeight + animationOffset.y,
-            cannonSize,
-            cannonSize);
-
-        render.draw(ri);
+        float angle = (cannonTarget - map.tileCenter(coord).as!Vector2f).angle;
+        battle.drawCannon(coord, angle, featureDepth);
         break;
       case node:
         ri.region = Rect2i(
