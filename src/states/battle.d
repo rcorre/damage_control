@@ -115,6 +115,7 @@ class Battle : State!Game {
     ri.bmp       = _tileAtlas;
     ri.color     = Color.white;
     ri.depth     = depth;
+    ri.centered  = true;
     ri.transform = transform;
 
     ri.region = Rect2i(

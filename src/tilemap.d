@@ -66,8 +66,9 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
   foreach(coord, tile; map) {
     ri.depth     = tileDepth;
     ri.region    = tile.textureRect;
-    ri.transform = map.tileOffset(coord).as!Vector2f;
+    ri.transform = map.tileCenter(coord).as!Vector2f;
     ri.color     = tile.isEnclosed ? Color.red : Color.white;
+    ri.centered  = true;
 
     render.draw(ri);
 
@@ -91,6 +92,7 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
         battle.drawCannon(coord, angle, featureDepth);
         break;
       case node:
+        ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
         ri.region = Rect2i(
             nodeSpriteCol * map.tileWidth + animationOffset.x,
             nodeSpriteRow * map.tileHeight + animationOffset.y,
