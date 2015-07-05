@@ -90,7 +90,7 @@ class Battle : State!Game {
     ri.centered  = true;
 
     // draw the base
-    ri.transform = map.tileOffset(coord).as!Vector2f;
+    ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
 
     ri.region = Rect2i(
         cannonBaseCol * map.tileWidth + animationOffset.x,
