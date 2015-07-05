@@ -15,9 +15,9 @@ private enum {
   enemySize = Vector2i(32,32),
 
   enemyAccuracy = 0.5,
-  enemySpeed = 60,
-  enemyRotationSpeed = 1,
-  enemyRange = 160,
+  enemySpeed = 90,
+  enemyRotationSpeed = 4,
+  enemyRange = 240,
 }
 
 class FightAI : Fight {

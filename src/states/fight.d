@@ -12,9 +12,9 @@ private enum {
   phaseTime       = 10,
   cannonCooldown  = 4,
 
-  projectileSize  = Vector2i(12, 5),
+  projectileSize  = Vector2i(12, 8),
   projectileTint  = Color(1, 1, 1, 0.5),
-  projectileSpeed = 400,
+  projectileSpeed = 500,
   projectileDepth = 3,
 
   explosionTime  = 0.10f,
