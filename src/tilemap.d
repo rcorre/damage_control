@@ -94,10 +94,16 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
       case node:
         ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
         ri.region = Rect2i(
-            nodeSpriteCol * map.tileWidth + animationOffset.x,
-            nodeSpriteRow * map.tileHeight + animationOffset.y,
+            nodeSpriteCol * map.tileWidth,
+            nodeSpriteRow * map.tileHeight,
             nodeSize,
             nodeSize);
+
+        // only animate the reactor if it is enclosed
+        if (tile.isEnclosed) {
+          ri.region.x += animationOffset.x;
+          ri.region.y += animationOffset.y;
+        }
 
         render.draw(ri);
         break;
