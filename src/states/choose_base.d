@@ -23,17 +23,17 @@ class ChooseBase : State!Battle {
 
       if (newCoord != _currentCoord &&
           map.contains(newCoord)    &&
-          map.tileAt(newCoord).hasNode)
+          map.tileAt(newCoord).hasReactor)
       {
         // clear old walls
-        if (map.tileAt(_currentCoord).hasNode) {
-          foreach(coord ; battle.data.getWallCoordsForNode(_currentCoord)) {
+        if (map.tileAt(_currentCoord).hasReactor) {
+          foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
             map.tileAt(coord).construct = Construct.none;
           }
         }
 
         // place new walls
-        foreach(coord ; battle.data.getWallCoordsForNode(newCoord)) {
+        foreach(coord ; battle.data.getWallCoordsForReactor(newCoord)) {
           map.tileAt(coord).construct = Construct.wall;
         }
 
@@ -41,7 +41,9 @@ class ChooseBase : State!Battle {
         _currentCoord = newCoord;
       }
 
-      if (game.input.mouseReleased(MouseButton.lmb) && map.tileAt(_currentCoord).hasNode) {
+      if (game.input.mouseReleased(MouseButton.lmb) &&
+          map.tileAt(_currentCoord).hasReactor)
+      {
         // mark all tiles in selected base area as enclosed
         foreach(tile ; map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
           tile.isEnclosed = true;

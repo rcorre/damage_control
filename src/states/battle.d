@@ -17,9 +17,9 @@ private enum {
   cannonBarrelCol = 0,
   cannonSize      = 32, // width and height of cannon sprite in pixels
 
-  nodeSpriteRow = 6,
-  nodeSpriteCol = 2,
-  nodeSize      = 32,   // width and height of node sprite in pixels
+  reactorSpriteRow = 6,
+  reactorSpriteCol = 2,
+  reactorSize      = 32,   // width and height of reactor sprite in pixels
 
   enemySpriteRow = 6,
   enemySpriteCol = 4,
@@ -165,7 +165,7 @@ struct BattleData {
     return _enemyWaves[round];
   }
 
-  auto getWallCoordsForNode(RowCol coord) {
+  auto getWallCoordsForReactor(RowCol coord) {
     auto region = _wallRegions
       .find!(region =>
         region.start.col <= coord.col &&

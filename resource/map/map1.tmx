@@ -2016,7 +2016,7 @@
    <tile gid="100"/>
   </data>
  </layer>
- <objectgroup name="nodes">
+ <objectgroup name="reactors">
   <object id="12" x="144" y="96">
    <properties>
     <property name="id" value="0"/>

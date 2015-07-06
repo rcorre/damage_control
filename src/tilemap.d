@@ -13,19 +13,19 @@ import states.battle;
 private enum {
   tileDepth = 0,
   featureDepth = 1,
-  nodeDepth = 1,
+  reactorDepth = 1,
   wallLayoutFile = "./data/walls.json",
   cannonSpriteRow = 6,
   cannonSpriteCol = 0,
-  nodeSpriteRow = 6,
-  nodeSpriteCol = 2,
+  reactorSpriteRow = 6,
+  reactorSpriteCol = 2,
   cannonSize = 32, // width and height of cannon sprite in pixels
-  nodeSize = 32,   // width and height of node sprite in pixels
+  reactorSize = 32,   // width and height of reactor sprite in pixels
 }
 
 enum Construct {
   none,
-  node,
+  reactor,
   wall,
   cannon,
 }
@@ -40,8 +40,8 @@ class Tile {
   }
 
   @property bool hasWall() { return construct == Construct.wall; }
-  /// only true if the tile is the top-left of a node (which covers 4 tiles)
-  @property bool hasNode() { return construct == Construct.node; }
+  /// only true if the tile is the top-left of a reactor (which covers 4 tiles)
+  @property bool hasReactor() { return construct == Construct.reactor; }
   /// only true if the tile is the top-left of a cannon (which covers 4 tiles)
   @property bool hasCannon() { return construct == Construct.cannon; }
   @property bool isEmpty() { return construct == Construct.none; }
@@ -91,13 +91,13 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
         float angle = (cannonTarget - map.tileCenter(coord).as!Vector2f).angle;
         battle.drawCannon(coord, angle, featureDepth);
         break;
-      case node:
+      case reactor:
         ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
         ri.region = Rect2i(
-            nodeSpriteCol * map.tileWidth,
-            nodeSpriteRow * map.tileHeight,
-            nodeSize,
-            nodeSize);
+            reactorSpriteCol * map.tileWidth,
+            reactorSpriteRow * map.tileHeight,
+            reactorSize,
+            reactorSize);
 
         // only animate the reactor if it is enclosed
         if (tile.isEnclosed) {
@@ -138,11 +138,13 @@ auto buildMap(MapData data) {
 
   auto tileMap = TileMap(tiles, data.tileWidth, data.tileHeight);
 
-  // create nodes
-  foreach(rect ; data.getLayer("nodes").objects) {
-    // each node is represented by a rect whose top-left corner is in the top-left tile of that node
-    auto coord = RowCol(rect.y / data.tileHeight - 1, rect.x / data.tileWidth - 1);
-    tileMap.tileAt(coord).construct = Construct.node;
+  // create reactors
+  foreach(rect ; data.getLayer("reactors").objects) {
+    // each reactor is represented by a rect.
+    // place the reactors top-left at the top-left rect
+    auto coord = RowCol(rect.y / data.tileHeight - 1,
+                        rect.x / data.tileWidth  - 1);
+    tileMap.tileAt(coord).construct = Construct.reactor;
   }
 
   return tileMap;
