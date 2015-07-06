@@ -57,7 +57,7 @@ class Battle : State!Game {
       this.map = buildMap(mapData);
       this.data = BattleData(mapData);
       this.states = new StateStack!Battle(this);
-      _tileAtlas = game.content.bitmaps.get("tileset");
+      _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
       states.push(new ChooseBase, new StartRound);
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;

@@ -29,7 +29,7 @@ class PlaceWall : State!Battle {
   override {
     void enter(Battle battle) {
       _piece = Piece.random;
-      _tileAtlas = battle.game.content.bitmaps.get("tileset");
+      _tileAtlas = battle.game.bitmaps.get("tileset");
       _timer = phaseTime;
     }
 
