@@ -5,13 +5,14 @@
 SOURCEDIR = 'resource'
 TARGETDIR = 'content'
 
-task :default => %w{images maps}
+task :default => %w{images maps fonts}
 task :default => "#{TARGETDIR}"
 
 directory TARGETDIR
 directory "#{TARGETDIR}/image"
 directory "#{TARGETDIR}/map"
 directory "#{TARGETDIR}/sound"
+directory "#{TARGETDIR}/font"
 
 task :maps => "#{TARGETDIR}/map"
 FileList.new("#{SOURCEDIR}/map/*.tmx").each do |src| 
@@ -35,4 +36,16 @@ FileList.new("#{SOURCEDIR}/image/*.ase").each do |src|
   end
 
   task :images => target
+end
+
+task :fonts => "#{TARGETDIR}/font"
+FileList.new("#{SOURCEDIR}/font/*.ttf").each do |src| 
+  fname = File.basename(src, '.ttf')
+  target = File.join(TARGETDIR, 'font', fname + '.ttf') 
+
+  file target => src do
+    sh "cp #{src} #{target}"
+  end
+
+  task :fonts => target
 end
