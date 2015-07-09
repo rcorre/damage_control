@@ -15,8 +15,8 @@ private enum {
   featureDepth = 1,
   reactorDepth = 1,
   wallLayoutFile = "./data/walls.json",
-  cannonSpriteRow = 6,
-  cannonSpriteCol = 0,
+  cannonBaseRow = 6,
+  cannonBaseCol = 0,
   reactorSpriteRow = 6,
   reactorSpriteCol = 2,
   cannonSize = 32, // width and height of cannon sprite in pixels
@@ -59,41 +59,52 @@ alias TileMap = OrthoMap!Tile;
 void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset,
           Vector2f cannonTarget)
 {
-  auto render = battle.game.renderer;
-  RenderInfo ri;
-  ri.bmp   = tileAtlas;
+  auto makeTileSprite(RowCol coord) {
+    auto tile = map.tileAt(coord);
+    Sprite sprite;
 
-  foreach(coord, tile; map) {
-    ri.depth     = tileDepth;
-    ri.region    = tile.textureRect;
-    ri.transform = map.tileCenter(coord).as!Vector2f;
-    ri.color     = tile.isEnclosed ? Color.red : Color.white;
-    ri.centered  = true;
+    sprite.region    = tile.textureRect;
+    sprite.transform = map.tileCenter(coord).as!Vector2f;
+    sprite.color     = tile.isEnclosed ? Color.red : Color.white;
+    sprite.centered  = true;
 
-    render.draw(ri);
+    return sprite;
+  }
 
-    // don't shade in the construct on top of the tile
-    ri.color = Color.white;
-    // draw constructs above tiles
-    ri.depth = featureDepth;
+  auto makeConstructSprite(RowCol coord) {
+    auto tile = map.tileAt(coord);
+    Sprite sprite;
+
+    sprite.color     = Color.white;
+    sprite.centered  = true;
 
     final switch (tile.construct) with (Construct) {
       case wall:
         uint[3][3] layout;
         map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
 
-        ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
-        ri.region.x += animationOffset.x;
-        ri.region.y += animationOffset.y;
-        render.draw(ri);
+        sprite.transform = map.tileCenter(coord).as!Vector2f;
+        sprite.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
+        sprite.region.x += animationOffset.x;
+        sprite.region.y += animationOffset.y;
+
         break;
       case cannon:
-        float angle = (cannonTarget - map.tileCenter(coord).as!Vector2f).angle;
-        battle.drawCannon(coord, angle, featureDepth);
+        sprite.transform = map.tileOffset(coord.south.east).as!Vector2f;
+
+        sprite.transform.angle =
+          (cannonTarget - map.tileCenter(coord).as!Vector2f).angle;
+
+        sprite.region = Rect2i(
+            cannonBaseCol * map.tileWidth + animationOffset.x,
+            cannonBaseRow * map.tileHeight + animationOffset.y,
+            cannonSize,
+            cannonSize);
+
         break;
       case reactor:
-        ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
-        ri.region = Rect2i(
+        sprite.transform = map.tileOffset(coord.south.east).as!Vector2f;
+        sprite.region = Rect2i(
             reactorSpriteCol * map.tileWidth,
             reactorSpriteRow * map.tileHeight,
             reactorSize,
@@ -101,16 +112,26 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
 
         // only animate the reactor if it is enclosed
         if (tile.isEnclosed) {
-          ri.region.x += animationOffset.x;
-          ri.region.y += animationOffset.y;
+          sprite.region.x += animationOffset.x;
+          sprite.region.y += animationOffset.y;
         }
 
-        render.draw(ri);
         break;
       case none:
-        break;
+        assert(0, "Should not draw construct on empty tile");
     }
+
+    return sprite;
   }
+
+  auto sprites = map.allCoords.map!(x => makeTileSprite(x));
+  battle.game.renderer.draw(sprites, tileAtlas, tileDepth);
+
+  auto constructs = map.allCoords
+    .filter!(x => map.tileAt(x).construct != Construct.none)
+    .map!(x => makeConstructSprite(x));
+
+  battle.game.renderer.draw(constructs, tileAtlas, tileDepth);
 }
 
 auto buildMap(MapData data) {
