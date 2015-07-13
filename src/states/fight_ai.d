@@ -110,9 +110,9 @@ class FightAI : Fight {
         enemy.target = _targets.randomSample(1).front;
         assert(battle.map.contains(enemy.target));
       }
-    }
 
-    battle.drawEnemies(_enemies[].map!(x => x.transform), enemyDepth);
+      battle.drawEnemy(enemy.transform, enemyDepth);
+    }
   }
 }
 

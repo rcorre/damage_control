@@ -1,6 +1,5 @@
 module states.battle;
 
-import std.range     : isInputRange, ElementType;
 import std.array     : array;
 import std.string    : startsWith;
 import std.algorithm : sort;
@@ -29,8 +28,6 @@ private enum {
   animationTime = 0.06,            // seconds per frame of tilesheet animation
   tilesetSize   = Vector2i(96, 0), // size of the tileset image for one frame of animation
 
-  timerFont = "Mecha",
-  timerFontSize = 12,
 }
 
 /// Start a new match.
@@ -44,10 +41,9 @@ class Battle : State!Game {
 
   private {
     Bitmap _tileAtlas;
-    Font   _timerFont;
-    float  _animationTimer;
-    int    _numAnimationFrames;
-    int    _animationCounter;
+    float _animationTimer;
+    int _numAnimationFrames;
+    int _animationCounter;
   }
 
   @property auto animationOffset() {
@@ -86,56 +82,49 @@ class Battle : State!Game {
   }
 
   void drawCannon(RowCol coord, float angle, int depth) {
-    Sprite sprite;
+    RenderInfo ri;
 
-    sprite.color     = Color.white;
-    sprite.centered  = true;
+    ri.bmp       = _tileAtlas;
+    ri.color     = Color.white;
+    ri.depth     = depth;
+    ri.centered  = true;
 
     // draw the base
-    sprite.transform = map.tileOffset(coord.south.east).as!Vector2f;
+    ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
 
-    sprite.region = Rect2i(
+    ri.region = Rect2i(
         cannonBaseCol * map.tileWidth + animationOffset.x,
         cannonBaseRow * map.tileHeight + animationOffset.y,
         cannonSize,
         cannonSize);
 
-    game.renderer.draw(sprite, _tileAtlas, depth);
+    game.renderer.draw(ri);
 
     // draw the barrel
-    sprite.transform.angle = angle;
+    ri.transform.angle = angle;
 
-    sprite.region.x = cannonBarrelCol * map.tileWidth + animationOffset.x;
-    sprite.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
+    ri.region.x = cannonBarrelCol * map.tileWidth + animationOffset.x;
+    ri.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
 
-    game.renderer.draw(sprite, _tileAtlas, depth);
+    game.renderer.draw(ri);
   }
 
-  void drawEnemies(R)(R transforms, int depth)
-    if (isInputRange!R && is(ElementType!R == Transform!float))
-  {
-    auto makeSprite(Transform!float transform) {
-      Sprite sprite;
+  void drawEnemy(Transform!float transform, int depth) {
+    RenderInfo ri;
 
-      sprite.color     = Color.white;
-      sprite.centered  = true;
-      sprite.transform = transform;
+    ri.bmp       = _tileAtlas;
+    ri.color     = Color.white;
+    ri.depth     = depth;
+    ri.centered  = true;
+    ri.transform = transform;
 
-      sprite.region = Rect2i(
-          enemySpriteCol * map.tileWidth  + animationOffset.x,
-          enemySpriteRow * map.tileHeight + animationOffset.y,
-          enemySize,
-          enemySize);
+    ri.region = Rect2i(
+        enemySpriteCol * map.tileWidth  + animationOffset.x,
+        enemySpriteRow * map.tileHeight + animationOffset.y,
+        enemySize,
+        enemySize);
 
-      return sprite;
-    }
-
-    auto sprites = transforms.map!(x => makeSprite(x));
-
-    static assert(isInputRange!(typeof(sprites)));
-    static assert(is(ElementType!(typeof(sprites)) == Sprite));
-
-    game.renderer.draw(sprites, _tileAtlas, depth);
+    game.renderer.draw(ri);
   }
 }
 

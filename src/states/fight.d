@@ -123,6 +123,11 @@ abstract class Fight : State!Battle {
 
   private:
   void processProjectiles(Battle battle) {
+    RenderInfo ri;
+    ri.bmp    = _projectileBmp;
+    ri.depth  = projectileDepth;
+    ri.region = Rect2i(Vector2i.zero, projectileSize);
+
     foreach(ref proj ; _projectiles) {
       proj.duration -= battle.game.deltaTime;
 
@@ -134,23 +139,37 @@ abstract class Fight : State!Battle {
       }
 
       proj.position += proj.velocity * battle.game.deltaTime;
-    }
 
-    battle.game.renderer.draw(
-        _projectiles[].map!(x => x.sprite),
-        _projectileBmp,
-        projectileDepth);
+      ri.transform       = proj.position;
+      ri.color           = Color.white;
+      ri.transform.angle = proj.velocity.angle;
+      while (ri.color.a > 0) {
+        battle.game.renderer.draw(ri);
+        ri.color.a -= 0.15;
+        ri.transform.pos -= proj.velocity * battle.game.deltaTime;
+      }
+    }
   }
 
   void processExplosions(Game game) {
+    RenderInfo ri;
+    ri.bmp    = _explosionBmp;
+    ri.depth  = explosionDepth;
+    ri.region = Rect2i(0, 0, explosionSize, explosionSize);
+
     foreach(ref expl ; _explosions) {
       expl.duration -= game.deltaTime;
-    }
 
-    game.renderer.draw(
-        _explosions[].map!(x => x.sprite),
-        _explosionBmp,
-        explosionDepth);
+      // scale about the center
+      auto scale = Vector2f(1,1) * (1 - expl.duration / explosionTime);
+      ri.transform.pos = expl.position - (scale * explosionSize) / 2;
+      ri.transform.scale = scale;
+
+      // fade as time passes
+      ri.color = Color.black.lerp(Color.white, expl.duration / explosionTime);
+
+      game.renderer.draw(ri);
+    }
   }
 
   void destroyWall(Battle battle, RowCol wallCoord) {
@@ -175,26 +194,6 @@ struct Projectile {
   Vector2f position;
   Vector2f velocity;
   float duration;
-
-  auto sprite() {
-    Sprite sprite;
-    sprite.region = Rect2i(Vector2i.zero, projectileSize);
-
-    sprite.centered        = true;
-    sprite.transform.pos   = position;
-    sprite.transform.angle = velocity.angle;
-
-    // fade as time passes
-    sprite.color = Color.black.lerp(Color.white, duration / explosionTime);
-
-      //while (ri.color.a > 0) {
-      //  battle.game.renderer.draw(ri);
-      //  ri.color.a -= 0.15;
-      //  ri.transform.pos -= proj.velocity * battle.game.deltaTime;
-      //}
-
-    return sprite;
-  }
 }
 
 private:
@@ -206,18 +205,6 @@ struct Explosion {
     // center the rectangle on the given point
     this.position = position;
     this.duration = explosionTime;
-  }
-
-  auto sprite() {
-    Sprite sprite;
-
-    sprite.region = Rect2i(0, 0, explosionSize, explosionSize);
-
-    sprite.centered = true;
-    sprite.transform.pos = position;
-    sprite.transform.scale = Vector2f(1,1) * (1 - duration / explosionTime);
-
-    return sprite;
   }
 }
 
