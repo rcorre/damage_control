@@ -195,6 +195,9 @@ abstract class Fight : State!Battle {
       }
     }
   }
+
+  protected:
+  bool allProjectilesExpired() { return _explosions.empty && _projectiles.empty; }
 }
 
 struct Projectile {

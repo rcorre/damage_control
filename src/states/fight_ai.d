@@ -74,8 +74,9 @@ class FightAI : Fight {
   void updateEnemies(Battle battle) {
     auto game = battle.game;
 
-    // when no enemies are left, the battle is over
-    if (_enemies.empty) battle.states.pop();
+    // when no enemies are left, and all projectiles are gone, end the battle
+    if (_enemies.empty && super.allProjectilesExpired)
+      battle.states.pop();
 
     foreach(ref enemy ; _enemies) {
       enemy.fireCooldown -= game.deltaTime;
