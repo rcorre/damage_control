@@ -165,6 +165,7 @@ abstract class Fight : State!Battle {
       // scale about the center
       Sprite sprite;
 
+      sprite.centered = true;
       sprite.region = Rect2i(0, 0, explosionSize, explosionSize);
       sprite.transform.pos = expl.position;
       sprite.transform.scale = Vector2f(1,1) * (1 - expl.duration / explosionTime);
