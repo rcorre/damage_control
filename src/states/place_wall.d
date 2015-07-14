@@ -86,24 +86,26 @@ struct Piece {
   }
 
   void draw(Vector2i center, Bitmap bmp, Renderer renderer) {
-    RenderInfo ri;
-    ri.bmp = bmp;
-    ri.depth = wallDepth;
+    auto batch = SpriteBatch(bmp, wallDepth);
 
     foreach(coord ; RowCol(0,0).span(dataSize, dataSize)) {
       // no wall at this slot
       if (!layout[coord.row][coord.col]) continue;
 
       auto offset = Vector2i(cast(int) coord.col - 2, cast(int) coord.row - 2) * spriteSize;
-      ri.transform = center + offset;
 
       uint[3][3] mask;
 
       rectGrid(layout).createMaskAround!(x => x)(coord, mask);
-      ri.region = getWallSpriteRegion(mask, spriteSize, spriteSize);
 
-      renderer.draw(ri);
+      Sprite sprite;
+      sprite.transform = center + offset;
+      sprite.region = getWallSpriteRegion(mask, spriteSize, spriteSize);
+
+      batch ~= sprite;
     }
+
+    renderer.draw(batch);
   }
 
   void rotate(bool clockwise) {

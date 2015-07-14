@@ -123,10 +123,7 @@ abstract class Fight : State!Battle {
 
   private:
   void processProjectiles(Battle battle) {
-    RenderInfo ri;
-    ri.bmp    = _projectileBmp;
-    ri.depth  = projectileDepth;
-    ri.region = Rect2i(Vector2i.zero, projectileSize);
+    auto batch = SpriteBatch(_projectileBmp, projectileDepth);
 
     foreach(ref proj ; _projectiles) {
       proj.duration -= battle.game.deltaTime;
@@ -140,36 +137,45 @@ abstract class Fight : State!Battle {
 
       proj.position += proj.velocity * battle.game.deltaTime;
 
-      ri.transform       = proj.position;
-      ri.color           = Color.white;
-      ri.transform.angle = proj.velocity.angle;
-      while (ri.color.a > 0) {
-        battle.game.renderer.draw(ri);
-        ri.color.a -= 0.15;
-        ri.transform.pos -= proj.velocity * battle.game.deltaTime;
+      Sprite sprite;
+      sprite.region          = Rect2i(Vector2i.zero, projectileSize);
+      sprite.transform       = proj.position;
+      sprite.color           = Color.white;
+      sprite.transform.angle = proj.velocity.angle;
+
+      // draw the projectile as a 'trail' of fading rects
+      while (sprite.color.a > 0) {
+        batch ~= sprite;
+        sprite.color.a -= 0.15;
+        sprite.transform.pos -= proj.velocity * battle.game.deltaTime;
+
+        batch ~= sprite;
       }
     }
+
+    battle.game.renderer.draw(batch);
   }
 
   void processExplosions(Game game) {
-    RenderInfo ri;
-    ri.bmp    = _explosionBmp;
-    ri.depth  = explosionDepth;
-    ri.region = Rect2i(0, 0, explosionSize, explosionSize);
+    auto batch = SpriteBatch(_explosionBmp, explosionDepth);
 
     foreach(ref expl ; _explosions) {
       expl.duration -= game.deltaTime;
 
       // scale about the center
-      auto scale = Vector2f(1,1) * (1 - expl.duration / explosionTime);
-      ri.transform.pos = expl.position - (scale * explosionSize) / 2;
-      ri.transform.scale = scale;
+      Sprite sprite;
+
+      sprite.region = Rect2i(0, 0, explosionSize, explosionSize);
+      sprite.transform.pos = expl.position;
+      sprite.transform.scale = Vector2f(1,1) * (1 - expl.duration / explosionTime);
 
       // fade as time passes
-      ri.color = Color.black.lerp(Color.white, expl.duration / explosionTime);
+      sprite.color = Color.black.lerp(Color.white, expl.duration / explosionTime);
 
-      game.renderer.draw(ri);
+      batch ~= sprite;
     }
+
+    game.renderer.draw(batch);
   }
 
   void destroyWall(Battle battle, RowCol wallCoord) {

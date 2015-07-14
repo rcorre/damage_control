@@ -59,41 +59,39 @@ alias TileMap = OrthoMap!Tile;
 void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset,
           Vector2f cannonTarget)
 {
-  auto render = battle.game.renderer;
-  RenderInfo ri;
-  ri.bmp   = tileAtlas;
+  auto tileBatch    = SpriteBatch(tileAtlas, tileDepth);
+  auto featureBatch = SpriteBatch(tileAtlas, featureDepth);
 
   foreach(coord, tile; map) {
-    ri.depth     = tileDepth;
-    ri.region    = tile.textureRect;
-    ri.transform = map.tileCenter(coord).as!Vector2f;
-    ri.color     = tile.isEnclosed ? Color.red : Color.white;
-    ri.centered  = true;
+    Sprite sprite;
+    sprite.region    = tile.textureRect;
+    sprite.transform = map.tileCenter(coord).as!Vector2f;
+    sprite.color     = tile.isEnclosed ? Color.red : Color.white;
+    sprite.centered  = true;
 
-    render.draw(ri);
+    tileBatch ~= sprite;
 
     // don't shade in the construct on top of the tile
-    ri.color = Color.white;
-    // draw constructs above tiles
-    ri.depth = featureDepth;
+    sprite.color = Color.white;
 
     final switch (tile.construct) with (Construct) {
       case wall:
         uint[3][3] layout;
         map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, layout);
 
-        ri.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
-        ri.region.x += animationOffset.x;
-        ri.region.y += animationOffset.y;
-        render.draw(ri);
+        sprite.region = getWallSpriteRegion(layout, map.tileWidth, map.tileHeight);
+        sprite.region.x += animationOffset.x;
+        sprite.region.y += animationOffset.y;
+        featureBatch ~= sprite;
         break;
       case cannon:
+        // TODO: handle drawing here
         float angle = (cannonTarget - map.tileCenter(coord).as!Vector2f).angle;
         battle.drawCannon(coord, angle, featureDepth);
         break;
       case reactor:
-        ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
-        ri.region = Rect2i(
+        sprite.transform = map.tileOffset(coord.south.east).as!Vector2f;
+        sprite.region = Rect2i(
             reactorSpriteCol * map.tileWidth,
             reactorSpriteRow * map.tileHeight,
             reactorSize,
@@ -101,16 +99,19 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
 
         // only animate the reactor if it is enclosed
         if (tile.isEnclosed) {
-          ri.region.x += animationOffset.x;
-          ri.region.y += animationOffset.y;
+          sprite.region.x += animationOffset.x;
+          sprite.region.y += animationOffset.y;
         }
 
-        render.draw(ri);
+        featureBatch ~= sprite;
         break;
       case none:
         break;
     }
   }
+
+  battle.game.renderer.draw(tileBatch);
+  battle.game.renderer.draw(featureBatch);
 }
 
 auto buildMap(MapData data) {

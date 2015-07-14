@@ -1,8 +1,7 @@
 module states.battle;
 
-import std.array     : array;
-import std.string    : startsWith;
-import std.algorithm : sort;
+import std.array  : array;
+import std.string : startsWith;
 import dau;
 import dtiled;
 import tilemap;
@@ -17,17 +16,13 @@ private enum {
   cannonBarrelCol = 0,
   cannonSize      = 32, // width and height of cannon sprite in pixels
 
-  reactorSpriteRow = 6,
-  reactorSpriteCol = 2,
-  reactorSize      = 32,   // width and height of reactor sprite in pixels
-
   enemySpriteRow = 6,
   enemySpriteCol = 4,
   enemySize      = 32,
+  enemyDepth = 3,
 
   animationTime = 0.06,            // seconds per frame of tilesheet animation
   tilesetSize   = Vector2i(96, 0), // size of the tileset image for one frame of animation
-
 }
 
 /// Start a new match.
@@ -82,49 +77,56 @@ class Battle : State!Game {
   }
 
   void drawCannon(RowCol coord, float angle, int depth) {
-    RenderInfo ri;
+    auto batch = SpriteBatch(_tileAtlas, depth);
+    Sprite sprite;
 
-    ri.bmp       = _tileAtlas;
-    ri.color     = Color.white;
-    ri.depth     = depth;
-    ri.centered  = true;
+    sprite.color     = Color.white;
+    sprite.centered  = true;
 
     // draw the base
-    ri.transform = map.tileOffset(coord.south.east).as!Vector2f;
+    sprite.transform = map.tileOffset(coord.south.east).as!Vector2f;
 
-    ri.region = Rect2i(
+    sprite.region = Rect2i(
         cannonBaseCol * map.tileWidth + animationOffset.x,
         cannonBaseRow * map.tileHeight + animationOffset.y,
         cannonSize,
         cannonSize);
 
-    game.renderer.draw(ri);
+    batch ~= sprite;
 
     // draw the barrel
-    ri.transform.angle = angle;
+    sprite.transform.angle = angle;
 
-    ri.region.x = cannonBarrelCol * map.tileWidth + animationOffset.x;
-    ri.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
+    sprite.region.x = cannonBarrelCol * map.tileWidth + animationOffset.x;
+    sprite.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
 
-    game.renderer.draw(ri);
+    batch ~= sprite;
+
+    game.renderer.draw(batch);
   }
 
-  void drawEnemy(Transform!float transform, int depth) {
-    RenderInfo ri;
+  void drawEnemies(R)(R r)
+    if (isInputRange!R && is(ElementType!R == Transform!float))
+  {
+    auto batch = SpriteBatch(_tileAtlas, enemyDepth);
 
-    ri.bmp       = _tileAtlas;
-    ri.color     = Color.white;
-    ri.depth     = depth;
-    ri.centered  = true;
-    ri.transform = transform;
+    foreach(transform ; r) {
+      Sprite sprite;
 
-    ri.region = Rect2i(
-        enemySpriteCol * map.tileWidth  + animationOffset.x,
-        enemySpriteRow * map.tileHeight + animationOffset.y,
-        enemySize,
-        enemySize);
+      sprite.color     = Color.white;
+      sprite.centered  = true;
+      sprite.transform = transform;
 
-    game.renderer.draw(ri);
+      sprite.region = Rect2i(
+          enemySpriteCol * map.tileWidth  + animationOffset.x,
+          enemySpriteRow * map.tileHeight + animationOffset.y,
+          enemySize,
+          enemySize);
+
+      batch ~= sprite;
+    }
+
+    game.renderer.draw(batch);
   }
 }
 

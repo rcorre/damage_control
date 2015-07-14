@@ -11,7 +11,6 @@ import states.fight;
 private enum {
   minEnemyFireCooldown = 2,
   maxEnemyFireCooldown = 5,
-  enemyDepth = 3,
   enemySize = Vector2i(32,32),
 
   enemyAccuracy = 0.5,
@@ -56,7 +55,8 @@ class FightAI : Fight {
 
       battle.cannonTarget = battle.game.input.mousePos;
 
-      processEnemies(battle);
+      updateEnemies(battle);
+      battle.drawEnemies(_enemies[].map!(x => x.transform));
     }
 
     void onProjectileExplode(Battle battle, Vector2f pos, float radius) {
@@ -71,7 +71,7 @@ class FightAI : Fight {
   }
 
   private:
-  void processEnemies(Battle battle) {
+  void updateEnemies(Battle battle) {
     auto game = battle.game;
 
     // when no enemies are left, the battle is over
@@ -110,8 +110,6 @@ class FightAI : Fight {
         enemy.target = _targets.randomSample(1).front;
         assert(battle.map.contains(enemy.target));
       }
-
-      battle.drawEnemy(enemy.transform, enemyDepth);
     }
   }
 }
