@@ -44,12 +44,12 @@ class PlaceCannons : State!Battle {
       if (_cannons > 0) battle.drawCannon(mouseCoord, 0, cannonDepth);
 
       // try to place cannon if LMB clicked
-      if (game.input.mouseReleased(MouseButton.lmb)   &&
-          _cannons > 0                                &&
-          map.tileAt(mouseCoord).canPlaceCannon       &&
-          map.tileAt(mouseCoord.south).canPlaceCannon &&
-          map.tileAt(mouseCoord.east).canPlaceCannon  &&
-          map.tileAt(mouseCoord.south.east).canPlaceCannon)
+      if (game.input.mouseReleased(MouseButton.lmb) &&
+          _cannons > 0                              &&
+          map.canBuildAt(mouseCoord)                &&
+          map.canBuildAt(mouseCoord.south)          &&
+          map.canBuildAt(mouseCoord.east)           &&
+          map.canBuildAt(mouseCoord.south.east))
       {
         --_cannons;
         map.tileAt(mouseCoord).construct = Construct.cannon;
