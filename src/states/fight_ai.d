@@ -62,8 +62,7 @@ class FightAI : Fight {
     void onProjectileExplode(Battle battle, Vector2f pos, float radius) {
       super.onProjectileExplode(battle, pos, radius);
       foreach(ref enemy ; _enemies) {
-        auto center = enemy.pos + enemySize / 2;
-        if (center.distance(pos) < radius) {
+        if (enemy.pos.distance(pos) < radius) {
           enemy.destroyed = true;
         }
       }
