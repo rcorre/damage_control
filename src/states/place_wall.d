@@ -43,10 +43,9 @@ class PlaceWall : State!Battle {
 
       if (game.input.mouseReleased(MouseButton.lmb)) {
         auto wallCoords = map.maskCoordsAround(centerCoord, _piece.layout);
-        auto wallTiles = wallCoords.map!(x => map.tileAt(x));
 
         // No room to place piece
-        if (!wallTiles.all!(x => x.canPlaceWall)) return;
+        if (!wallCoords.all!(x => map.canBuildAt(x))) return;
 
         foreach(coord ; wallCoords) {
           map.tileAt(coord).construct = Construct.wall;

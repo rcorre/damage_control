@@ -39,14 +39,17 @@ class Tile {
     Rect2i textureRect;
   }
 
-  @property bool hasWall() { return construct == Construct.wall; }
+  bool hasWall() { return construct == Construct.wall; }
   /// only true if the tile is the top-left of a reactor (which covers 4 tiles)
-  @property bool hasReactor() { return construct == Construct.reactor; }
+  bool hasReactor() { return construct == Construct.reactor; }
   /// only true if the tile is the top-left of a cannon (which covers 4 tiles)
-  @property bool hasCannon() { return construct == Construct.cannon; }
-  @property bool isEmpty() { return construct == Construct.none; }
-  @property bool canPlaceWall() { return isEmpty && canBuild; }
-  @property bool canPlaceCannon() { return isEmpty && canBuild && isEnclosed; }
+  bool hasCannon() { return construct == Construct.cannon; }
+  bool isEmpty() { return construct == Construct.none; }
+  bool canPlaceWall() { return isEmpty && canBuild; }
+  bool canPlaceCannon() { return isEmpty && canBuild && isEnclosed; }
+  bool hasLargeConstruct() {
+    return construct == Construct.cannon || construct == Construct.reactor;
+  }
 
   this(Rect2i textureRect, bool canBuild) {
     this.textureRect = textureRect;
@@ -149,6 +152,13 @@ auto buildMap(MapData data) {
   }
 
   return tileMap;
+}
+
+bool canBuildAt(TileMap map, RowCol coord) {
+  return map.tileAt(coord).isEmpty             &&
+    !map.tileAt(coord.north).hasLargeConstruct &&
+    !map.tileAt(coord.west).hasLargeConstruct  &&
+    !map.tileAt(coord.north.west).hasLargeConstruct;
 }
 
 auto getWallSpriteRegion(uint[3][3] mask, int width, int height) {
