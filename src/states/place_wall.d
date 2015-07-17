@@ -9,6 +9,7 @@ import dtiled;
 import jsonizer;
 import tilemap;
 import states.battle;
+import states.battle_phase;
 
 private enum {
   dataFile   = "data/pieces.json",
@@ -16,24 +17,29 @@ private enum {
   spriteSize = 16,
   wallDepth  = 2,
   phaseTime  = 15,
+  titleText  = "Rebuild"
 }
 
 /// Player is holding a wall segment they can place with a mouse click
-class PlaceWall : State!Battle {
+class PlaceWall : BattlePhase {
   private {
     Piece _piece;
     Bitmap _tileAtlas;
-    float _timer;
+  }
+
+  this() {
+    super(titleText, phaseTime);
   }
 
   override {
     void enter(Battle battle) {
+      super.enter(battle);
       _piece = Piece.random;
       _tileAtlas = battle.game.bitmaps.get("tileset");
-      _timer = phaseTime;
     }
 
     void run(Battle battle) {
+      super.run(battle);
       auto game = battle.game;
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
@@ -66,11 +72,6 @@ class PlaceWall : State!Battle {
       else if (game.input.keyPressed(ALLEGRO_KEY_Q)) {
         _piece.rotate(true);
       }
-
-      _timer -= game.deltaTime;
-
-      // timer ran out, this state is done
-      if (_timer < 0) battle.states.pop();
     }
   }
 }
