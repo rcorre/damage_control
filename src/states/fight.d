@@ -6,11 +6,13 @@ import std.algorithm : sort, count, filter;
 import dau;
 import dtiled;
 import states.battle;
+import states.battle_phase;
 import tilemap;
 
 private enum {
-  phaseTime       = 10,
-  cannonCooldown  = 4,
+  titleText      = "Engage",
+  phaseTime      = 15,
+  cannonCooldown = 4,
 
   projectileSize  = Vector2i(12, 8),
   projectileTint  = Color(1, 1, 1, 0.5),
@@ -24,21 +26,24 @@ private enum {
 }
 
 /// Base battle state for fight vs ai or fight vs player.
-abstract class Fight : State!Battle {
+abstract class Fight : BattlePhase {
   private {
     alias ProjectileList = DropList!(Projectile, x => x.duration < 0);
     alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
 
-    private float  _timer;
     private ProjectileList _projectiles;
     private ExplosionList _explosions;
     private Cannon[] _cannons;
     private Bitmap _projectileBmp, _explosionBmp;
   }
 
+  this() {
+    super(titleText, phaseTime);
+  }
+
   override {
     void start(Battle battle) {
-      _timer = phaseTime;
+      super.start(battle);
       _projectiles = new ProjectileList;
       _explosions = new ExplosionList;
 
@@ -60,6 +65,8 @@ abstract class Fight : State!Battle {
     }
 
     void enter(Battle battle) {
+      super.enter(battle);
+
       // create an entry in the cannon list for each cannon in player territory
       _cannons = battle.map.allCoords
         .filter!(x => battle.map.tileAt(x).hasCannon)
@@ -68,15 +75,11 @@ abstract class Fight : State!Battle {
     }
 
     void run(Battle battle) {
+      super.run(battle);
+
       auto game = battle.game;
       auto mousePos = game.input.mousePos;
       auto map = battle.map;
-
-      _timer -= game.deltaTime;
-
-      if (_timer < 0) {
-        //game.states.pop();
-      }
 
       // try to place cannon if LMB clicked
       if (game.input.mouseReleased(MouseButton.lmb)) {
