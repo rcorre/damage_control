@@ -11,7 +11,7 @@ import tilemap;
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
-  textDepth = 1,
+  textDepth = 5,
 
   titleEnterPos = Vector2i(-210, 300),
   titleExitPos  = Vector2i( 900, 300),
@@ -27,7 +27,8 @@ private enum {
 /// Play a short animation before entering the next phase
 class BattleTransition : State!Battle {
   private {
-    Bitmap     _underline;
+    static Bitmap _underline;
+
     Transition _textTransition;
     Transition _underlineTransition;
     string     _title;
@@ -38,8 +39,22 @@ class BattleTransition : State!Battle {
     _title = title;
   }
 
+  static ~this() {
+    al_destroy_bitmap(_underline);
+  }
+
   override {
-    void enter(Battle battle) {
+    void start(Battle battle) {
+      if (_underline is null) {
+        // TODO: what a hack ...
+        // create underline bitmap
+        _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
+
+        al_set_target_bitmap(_underline);
+        al_clear_to_color(Color.white);
+        al_set_target_backbuffer(battle.game.display.display);
+      }
+
       _font = battle.game.fonts.get(fontName, fontSize);
 
       _textTransition.startPos    = titleEnterPos;
@@ -52,16 +67,6 @@ class BattleTransition : State!Battle {
       _underlineTransition.timeElapsed = 0;
       _underlineTransition.totalTime   = transitionDuration;
 
-      // create underline bitmap
-      _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
-
-      al_set_target_bitmap(_underline);
-      al_clear_to_color(Color.white);
-      al_set_target_backbuffer(battle.game.display.display);
-    }
-
-    void exit(Battle battle) {
-      al_destroy_bitmap(_underline);
     }
 
     void run(Battle battle) {
@@ -72,6 +77,10 @@ class BattleTransition : State!Battle {
 
       drawText(game.renderer);
       drawUnderline(game.renderer);
+
+      if (_textTransition.done && _underlineTransition.done) {
+        battle.states.pop();
+      }
     }
   }
 
@@ -116,5 +125,9 @@ private struct Transition {
     auto y = (((2 * x) - 1).pow(5) + 1) / 2 + x / 8;
 
     return startPos.lerp(endPos, y);
+  }
+
+  bool done() {
+    return timeElapsed > totalTime;
   }
 }

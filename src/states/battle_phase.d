@@ -4,6 +4,7 @@ import std.format : format;
 import dau;
 import dtiled;
 import states.battle;
+import states.battle_transition;
 import tilemap;
 
 private enum {
@@ -31,6 +32,10 @@ class BattlePhase : State!Battle {
   }
 
   override {
+    void start(Battle battle) {
+      battle.states.push(new BattleTransition(_title));
+    }
+
     void enter(Battle battle) {
       _font = battle.game.fonts.get(fontName, fontSize);
     }
