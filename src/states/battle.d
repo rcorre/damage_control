@@ -22,7 +22,7 @@ private enum {
   enemyDepth = 3,
 
   animationTime = 0.06,            // seconds per frame of tilesheet animation
-  tilesetSize   = Vector2i(96, 0), // size of the tileset image for one frame of animation
+  tilesetSize   = Vector2i(128, 0), // size of the tileset image for one frame of animation
 }
 
 /// Start a new match.

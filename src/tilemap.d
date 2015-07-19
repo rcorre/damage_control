@@ -12,15 +12,16 @@ import states.battle;
 
 private enum {
   tileDepth = 0,
-  featureDepth = 1,
-  reactorDepth = 1,
+  circuitDepth = 1,
+  featureDepth = 2,
   wallLayoutFile = "./data/walls.json",
   cannonSpriteRow = 6,
   cannonSpriteCol = 0,
   reactorSpriteRow = 6,
   reactorSpriteCol = 2,
-  cannonSize = 32, // width and height of cannon sprite in pixels
-  reactorSize = 32,   // width and height of reactor sprite in pixels
+  cannonSize = 32,      // width and height of cannon sprite in pixels
+  reactorSize = 32,     // width and height of reactor sprite in pixels
+  circuitColOffset = 6, // offset of circuit animation
 }
 
 enum Construct {
@@ -63,16 +64,25 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
           Vector2f cannonTarget)
 {
   auto tileBatch    = SpriteBatch(tileAtlas, tileDepth);
+  auto circuitBatch = SpriteBatch(tileAtlas, circuitDepth);
   auto featureBatch = SpriteBatch(tileAtlas, featureDepth);
 
   foreach(coord, tile; map) {
     Sprite sprite;
+
     sprite.region    = tile.textureRect;
     sprite.transform = map.tileCenter(coord).as!Vector2f;
-    sprite.color     = tile.isEnclosed ? Color.red : Color.white;
+    sprite.color     = Color.white;
     sprite.centered  = true;
 
     tileBatch ~= sprite;
+
+    // draw circuit animation
+    if (tile.isEnclosed) {
+      sprite.region.x += circuitColOffset * map.tileWidth + animationOffset.x;
+
+      tileBatch ~= sprite;
+    }
 
     // don't shade in the construct on top of the tile
     sprite.color = Color.white;
