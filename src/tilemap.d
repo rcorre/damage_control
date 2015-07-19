@@ -79,7 +79,14 @@ void draw(TileMap map, Bitmap tileAtlas, Battle battle, Vector2i animationOffset
 
     // draw circuit animation
     if (tile.isEnclosed) {
-      sprite.region.x += circuitColOffset * map.tileWidth + animationOffset.x;
+      // hack because of my messy tilemapping
+      if (sprite.region.x <= 2 * map.tileWidth) { // inside of main set
+        sprite.region.x += circuitColOffset * map.tileWidth + animationOffset.x;
+      }
+      else {
+        sprite.region.x = (1 + circuitColOffset) * map.tileWidth + animationOffset.x;
+        sprite.region.y = map.tileHeight;
+      }
 
       tileBatch ~= sprite;
     }
