@@ -21,7 +21,7 @@ private enum {
   reactorSpriteCol = 2,
   cannonSize = 32,      // width and height of cannon sprite in pixels
   reactorSize = 32,     // width and height of reactor sprite in pixels
-  circuitColOffset = 6, // offset of circuit animation
+  circuitColOffset = 5, // offset of circuit animation
 }
 
 enum Construct {
