@@ -1,22 +1,13 @@
 module states.fight_ai;
 
-import std.math   : PI, sgn, approxEqual;
 import std.array  : array;
-import std.random : uniform, randomSample;
 import dau;
 import dtiled;
 import states.battle;
 import states.fight;
 
 private enum {
-  minEnemyFireCooldown = 2,
-  maxEnemyFireCooldown = 5,
   enemySize = Vector2i(32,32),
-
-  enemyAccuracy = 0.5,
-  enemySpeed = 90,
-  enemyRotationSpeed = 4,
-  enemyRange = 240,
 }
 
 class FightAI : Fight {
@@ -74,54 +65,14 @@ class FightAI : Fight {
     if (_enemies.empty && super.allProjectilesExpired)
       battle.states.pop();
 
+    EnemyContext context;
+    context.timeElapsed     = game.deltaTime;
+    context.targets         = _targets;
+    context.tileMap         = battle.map;
+    context.spawnProjectile = &super.spawnProjectile;
+
     foreach(ref enemy ; _enemies) {
-      enemy.fireCooldown -= game.deltaTime;
-
-      if (battle.map.tileAt(enemy.target).hasWall) {
-        auto targetPos = battle.map.tileCenter(enemy.target).as!Vector2f;
-
-        // rotate towards the target
-        auto angleDiff = enemy.transform.angle - (targetPos - enemy.pos).angle;
-        if (!angleDiff.approxEqual(0, 0.1)) {
-          enemy.transform.angle -= angleDiff.sgn * enemyRotationSpeed * game.deltaTime;
-        }
-
-        if (enemy.pos.distance(targetPos) > enemyRange) {
-          // not in range, so move towards the target
-          enemy.pos.moveTo(targetPos, game.deltaTime * enemySpeed);
-        }
-        else if (enemy.fireCooldown < 0) {
-          // in range and weapons ready, so fire!
-          auto target = enemy.target;
-          if (uniform(0f, 1f) > enemyAccuracy) {
-            // simulate a 'miss' by targeting an adjacent tile
-            target = target.adjacent(Diagonals.yes).randomSample(1).front;
-          }
-
-          enemy.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
-          spawnProjectile(enemy.pos, battle.map.tileCenter(target).as!Vector2f);
-        }
-      }
-      else {
-        // target tile no longer holds a wall, pick a new target
-        enemy.target = _targets.randomSample(1).front;
-        assert(battle.map.contains(enemy.target));
-      }
+      enemy.update(context);
     }
   }
-}
-
-private:
-struct Enemy {
-  Transform!float transform;
-  float fireCooldown;
-  RowCol target;
-  bool destroyed;
-
-  this(Vector2f position) {
-    this.transform = position;
-    this.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
-  }
-
-  ref auto pos() { return transform.pos; }
 }
