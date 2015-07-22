@@ -9,16 +9,15 @@ import dtiled;
 import jsonizer;
 import tilemap;
 import states.battle;
-import states.battle_transition;
 
 /// Player is holding a wall segment they can place with a mouse click
 class ChooseBase : State!Battle {
   private RowCol _currentCoord;
 
   override {
-    void start(Battle battle) {
-      battle.states.push(new BattleTransition("Choose Base"));
-    }
+    void enter(Battle battle) { }
+
+    void exit(Battle battle) { }
 
     void run(Battle battle) {
       auto game = battle.game;

@@ -14,6 +14,12 @@ class StartRound : State!Battle {
 
   override void enter(Battle battle) {
     // TODO: check if just finished last round
-    battle.states.push(new PlaceCannons, new FightAI(_currentRound++), new PlaceWall);
+    battle.states.push(
+        new PlaceCannons(battle), 
+        new FightAI(battle, _currentRound++), 
+        new PlaceWall(battle));
   }
+
+  override void exit(Battle battle) { }
+  override void run(Battle battle) { }
 }

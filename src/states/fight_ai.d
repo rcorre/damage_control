@@ -28,13 +28,16 @@ class FightAI : Fight {
     RowCol[] _targets;  // coordinates enemies should target
   }
 
-  this(int round) {
+  this(Battle battle, int round) {
+    super(battle);
     _round = round;
   }
 
   override {
-    void start(Battle battle) {
-      super.start(battle);
+    void enter(Battle battle) {
+      super.enter(battle);
+      // consider all tiles with walls as targets
+      _targets = battle.map.allCoords.filter!(x => battle.map.tileAt(x).hasWall).array;
 
       _enemies = new EnemyList;
 
@@ -42,12 +45,6 @@ class FightAI : Fight {
           battle.data
           .getEnemyWave(_round)  // get the wave data for this round
           .map!(x => Enemy(x))); // create an enemy at each location
-    }
-
-    void enter(Battle battle) {
-      super.enter(battle);
-      // consider all tiles with walls as targets
-      _targets = battle.map.allCoords.filter!(x => battle.map.tileAt(x).hasWall).array;
     }
 
     void run(Battle battle) {

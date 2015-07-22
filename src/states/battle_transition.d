@@ -44,9 +44,13 @@ class BattleTransition : State!Battle {
   }
 
   override {
-    void start(Battle battle) {
+    void enter(Battle battle) {
       if (_underline is null) {
         // TODO: what a hack ...
+        // problem here is that the renderer is holding on to the bitmap through
+        // the SpriteBatch
+        // eventually need to have the renderer manage bitmaps itself.
+
         // create underline bitmap
         _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
 
@@ -66,8 +70,9 @@ class BattleTransition : State!Battle {
       _underlineTransition.endPos      = underlineExitPos;
       _underlineTransition.timeElapsed = 0;
       _underlineTransition.totalTime   = transitionDuration;
-
     }
+
+    void exit(Battle battle) { }
 
     void run(Battle battle) {
       auto game = battle.game;

@@ -26,19 +26,18 @@ class BattlePhase : State!Battle {
     Font  _font;
   }
 
-  this(string title, float duration) {
+  this(Battle battle, string title, float duration) {
+    battle.states.push(new BattleTransition(_title));
     _title = title;
     _timer = duration;
   }
 
   override {
-    void start(Battle battle) {
-      battle.states.push(new BattleTransition(_title));
-    }
-
     void enter(Battle battle) {
       _font = battle.game.fonts.get(fontName, fontSize);
     }
+
+    void exit(Battle battle) { }
 
     void run(Battle battle) {
       auto game = battle.game;

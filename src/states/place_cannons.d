@@ -26,8 +26,8 @@ private enum {
 class PlaceCannons : BattlePhase {
   private ulong _cannons;
 
-  this() {
-    super(titleText, phaseTime);
+  this(Battle battle) {
+    super(battle, titleText, phaseTime);
   }
 
   override {

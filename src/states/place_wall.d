@@ -27,8 +27,8 @@ class PlaceWall : BattlePhase {
     Bitmap _tileAtlas;
   }
 
-  this() {
-    super(titleText, phaseTime);
+  this(Battle battle) {
+    super(battle, titleText, phaseTime);
   }
 
   override {

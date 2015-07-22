@@ -8,6 +8,7 @@ import tilemap;
 import player;
 import states.choose_base;
 import states.start_round;
+import states.battle_transition;
 
 private enum {
   cannonBaseRow   = 6,
@@ -46,25 +47,30 @@ class Battle : State!Game {
   }
 
   override {
-    void start(Game game) {
+    void enter(Game game) {
       this.game = game;
       auto mapData = MapData.load("./content/map/map1.json");
       this.map = buildMap(mapData);
       this.data = BattleData(mapData);
-      this.states = new StateStack!Battle(this);
       _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
-      states.push(new ChooseBase, new StartRound);
+
+      states.push(new BattleTransition("Choose Base"),
+                  new ChooseBase,
+                  new StartRound);
+
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
     }
+
+    void exit(Game game) { }
 
     void run(Game game) {
       if (game.input.keyPressed(ALLEGRO_KEY_ESCAPE)) {
         game.stop();
       }
 
-      states.run();
+      states.run(this);
       map.draw(_tileAtlas, this, animationOffset, cannonTarget);
 
       // animation

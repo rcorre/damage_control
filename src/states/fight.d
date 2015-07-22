@@ -37,33 +37,30 @@ abstract class Fight : BattlePhase {
     private Bitmap _projectileBmp, _explosionBmp;
   }
 
-  this() {
-    super(titleText, phaseTime);
-  }
-
-  override {
-    void start(Battle battle) {
-      super.start(battle);
-      _projectiles = new ProjectileList;
-      _explosions = new ExplosionList;
+  this(Battle battle) {
+    super(battle, titleText, phaseTime);
+    _projectiles = new ProjectileList;
+    _explosions = new ExplosionList;
 
       // don't forget to re-target the display after creating the bitmaps
       scope(exit) al_set_target_backbuffer(battle.game.display.display);
 
       // create the projectile bitmap
-      _projectileBmp = al_create_bitmap(projectileSize.x, projectileSize.y);
+      _projectileBmp = Bitmap(al_create_bitmap(projectileSize.x,
+            projectileSize.y));
       al_set_target_bitmap(_projectileBmp);
       al_clear_to_color(projectileTint);
 
       // create the explosion bitmap
-      _explosionBmp = al_create_bitmap(explosionSize, explosionSize);
+      _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
       al_set_target_bitmap(_explosionBmp);
       al_draw_filled_ellipse(
           explosionSize / 2, explosionSize / 2, // center x,y
           explosionSize / 2, explosionSize / 2, // radius x,y
           explosionTint);                       // color
-    }
+  }
 
+  override {
     void enter(Battle battle) {
       super.enter(battle);
 
@@ -73,6 +70,8 @@ abstract class Fight : BattlePhase {
         .map!(x => Cannon(battle.map.tileOffset(x + RowCol(1,1)).as!Vector2f))
         .array;
     }
+
+    void exit(Battle battle) { super.exit(battle); }
 
     void run(Battle battle) {
       super.run(battle);
