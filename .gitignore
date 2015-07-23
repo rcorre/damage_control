@@ -1,7 +1,7 @@
 # dub generated
 .dub
 
-#docs
+# docs
 docs/
 docs.json
 __dummy.html
@@ -11,5 +11,8 @@ bin/
 *.o
 *.obj
 
-#content
+# content
 content/
+
+# LMMS backup files
+*.mmpz.bak
