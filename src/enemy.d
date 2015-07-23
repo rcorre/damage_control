@@ -18,6 +18,7 @@ class Enemy {
     accuracy      = 0.5,
     speed         = 90,
     rotationSpeed = 4,
+    circlingSpeed = 0.5,
     range         = 240,
 
     minHoverTime = 0.5,
@@ -29,14 +30,18 @@ class Enemy {
   RowCol          target;
   bool            destroyed;
 
-  protected StateStack!Enemy states;
+  protected StateStack!(Enemy, EnemyContext) states;
 
   this(Vector2f position) {
     this.transform = position;
-    this.fireCooldown = uniform(minEnemyFireCooldown, maxEnemyFireCooldown);
+    states.push(new SelectTarget);
   }
 
   ref auto pos() { return transform.pos; }
+
+  void update(EnemyContext context) {
+    states.run(this, context);
+  }
 }
 
 private:
@@ -51,7 +56,7 @@ abstract class EnemyState : State!(Enemy, EnemyContext) {
   }
 
   static bool hasTarget(Enemy self, EnemyContext context) {
-    return context.map.tileAt(self.target).hasWall;
+    return context.tileMap.tileAt(self.target).hasWall;
   }
 }
 
@@ -65,9 +70,12 @@ class SelectTarget : EnemyState {
 class ApproachTarget : EnemyState {
   override void run(Enemy self, EnemyContext context) {
     // stop trying to approach target if it is gone
-    if (!hasTarget(self, context)) self.states.pop();
+    if (!hasTarget(self, context)) {
+      self.states.pop();
+      return;
+    }
 
-    auto targetPos = context.map.tileCenter(self.target).as!Vector2f;
+    auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
     // rotate towards the target
     auto angleDiff = self.transform.angle - (targetPos - self.pos).angle;
@@ -79,7 +87,7 @@ class ApproachTarget : EnemyState {
 
     if (self.pos.distance(targetPos) > self.range) {
       // not in range, so move towards the target
-      self.pos.moveTo(targetPos, game.deltaTime * self.speed);
+      self.pos.moveTo(targetPos, context.timeElapsed * self.speed);
     }
     else {
       self.states.replace(new FireAtTarget); // in range, prepare to fire
@@ -105,12 +113,12 @@ class FireAtTarget : EnemyState {
   override void enter(Enemy self, EnemyContext context) {
     auto target = self.target;
 
-    if (uniform(0f, 1f) > enemyAccuracy) {
+    if (uniform(0f, 1f) > self.accuracy) {
       // simulate a 'miss' by targeting an adjacent tile
       target = target.adjacent(Diagonals.yes).randomSample(1).front;
     }
 
-    auto targetPos = context.map.tileCenter(self.target).as!Vector2f;
+    auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
     context.spawnProjectile(self.pos, targetPos);
 
@@ -129,16 +137,21 @@ class CircleTarget : EnemyState {
   private float _timer;
 
   override void enter(Enemy self, EnemyContext context) {
-    _timer = uniform(minHoverTime, maxHoverTime);
+    _timer = uniform(self.minHoverTime, self.maxHoverTime);
   }
 
   override void run(Enemy self, EnemyContext context) {
     _timer -= context.timeElapsed;
-    if (_timer < 0) self.states.pop();
+    if (_timer < 0) {
+      self.states.pop();
+      return;
+    }
 
-    auto targetPos = context.map.tileCenter(self.target).as!Vector2f;
+    auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
-    self.pos = targetPos + (self.pos - targetPos).rotated(self.rotationSpeed);
+    auto offset = self.pos - targetPos;
+    offset.rotate(self.circlingSpeed * context.timeElapsed);
+    self.pos = targetPos + offset;
 
     // keep facing towards the target
     self.transform.angle = (targetPos - self.pos).angle;

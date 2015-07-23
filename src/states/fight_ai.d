@@ -3,6 +3,7 @@ module states.fight_ai;
 import std.array  : array;
 import dau;
 import dtiled;
+import enemy;
 import states.battle;
 import states.fight;
 
@@ -34,8 +35,8 @@ class FightAI : Fight {
 
       _enemies.insert(
           battle.data
-          .getEnemyWave(_round)  // get the wave data for this round
-          .map!(x => Enemy(x))); // create an enemy at each location
+          .getEnemyWave(_round)      // get the wave data for this round
+          .map!(x => new Enemy(x))); // create an enemy at each location
     }
 
     void run(Battle battle) {
