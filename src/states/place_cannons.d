@@ -57,6 +57,7 @@ class PlaceCannons : TimedPhase {
       // try to place cannon if LMB clicked
       if (game.input.mouseReleased(MouseButton.lmb) &&
           _cannons > 0                              &&
+          map.tileAt(mouseCoord).isEnclosed         &&
           map.canBuildAt(mouseCoord)                &&
           map.canBuildAt(mouseCoord.south)          &&
           map.canBuildAt(mouseCoord.east)           &&

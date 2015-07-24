@@ -46,8 +46,6 @@ class Tile {
   /// only true if the tile is the top-left of a cannon (which covers 4 tiles)
   bool hasCannon() { return construct == Construct.cannon; }
   bool isEmpty() { return construct == Construct.none; }
-  bool canPlaceWall() { return isEmpty && canBuild; }
-  bool canPlaceCannon() { return isEmpty && canBuild && isEnclosed; }
   bool hasLargeConstruct() {
     return construct == Construct.cannon || construct == Construct.reactor;
   }
