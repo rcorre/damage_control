@@ -172,7 +172,9 @@ auto buildMap(MapData data) {
 }
 
 bool canBuildAt(TileMap map, RowCol coord) {
-  return map.tileAt(coord).isEmpty             &&
+  return
+    map.tileAt(coord).isEmpty                  &&
+    map.tileAt(coord).canBuild                 &&
     !map.tileAt(coord.north).hasLargeConstruct &&
     !map.tileAt(coord.west).hasLargeConstruct  &&
     !map.tileAt(coord.north.west).hasLargeConstruct;

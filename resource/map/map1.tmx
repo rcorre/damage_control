@@ -96,6 +96,31 @@
     <property name="canBuild" value="true"/>
    </properties>
   </tile>
+  <tile id="64">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="65">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="66">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="67">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="68">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
   <tile id="96" terrain="1,0,1,1">
    <properties>
     <property name="canBuild" value="true"/>
@@ -107,6 +132,21 @@
    </properties>
   </tile>
   <tile id="98" terrain="0,1,1,1">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="128">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="129">
+   <properties>
+    <property name="canBuild" value="true"/>
+   </properties>
+  </tile>
+  <tile id="130">
    <properties>
     <property name="canBuild" value="true"/>
    </properties>
