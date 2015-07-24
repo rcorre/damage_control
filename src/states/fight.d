@@ -53,6 +53,7 @@ abstract class Fight : TimedPhase {
       // create the explosion bitmap
       _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
       al_set_target_bitmap(_explosionBmp);
+      al_clear_to_color(Color(0,0,0,0));
       al_draw_filled_ellipse(
           explosionSize / 2, explosionSize / 2, // center x,y
           explosionSize / 2, explosionSize / 2, // radius x,y
