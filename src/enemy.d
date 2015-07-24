@@ -18,7 +18,7 @@ class Enemy {
     accuracy      = 0.5,
     speed         = 90,
     rotationSpeed = 4,
-    circlingSpeed = 0.5,
+    circlingSpeed = 1.0,
     range         = 240,
 
     minHoverTime = 0.5,
@@ -135,9 +135,11 @@ class FireAtTarget : EnemyState {
 
 class CircleTarget : EnemyState {
   private float _timer;
+  private float _factor;
 
   override void enter(Enemy self, EnemyContext context) {
     _timer = uniform(self.minHoverTime, self.maxHoverTime);
+    _factor = uniform(-1f, 1f);
   }
 
   override void run(Enemy self, EnemyContext context) {
@@ -150,7 +152,7 @@ class CircleTarget : EnemyState {
     auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
     auto offset = self.pos - targetPos;
-    offset.rotate(self.circlingSpeed * context.timeElapsed);
+    offset.rotate(self.circlingSpeed * context.timeElapsed * _factor);
     self.pos = targetPos + offset;
 
     // keep facing towards the target
