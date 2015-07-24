@@ -6,7 +6,7 @@ import std.algorithm : count, filter;
 import dau;
 import dtiled;
 import states.battle;
-import states.battle_phase;
+import states.timed_phase;
 import tilemap;
 
 private enum {
@@ -16,18 +16,17 @@ private enum {
   cannonsPerNode  = 1,
   tilesPerCannon  = 30,
 
-  titleText         = "Install Cannons",
   cannonCountFormat = "Cannons: %d",
 
   cannonCountPos = Vector2i(600, 10),
 }
 
 /// Player may place cannons within wall bounds
-class PlaceCannons : BattlePhase {
+class PlaceCannons : TimedPhase {
   private ulong _cannons;
 
   this(Battle battle) {
-    super(battle, titleText, phaseTime);
+    super(battle, phaseTime);
   }
 
   override {

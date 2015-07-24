@@ -9,26 +9,25 @@ import dtiled;
 import jsonizer;
 import tilemap;
 import states.battle;
-import states.battle_phase;
+import states.timed_phase;
 
 private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 5,
   spriteSize = 16,
-  wallDepth  = 2,
+  wallDepth  = 3,
   phaseTime  = 15,
-  titleText  = "Rebuild"
 }
 
 /// Player is holding a wall segment they can place with a mouse click
-class PlaceWall : BattlePhase {
+class PlaceWall : TimedPhase {
   private {
     Piece _piece;
     Bitmap _tileAtlas;
   }
 
   this(Battle battle) {
-    super(battle, titleText, phaseTime);
+    super(battle, phaseTime);
   }
 
   override {

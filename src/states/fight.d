@@ -6,11 +6,10 @@ import std.algorithm : sort, count, filter;
 import dau;
 import dtiled;
 import states.battle;
-import states.battle_phase;
+import states.timed_phase;
 import tilemap;
 
 private enum {
-  titleText      = "Engage",
   phaseTime      = 15,
   cannonCooldown = 4,
 
@@ -26,7 +25,7 @@ private enum {
 }
 
 /// Base battle state for fight vs ai or fight vs player.
-abstract class Fight : BattlePhase {
+abstract class Fight : TimedPhase {
   private {
     alias ProjectileList = DropList!(Projectile, x => x.duration < 0);
     alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
@@ -38,7 +37,7 @@ abstract class Fight : BattlePhase {
   }
 
   this(Battle battle) {
-    super(battle, titleText, phaseTime);
+    super(battle, phaseTime);
     _projectiles = new ProjectileList;
     _explosions = new ExplosionList;
 

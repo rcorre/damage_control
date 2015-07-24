@@ -1,34 +1,26 @@
-module states.battle_phase;
+module states.timed_phase;
 
 import std.format : format;
 import dau;
 import dtiled;
 import states.battle;
-import states.battle_transition;
-import tilemap;
 
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
   textDepth = 1,
-
   timerPos = Vector2i(10, 10),
-  titlePos = Vector2i(300, 10),
-
   timerFormat = "Time: %2.1f",
 }
 
 /// Base for any timed phase within the battle state
-class BattlePhase : State!Battle {
+class TimedPhase : State!Battle {
   private {
     float _timer;
-    string _title;
     Font  _font;
   }
 
-  this(Battle battle, string title, float duration) {
-    battle.states.push(new BattleTransition(_title));
-    _title = title;
+  this(Battle battle, float duration) {
     _timer = duration;
   }
 
@@ -46,32 +38,19 @@ class BattlePhase : State!Battle {
       _timer -= game.deltaTime;
       if (_timer < 0) battle.states.pop();
 
-      drawText(game.renderer);
+      drawTimer(game.renderer);
     }
   }
 
-  private void drawText(Renderer renderer) {
+  private void drawTimer(Renderer renderer) {
     auto batch = TextBatch(_font, textDepth);
 
     Text text;
 
-    // title
-    text.color     = Color.gray;
-    text.transform = titlePos;
-    text.text      = _title;
-    batch ~= text;
-
-    // timer
     text.color = (_timer > 3.0f) ? Color.gray : Color.red;
     text.transform = timerPos;
     text.text      = timerFormat.format(_timer);
     batch ~= text;
-
-    // cannon counter
-    //text.color = (_cannons > 0) ? Color.gray : Color.red;
-    //text.transform = cannonCountPos;
-    //text.text      = cannonCountFormat.format(_cannons);
-    //batch ~= text;
 
     renderer.draw(batch);
   }
