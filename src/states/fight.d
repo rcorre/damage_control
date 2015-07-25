@@ -77,11 +77,10 @@ abstract class Fight : TimedPhase {
       super.run(battle);
 
       auto game = battle.game;
-      auto mousePos = game.input.mousePos;
       auto map = battle.map;
 
       // try to place cannon if LMB clicked
-      if (game.input.mouseReleased(MouseButton.lmb)) {
+      if (game.input.keyPressed(ALLEGRO_KEY_J)) {
         // place the cannons with the lowest cooldowns first
         _cannons.sort!((a,b) => a.cooldown < b.cooldown);
 
