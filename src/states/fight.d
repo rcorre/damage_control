@@ -88,7 +88,7 @@ abstract class Fight : TimedPhase {
         if (_cannons.front.cooldown < 0) {
           _cannons.front.cooldown = cannonCooldown;
 
-          spawnProjectile(_cannons.front.position, (cast(Vector2f) mousePos));
+          spawnProjectile(_cannons.front.position, battle.cursor.center);
         }
       }
 

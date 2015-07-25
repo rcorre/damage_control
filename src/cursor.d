@@ -32,6 +32,12 @@ class Cursor {
     al_destroy_bitmap(_bitmap);
   }
 
+  @property {
+    auto coord() { return _coord; }
+    auto tile() { return _map.tileAt(_coord); }
+    auto center() { return _map.tileCenter(_coord).as!Vector2f; }
+  }
+
   void update(Game game, InputManager input) {
     if (input.keyPressed(ALLEGRO_KEY_A)) {
       _coord = _coord.west;
