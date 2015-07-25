@@ -6,6 +6,7 @@ import dau;
 import dtiled;
 import tilemap;
 import player;
+import cursor;
 import states.choose_base;
 import states.start_round;
 import states.battle_transition;
@@ -37,14 +38,17 @@ class Battle : State!Game {
 
   private {
     Bitmap _tileAtlas;
-    float _animationTimer;
-    int _numAnimationFrames;
-    int _animationCounter;
+    float  _animationTimer;
+    int    _numAnimationFrames;
+    int    _animationCounter;
+    Cursor _cursor;
   }
 
   @property auto animationOffset() {
     return tilesetSize * _animationCounter;
   }
+
+  @property auto cursor() { return _cursor; }
 
   override {
     void enter(Game game) {
@@ -61,6 +65,7 @@ class Battle : State!Game {
 
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
+      _cursor = new Cursor(this);
     }
 
     void exit(Game game) { }
@@ -79,6 +84,9 @@ class Battle : State!Game {
         _animationTimer = animationTime;
         _animationCounter = (_animationCounter + 1) % _numAnimationFrames;
       }
+
+      cursor.update(game, game.input);
+      cursor.draw(game.renderer);
     }
   }
 
