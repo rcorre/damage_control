@@ -21,7 +21,7 @@ class ChooseBase : BattleState {
       _reactorCoords = Array!RowCol(battle.map
         .allCoords
         .filter!(x => battle.map.tileAt(x).hasReactor));
-            
+
       _currentCoord = _reactorCoords.front;
       selectReactor(battle, _currentCoord);
     }
