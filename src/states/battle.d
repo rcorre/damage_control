@@ -200,9 +200,36 @@ abstract class BattleState : State!Battle {
         onConfirm(battle);
       }
 
+      void handleJoypadAxis(in ALLEGRO_EVENT ev) {
+        // TODO: hardcoded to Buffalo SNES controller
+        auto joy = ev.joystick;
+
+        if (joy.pos == 0) {
+          if (joy.axis == 0) {
+            battle.cursor.stopMoving(Cursor.Direction.west);
+            battle.cursor.stopMoving(Cursor.Direction.east);
+          }
+          else {
+            battle.cursor.stopMoving(Cursor.Direction.north);
+            battle.cursor.stopMoving(Cursor.Direction.south);
+          }
+        }
+        else {
+          with (Cursor.Direction) {
+            auto direction =
+              (joy.axis == 0) ?
+              ((joy.pos > 0) ? east : west) :
+              ((joy.pos > 0) ? south : north);
+
+            battle.cursor.startMoving(direction);
+          }
+        }
+      }
+
       _handlers.insert(battle.game.events.onKeyDown(&handleKeyDown));
       _handlers.insert(battle.game.events.onKeyUp(&handleKeyUp));
       _handlers.insert(battle.game.events.onButtonDown(&handleButtonDown));
+      _handlers.insert(battle.game.events.onJoypadAxis(&handleJoypadAxis));
     }
 
     void exit(Battle battle) {
@@ -265,10 +292,10 @@ struct BattleData {
   auto getWallCoordsForReactor(RowCol coord) {
     auto region = _wallRegions
       .find!(region =>
-        region.start.col <= coord.col &&
-        region.start.row <= coord.row &&
-        region.end.col   >= coord.col &&
-        region.end.row   >= coord.row)
+          region.start.col <= coord.col &&
+          region.start.row <= coord.row &&
+          region.end.col   >= coord.col &&
+          region.end.row   >= coord.row)
       .front;
 
     auto topLeft  = region.start;

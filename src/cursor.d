@@ -55,8 +55,10 @@ class Cursor {
 
   void stopMoving(Direction direction) {
     auto idx = cast(long) direction;
-    _moveTimers[idx].unregister();
-    _moveTimers[idx] = null;
+    if (_moveTimers[idx] !is null) {
+      _moveTimers[idx].unregister();
+      _moveTimers[idx] = null;
+    }
   }
 
   void draw(Renderer renderer) {
