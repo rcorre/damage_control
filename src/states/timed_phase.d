@@ -14,7 +14,7 @@ private enum {
 }
 
 /// Base for any timed phase within the battle state
-class TimedPhase : State!Battle {
+class TimedPhase : BattleState {
   private {
     float _timer;
     Font  _font;
