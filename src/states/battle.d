@@ -2,6 +2,7 @@ module states.battle;
 
 import std.array     : array;
 import std.string    : startsWith;
+import std.container : Array;
 import dau;
 import dtiled;
 import tilemap;
@@ -142,8 +143,7 @@ class Battle : State!Game {
 
 protected:
 abstract class BattleState : State!Battle {
-  EventHandler _keyDownHandler;
-  EventHandler _keyUpHandler;
+  Array!EventHandler _handlers;
 
   override {
     void enter(Battle battle) {
@@ -196,13 +196,17 @@ abstract class BattleState : State!Battle {
         }
       }
 
-      _keyDownHandler = battle.game.events.onKeyDown(&handleKeyDown);
-      _keyUpHandler   = battle.game.events.onKeyUp(&handleKeyUp);
+      void handleButtonDown(in ALLEGRO_EVENT ev) {
+        onConfirm(battle);
+      }
+
+      _handlers.insert(battle.game.events.onKeyDown(&handleKeyDown));
+      _handlers.insert(battle.game.events.onKeyUp(&handleKeyUp));
+      _handlers.insert(battle.game.events.onButtonDown(&handleButtonDown));
     }
 
     void exit(Battle battle) {
-      _keyDownHandler.unregister();
-      _keyUpHandler.unregister();
+      foreach(handler ; _handlers) handler.unregister();
     }
 
     void run(Battle battle) { }
