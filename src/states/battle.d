@@ -156,19 +156,19 @@ abstract class BattleState : State!Battle {
             onCancel(battle);
             break;
           case ALLEGRO_KEY_A:
-            battle.cursor.coord = battle.cursor.coord.west;
+            battle.cursor.startMoving(Cursor.Direction.west);
             onCursorMove(battle, Vector2i(-1,0));
             break;
           case ALLEGRO_KEY_D:
-            battle.cursor.coord = battle.cursor.coord.east;
+            battle.cursor.startMoving(Cursor.Direction.east);
             onCursorMove(battle, Vector2i(1,0));
             break;
           case ALLEGRO_KEY_W:
-            battle.cursor.coord = battle.cursor.coord.north;
+            battle.cursor.startMoving(Cursor.Direction.north);
             onCursorMove(battle, Vector2i(0,-1));
             break;
           case ALLEGRO_KEY_S:
-            battle.cursor.coord = battle.cursor.coord.south;
+            battle.cursor.startMoving(Cursor.Direction.south);
             onCursorMove(battle, Vector2i(0,1));
             break;
           case ALLEGRO_KEY_ESCAPE:
@@ -179,6 +179,21 @@ abstract class BattleState : State!Battle {
       }
 
       void handleKeyUp(in ALLEGRO_EVENT ev) {
+        switch (ev.keyboard.keycode) {
+          case ALLEGRO_KEY_A:
+            battle.cursor.stopMoving(Cursor.Direction.west);
+            break;
+          case ALLEGRO_KEY_D:
+            battle.cursor.stopMoving(Cursor.Direction.east);
+            break;
+          case ALLEGRO_KEY_W:
+            battle.cursor.stopMoving(Cursor.Direction.north);
+            break;
+          case ALLEGRO_KEY_S:
+            battle.cursor.stopMoving(Cursor.Direction.south);
+            break;
+          default:
+        }
       }
 
       _keyDownHandler = battle.game.events.onKeyDown(&handleKeyDown);
