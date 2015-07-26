@@ -79,23 +79,24 @@ abstract class Fight : TimedPhase {
       auto game = battle.game;
       auto map = battle.map;
 
-      // try to place cannon if LMB clicked
-      if (game.input.keyPressed(ALLEGRO_KEY_J)) {
-        // place the cannons with the lowest cooldowns first
-        _cannons.sort!((a,b) => a.cooldown < b.cooldown);
-
-        if (_cannons.front.cooldown < 0) {
-          _cannons.front.cooldown = cannonCooldown;
-
-          spawnProjectile(_cannons.front.position, battle.cursor.center);
-        }
-      }
-
       processProjectiles(battle);
       processExplosions(game);
 
       foreach(ref cannon ; _cannons) {
         cannon.cooldown -= game.deltaTime;
+      }
+
+      battle.cannonTarget = battle.cursor.center;
+    }
+
+    override void onConfirm(Battle battle) {
+      // fire the cannons with the lowest cooldowns first
+      _cannons.sort!((a,b) => a.cooldown < b.cooldown);
+
+      if (_cannons.front.cooldown < 0) {
+        _cannons.front.cooldown = cannonCooldown;
+
+        spawnProjectile(_cannons.front.position, battle.cursor.center);
       }
     }
   }

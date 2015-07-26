@@ -1,7 +1,7 @@
 module states.battle;
 
-import std.array  : array;
-import std.string : startsWith;
+import std.array     : array;
+import std.string    : startsWith;
 import dau;
 import dtiled;
 import tilemap;
@@ -37,11 +37,11 @@ class Battle : State!Game {
   Vector2f cannonTarget = Vector2f.zero;
 
   private {
-    Bitmap _tileAtlas;
-    float  _animationTimer;
-    int    _numAnimationFrames;
-    int    _animationCounter;
-    Cursor _cursor;
+    Bitmap       _tileAtlas;
+    float        _animationTimer;
+    int          _numAnimationFrames;
+    int          _animationCounter;
+    Cursor       _cursor;
   }
 
   @property auto animationOffset() {
@@ -68,13 +68,10 @@ class Battle : State!Game {
       _cursor = new Cursor(this);
     }
 
-    void exit(Game game) { }
+    void exit(Game game) {
+    }
 
     void run(Game game) {
-      if (game.input.keyPressed(ALLEGRO_KEY_ESCAPE)) {
-        game.stop();
-      }
-
       states.run(this);
       map.draw(_tileAtlas, this, animationOffset, cannonTarget);
 
@@ -85,7 +82,6 @@ class Battle : State!Game {
         _animationCounter = (_animationCounter + 1) % _numAnimationFrames;
       }
 
-      cursor.update(game, game.input);
       cursor.draw(game.renderer);
     }
   }
@@ -142,6 +138,72 @@ class Battle : State!Game {
 
     game.renderer.draw(batch);
   }
+}
+
+protected:
+abstract class BattleState : State!Battle {
+  EventHandler _keyDownHandler;
+  EventHandler _keyUpHandler;
+
+  override {
+    void enter(Battle battle) {
+      void handleKeyDown(in ALLEGRO_EVENT ev) {
+        switch (ev.keyboard.keycode) {
+          case ALLEGRO_KEY_J:
+            onConfirm(battle);
+            break;
+          case ALLEGRO_KEY_K:
+            onCancel(battle);
+            break;
+          case ALLEGRO_KEY_A:
+            battle.cursor.coord = battle.cursor.coord.west;
+            onCursorMove(battle, Vector2i(-1,0));
+            break;
+          case ALLEGRO_KEY_D:
+            battle.cursor.coord = battle.cursor.coord.east;
+            onCursorMove(battle, Vector2i(1,0));
+            break;
+          case ALLEGRO_KEY_W:
+            battle.cursor.coord = battle.cursor.coord.north;
+            onCursorMove(battle, Vector2i(0,-1));
+            break;
+          case ALLEGRO_KEY_S:
+            battle.cursor.coord = battle.cursor.coord.south;
+            onCursorMove(battle, Vector2i(0,1));
+            break;
+          case ALLEGRO_KEY_ESCAPE:
+            battle.game.stop();
+            break;
+          default:
+        }
+      }
+
+      void handleKeyUp(in ALLEGRO_EVENT ev) {
+      }
+
+      _keyDownHandler = battle.game.events.onKeyDown(&handleKeyDown);
+      _keyUpHandler   = battle.game.events.onKeyUp(&handleKeyUp);
+    }
+
+    void exit(Battle battle) {
+      _keyDownHandler.unregister();
+      _keyUpHandler.unregister();
+    }
+
+    void run(Battle battle) { }
+  }
+
+  // action to take when cursor is moved in the given direction
+  void onCursorMove(Battle battle, Vector2i direction) { }
+
+  // action to take when the "confirm" button is pressed
+  void onConfirm(Battle battle) { }
+
+  // action to take when the "cancel" button is pressed
+  void onCancel(Battle battle) { }
+
+  // action to take when a "rotate" button is pressed
+  void onRotate(Battle battle, bool clockwise) { }
 }
 
 private:

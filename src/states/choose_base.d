@@ -1,9 +1,10 @@
 module states.choose_base;
 
+import std.math : sgn;
 import std.range;
-import std.array;
 import std.random;
-import std.algorithm;
+import std.algorithm : filter;
+import std.container : Array;
 import dau;
 import dtiled;
 import jsonizer;
@@ -11,51 +12,49 @@ import tilemap;
 import states.battle;
 
 /// Player is holding a wall segment they can place with a mouse click
-class ChooseBase : State!Battle {
-  private RowCol _currentCoord;
+class ChooseBase : BattleState {
+  private RowCol       _currentCoord;
+  private Array!RowCol _reactorCoords;
 
   override {
-    void enter(Battle battle) { }
+    void enter(Battle battle) {
+      _reactorCoords = Array!RowCol(battle.map
+        .allCoords
+        .filter!(x => battle.map.tileAt(x).hasReactor));
+            
+      _currentCoord = _reactorCoords.front;
+    }
 
-    void exit(Battle battle) { }
+    void onCursorMove(Battle battle, Vector2i direction) {
+      // try to pick a reactor in the direction the cursor was moved
+      auto next = _reactorCoords[].find!(x =>
+          sgn(x.row - _currentCoord.row) == direction.y ||
+          sgn(x.col - _currentCoord.col) == direction.x);
 
-    void run(Battle battle) {
-      auto game = battle.game;
-      auto map = battle.map;
-
-      auto newCoord = map.coordAtPoint(game.input.mousePos);
-
-      if (newCoord != _currentCoord &&
-          map.contains(newCoord)    &&
-          map.tileAt(newCoord).hasReactor)
-      {
-        // clear old walls
-        if (map.tileAt(_currentCoord).hasReactor) {
-          foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-            map.tileAt(coord).construct = Construct.none;
-          }
+      if (!next.empty) {
+        // clear walls from previous selection
+        foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
+          battle.map.tileAt(coord).construct = Construct.none;
         }
 
-        // place new walls
-        foreach(coord ; battle.data.getWallCoordsForReactor(newCoord)) {
-          map.tileAt(coord).construct = Construct.wall;
-        }
+        // set walls for new selection
+        _currentCoord = next.front;
 
-        // register the current coord as the selected node
-        _currentCoord = newCoord;
+        // clear walls from previous selection
+        foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
+          battle.map.tileAt(coord).construct = Construct.wall;
+        }
+      }
+    }
+
+    void onConfirm(Battle battle) {
+      // mark all tiles in area surrounding the selection as enclosed
+      foreach(tile ; battle.map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
+        tile.isEnclosed = true;
       }
 
-      if (game.input.mouseReleased(MouseButton.lmb) &&
-          map.tileAt(_currentCoord).hasReactor)
-      {
-        // mark all tiles in selected base area as enclosed
-        foreach(tile ; map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
-          tile.isEnclosed = true;
-        }
-
-        // base is chosen, end this state
-        battle.states.pop();
-      }
+      // base is chosen, end this state
+      battle.states.pop();
     }
   }
 }

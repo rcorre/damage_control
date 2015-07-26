@@ -26,12 +26,12 @@ class TimedPhase : BattleState {
 
   override {
     void enter(Battle battle) {
+      super.enter(battle);
       _font = battle.game.fonts.get(fontName, fontSize);
     }
 
-    void exit(Battle battle) { }
-
     void run(Battle battle) {
+      super.run(battle);
       auto game = battle.game;
 
       // tick down the timer; if it hits 0 this phase is over

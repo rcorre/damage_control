@@ -45,28 +45,27 @@ class PlaceCannons : TimedPhase {
     void run(Battle battle) {
       super.run(battle);
 
-      auto game = battle.game;
-      auto mousePos = game.input.mousePos;
-      auto map = battle.map;
-
-      auto mouseCoord = map.coordAtPoint(mousePos);
+      auto coord = battle.cursor.coord;
 
       // draw cannon at current tile under mouse if the player has another cannon to place
-      if (_cannons > 0) battle.drawCannon(mouseCoord, 0, cannonDepth);
+      if (_cannons > 0) battle.drawCannon(coord, 0, cannonDepth);
 
-      // try to place cannon if LMB clicked
-      if (game.input.mouseReleased(MouseButton.lmb) &&
-          _cannons > 0                              &&
-          map.tileAt(mouseCoord).isEnclosed         &&
-          map.canBuildAt(mouseCoord)                &&
-          map.canBuildAt(mouseCoord.south)          &&
-          map.canBuildAt(mouseCoord.east)           &&
-          map.canBuildAt(mouseCoord.south.east))
+    }
+
+    override void onConfirm(Battle battle) {
+      auto map = battle.map;
+      auto coord = battle.cursor.coord;
+
+      if (_cannons > 0                 &&
+          map.tileAt(coord).isEnclosed &&
+          map.canBuildAt(coord)        &&
+          map.canBuildAt(coord.south)  &&
+          map.canBuildAt(coord.east)   &&
+          map.canBuildAt(coord.south.east))
       {
         --_cannons;
-        map.tileAt(mouseCoord).construct = Construct.cannon;
+        map.tileAt(coord).construct = Construct.cannon;
       }
-
     }
   }
 }

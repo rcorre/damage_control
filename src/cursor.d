@@ -33,24 +33,10 @@ class Cursor {
   }
 
   @property {
-    auto coord() { return _coord; }
+    ref auto coord() { return _coord; }
     auto tile() { return _map.tileAt(_coord); }
+    auto topLeft() { return _map.tileOffset(_coord).as!Vector2f; }
     auto center() { return _map.tileCenter(_coord).as!Vector2f; }
-  }
-
-  void update(Game game, InputManager input) {
-    if (input.keyPressed(ALLEGRO_KEY_A)) {
-      _coord = _coord.west;
-    }
-    else if (input.keyPressed(ALLEGRO_KEY_D)) {
-      _coord = _coord.east;
-    }
-    else if (input.keyPressed(ALLEGRO_KEY_W)) {
-      _coord = _coord.north;
-    }
-    else if (input.keyPressed(ALLEGRO_KEY_S)) {
-      _coord = _coord.south;
-    }
   }
 
   void draw(Renderer renderer) {

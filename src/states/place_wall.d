@@ -39,38 +39,34 @@ class PlaceWall : TimedPhase {
 
     void run(Battle battle) {
       super.run(battle);
-      auto game = battle.game;
-      auto mousePos = game.input.mousePos;
+
+      _piece.draw(battle.cursor.topLeft, _tileAtlas, battle.game.renderer);
+    }
+
+    void onConfirm(Battle battle) {
       auto map = battle.map;
 
-      auto centerCoord = map.coordAtPoint(mousePos);
-      _piece.draw(map.tileOffset(centerCoord).as!Vector2i, _tileAtlas, game.renderer);
+      auto wallCoords = map.maskCoordsAround(battle.cursor.coord, _piece.layout);
 
-      if (game.input.mouseReleased(MouseButton.lmb)) {
-        auto wallCoords = map.maskCoordsAround(centerCoord, _piece.layout);
+      // No room to place piece
+      if (!wallCoords.all!(x => map.canBuildAt(x))) return;
 
-        // No room to place piece
-        if (!wallCoords.all!(x => map.canBuildAt(x))) return;
+      foreach(coord ; wallCoords) {
+        map.tileAt(coord).construct = Construct.wall;
 
-        foreach(coord ; wallCoords) {
-          map.tileAt(coord).construct = Construct.wall;
-
-          // check if any surrounding tile is now part of an enclosed area
-          foreach(neighbor ; coord.adjacent(Diagonals.yes)) {
-            foreach(tile ; map.enclosedTiles!(x => x.hasWall)(neighbor, Diagonals.yes)) {
-              tile.isEnclosed = true;
-            }
+        // check if any surrounding tile is now part of an enclosed area
+        foreach(neighbor ; coord.adjacent(Diagonals.yes)) {
+          foreach(tile ; map.enclosedTiles!(x => x.hasWall)(neighbor, Diagonals.yes)) {
+            tile.isEnclosed = true;
           }
         }
+      }
 
-        _piece = Piece.random(); // generate a new piece
-      }
-      else if (game.input.keyPressed(ALLEGRO_KEY_E)) {
-        _piece.rotate(false);
-      }
-      else if (game.input.keyPressed(ALLEGRO_KEY_Q)) {
-        _piece.rotate(true);
-      }
+      _piece = Piece.random(); // generate a new piece
+    }
+
+    void onRotate(Battle battle, bool clockwise) {
+      _piece.rotate(clockwise);
     }
   }
 }
@@ -84,7 +80,7 @@ struct Piece {
     return Piece(_data.randomSample(1).front);
   }
 
-  void draw(Vector2i center, Bitmap bmp, Renderer renderer) {
+  void draw(Vector2f center, Bitmap bmp, Renderer renderer) {
     auto batch = SpriteBatch(bmp, wallDepth);
 
     foreach(coord ; RowCol(0,0).span(dataSize, dataSize)) {

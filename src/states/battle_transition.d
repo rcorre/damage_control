@@ -25,7 +25,7 @@ private enum {
 }
 
 /// Play a short animation before entering the next phase
-class BattleTransition : State!Battle {
+class BattleTransition : BattleState {
   private {
     static Bitmap _underline;
 
@@ -45,6 +45,7 @@ class BattleTransition : State!Battle {
 
   override {
     void enter(Battle battle) {
+      super.enter(battle);
       if (_underline is null) {
         // TODO: what a hack ...
         // problem here is that the renderer is holding on to the bitmap through
@@ -72,9 +73,8 @@ class BattleTransition : State!Battle {
       _underlineTransition.totalTime   = transitionDuration;
     }
 
-    void exit(Battle battle) { }
-
     void run(Battle battle) {
+      super.run(battle);
       auto game = battle.game;
 
       _textTransition.timeElapsed += game.deltaTime;

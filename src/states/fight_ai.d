@@ -42,8 +42,6 @@ class FightAI : Fight {
     void run(Battle battle) {
       super.run(battle);
 
-      battle.cannonTarget = battle.game.input.mousePos;
-
       updateEnemies(battle);
       battle.drawEnemies(_enemies[].map!(x => x.transform));
     }
