@@ -1,4 +1,4 @@
-module states.place_wall;
+module battle.place_wall;
 
 import std.range;
 import std.array;
@@ -8,8 +8,8 @@ import dau;
 import dtiled;
 import jsonizer;
 import tilemap;
-import states.battle;
-import states.timed_phase;
+import battle.battle;
+import battle.timed_phase;
 
 private enum {
   dataFile   = "data/pieces.json",

@@ -1,12 +1,12 @@
-module states.fight;
+module battle.fight;
 
 import std.array     : array;
 import std.range     : walkLength;
 import std.algorithm : sort, count, filter;
 import dau;
 import dtiled;
-import states.battle;
-import states.timed_phase;
+import battle.battle;
+import battle.timed_phase;
 import tilemap;
 
 private enum {

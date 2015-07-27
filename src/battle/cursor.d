@@ -1,9 +1,9 @@
-module cursor;
+module battle.cursor;
 
 import dau;
 import dtiled;
 import tilemap;
-import states.battle;
+import battle.battle;
 
 private enum {
   cursorSize = 16,

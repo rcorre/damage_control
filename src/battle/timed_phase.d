@@ -1,9 +1,9 @@
-module states.timed_phase;
+module battle.timed_phase;
 
 import std.format : format;
 import dau;
 import dtiled;
-import states.battle;
+import battle.battle;
 
 private enum {
   fontName  = "Mecha",

@@ -1,4 +1,4 @@
-module states.battle;
+module battle.battle;
 
 import std.array     : array;
 import std.string    : startsWith;
@@ -7,10 +7,10 @@ import dau;
 import dtiled;
 import tilemap;
 import player;
-import cursor;
-import states.choose_base;
-import states.start_round;
-import states.battle_transition;
+import battle.cursor;
+import battle.choose_base;
+import battle.start_round;
+import battle.transition;
 
 private enum {
   cannonBaseRow   = 6,

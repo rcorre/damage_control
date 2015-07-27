@@ -1,4 +1,4 @@
-module states.choose_base;
+module battle.choose_base;
 
 import std.range;
 import std.random;
@@ -8,7 +8,7 @@ import dau;
 import dtiled;
 import jsonizer;
 import tilemap;
-import states.battle;
+import battle.battle;
 
 /// Player is holding a wall segment they can place with a mouse click
 class ChooseBase : BattleState {

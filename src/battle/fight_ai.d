@@ -1,11 +1,11 @@
-module states.fight_ai;
+module battle.fight_ai;
 
 import std.array  : array;
 import dau;
 import dtiled;
 import enemy;
-import states.battle;
-import states.fight;
+import battle.battle;
+import battle.fight;
 
 private enum {
   enemySize = Vector2i(32,32),

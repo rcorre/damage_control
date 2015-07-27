@@ -1,11 +1,11 @@
-module states.battle_transition;
+module battle.transition;
 
 import std.math;
 import std.format : format;
 import std.container : Array;
 import dau;
 import dtiled;
-import states.battle;
+import battle.battle;
 import tilemap;
 
 private enum {

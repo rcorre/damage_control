@@ -8,7 +8,7 @@ import std.algorithm : map;
 import dau;
 import dtiled;
 import jsonizer;
-import states.battle;
+import battle.battle;
 
 private enum {
   tileDepth = 0,

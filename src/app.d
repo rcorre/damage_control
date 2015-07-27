@@ -1,5 +1,5 @@
 import dau;
-import states.battle;
+import battle.battle;
 
 int main(char[][] args) {
   Game.Settings settings;
