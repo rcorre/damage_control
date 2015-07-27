@@ -82,8 +82,6 @@ class Battle : State!Game {
         _animationTimer = animationTime;
         _animationCounter = (_animationCounter + 1) % _numAnimationFrames;
       }
-
-      cursor.draw(game.renderer);
     }
   }
 

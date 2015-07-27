@@ -22,6 +22,11 @@ private enum {
   explosionSize  = 40,
   explosionTint  = Color(1, 1, 1, 1.0),
   explosionDepth = 3,
+
+  targetDepth       = 6,
+  targetSpriteRow   = 8,
+  targetSpriteCol   = 2,
+  targetSpriteSheet = "tileset",
 }
 
 /// Base battle state for fight vs ai or fight vs player.
@@ -33,7 +38,7 @@ abstract class Fight : TimedPhase {
     private ProjectileList _projectiles;
     private ExplosionList _explosions;
     private Cannon[] _cannons;
-    private Bitmap _projectileBmp, _explosionBmp;
+    private Bitmap _projectileBmp, _explosionBmp, _targetBmp;
   }
 
   this(Battle battle) {
@@ -41,23 +46,25 @@ abstract class Fight : TimedPhase {
     _projectiles = new ProjectileList;
     _explosions = new ExplosionList;
 
-      // don't forget to re-target the display after creating the bitmaps
-      scope(exit) al_set_target_backbuffer(battle.game.display.display);
+    _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
 
-      // create the projectile bitmap
-      _projectileBmp = Bitmap(al_create_bitmap(projectileSize.x,
-            projectileSize.y));
-      al_set_target_bitmap(_projectileBmp);
-      al_clear_to_color(projectileTint);
+    // don't forget to re-target the display after creating the bitmaps
+    scope(exit) al_set_target_backbuffer(battle.game.display.display);
 
-      // create the explosion bitmap
-      _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
-      al_set_target_bitmap(_explosionBmp);
-      al_clear_to_color(Color(0,0,0,0));
-      al_draw_filled_ellipse(
-          explosionSize / 2, explosionSize / 2, // center x,y
-          explosionSize / 2, explosionSize / 2, // radius x,y
-          explosionTint);                       // color
+    // create the projectile bitmap
+    _projectileBmp = Bitmap(al_create_bitmap(projectileSize.x,
+          projectileSize.y));
+    al_set_target_bitmap(_projectileBmp);
+    al_clear_to_color(projectileTint);
+
+    // create the explosion bitmap
+    _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
+    al_set_target_bitmap(_explosionBmp);
+    al_clear_to_color(Color(0,0,0,0));
+    al_draw_filled_ellipse(
+        explosionSize / 2, explosionSize / 2, // center x,y
+        explosionSize / 2, explosionSize / 2, // radius x,y
+        explosionTint);                       // color
   }
 
   override {
@@ -87,6 +94,8 @@ abstract class Fight : TimedPhase {
       }
 
       battle.cannonTarget = battle.cursor.center;
+
+      drawTarget(battle.game.renderer, battle.cursor.center);
     }
 
     override void onConfirm(Battle battle) {
@@ -196,6 +205,17 @@ abstract class Fight : TimedPhase {
         }
       }
     }
+  }
+
+  void drawTarget(Renderer renderer, Vector2f pos) {
+    Sprite sprite;
+
+    sprite.transform = pos;
+    sprite.region = Rect2i(16 * targetSpriteCol, 16 * targetSpriteRow, 16, 16);
+
+    auto batch = SpriteBatch(_targetBmp, targetDepth);
+    batch ~= sprite;
+    renderer.draw(batch);
   }
 
   protected:

@@ -13,6 +13,8 @@ private enum {
 class Cursor {
   enum Direction : uint { north, south, east, west }
 
+  bool visible;
+
   private {
     TileMap      _map;
     RowCol       _coord;
@@ -62,6 +64,8 @@ class Cursor {
   }
 
   void draw(Renderer renderer) {
+    if (!visible) return;
+
     auto batch = SpriteBatch(_bitmap, 6);
     Sprite sprite;
 
