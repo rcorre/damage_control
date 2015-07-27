@@ -153,6 +153,12 @@ abstract class BattleState : State!Battle {
           case ALLEGRO_KEY_K:
             onCancel(battle);
             break;
+          case ALLEGRO_KEY_Q:
+            onRotate(battle, false);
+            break;
+          case ALLEGRO_KEY_E:
+            onRotate(battle, true);
+            break;
           case ALLEGRO_KEY_A:
             battle.cursor.startMoving(Cursor.Direction.west);
             onCursorMove(battle, Vector2i(-1,0));
@@ -195,7 +201,21 @@ abstract class BattleState : State!Battle {
       }
 
       void handleButtonDown(in ALLEGRO_EVENT ev) {
-        onConfirm(battle);
+        switch (ev.joystick.button) {
+          case 0:
+            onCancel(battle);
+            break;
+          case 1:
+            onConfirm(battle);
+            break;
+          case 4:
+            onRotate(battle, false);
+            break;
+          case 5:
+            onRotate(battle, true);
+            break;
+          default:
+        }
       }
 
       void handleJoypadAxis(in ALLEGRO_EVENT ev) {
