@@ -6,7 +6,8 @@ import tilemap;
 import battle.battle;
 
 private enum {
-  cursorSize = 16,
+  cursorDepth = 6
+  cursorSize  = 16,
   cursorColor = Color(0.0, 0.5 ,0.0, 0.5)
 }
 
@@ -66,12 +67,12 @@ class Cursor {
   void draw(Renderer renderer) {
     if (!visible) return;
 
-    auto batch = SpriteBatch(_bitmap, 6);
+    auto batch = SpriteBatch(_bitmap, cursorDepth);
     Sprite sprite;
 
     sprite.color     = Color.white;
     sprite.centered  = true;
-    sprite.transform = _map.tileCenter(_coord).as!Vector2f;
+    sprite.transform = this.center;
     sprite.region    = Rect2i(0, 0, cursorSize, cursorSize);
 
     batch ~= sprite;
@@ -80,19 +81,24 @@ class Cursor {
   }
 
   private void shift(Direction direction) {
+    RowCol newCoord;
+
     final switch (direction) with (Direction) {
       case north:
-        _coord = coord.north;
+        newCoord = coord.north;
         break;
       case south:
-        _coord = coord.south;
+        newCoord = coord.south;
         break;
       case east:
-        _coord = coord.east;
+        newCoord = coord.east;
         break;
       case west:
-        _coord = coord.west;
+        newCoord = coord.west;
         break;
     }
+
+    // disallow moving the cursor out of bounds
+    if (_map.contains(newCoord)) _coord = newCoord;
   }
 }
