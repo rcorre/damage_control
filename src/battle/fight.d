@@ -211,6 +211,7 @@ abstract class Fight : TimedPhase {
     Sprite sprite;
 
     sprite.transform = pos;
+    sprite.centered = true;
     sprite.region = Rect2i(16 * targetSpriteCol, 16 * targetSpriteRow, 16, 16);
 
     auto batch = SpriteBatch(_targetBmp, targetDepth);
