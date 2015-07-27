@@ -11,7 +11,7 @@ import tilemap;
 
 private enum {
   phaseTime       = 5,
-  cannonDepth     = 3,
+  cannonDepth     = 5,
   cannonsPerRound = 1,
   cannonsPerNode  = 1,
   tilesPerCannon  = 30,
