@@ -107,7 +107,6 @@ class BattleTransition : BattleState {
     auto batch = SpriteBatch(_underline, textDepth);
     Sprite sprite;
 
-    // title
     sprite.centered  = true;
     sprite.color     = Color.white;
     sprite.transform = _underlineTransition.getPos();
