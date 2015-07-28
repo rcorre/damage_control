@@ -1,5 +1,5 @@
 import dau;
-import battle.battle;
+import title.title;
 
 int main(char[][] args) {
   Game.Settings settings;
@@ -12,5 +12,5 @@ int main(char[][] args) {
   settings.display.canvasSize = [800, 600];
   settings.display.color = Color.black;
 
-  return Game.run(new Battle(), settings);
+  return Game.run(new Title(), settings);
 }

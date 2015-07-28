@@ -252,6 +252,7 @@ abstract class BattleState : State!Battle {
 
     void exit(Battle battle) {
       foreach(handler ; _handlers) handler.unregister();
+      _handlers.clear();
     }
 
     void run(Battle battle) { }
