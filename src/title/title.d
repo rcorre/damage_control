@@ -3,6 +3,7 @@ module title.title;
 
 import std.math      : pow;
 import std.container : Array;
+import battle.battle;
 import dau;
 
 private enum {
@@ -48,14 +49,25 @@ class Title : State!Game {
       }
 
       _font = game.fonts.get(fontName, fontSize);
-      _entries.insert(MenuEntry("Play"    , menuCenter + entryMargin * 0));
-      _entries.insert(MenuEntry("Options" , menuCenter + entryMargin * 1));
-      _entries.insert(MenuEntry("Quit"    , menuCenter + entryMargin * 2));
+
+      auto menuPos(int idx) { return menuCenter + entryMargin * idx; }
+
+      auto play(Game game)    { game.states.push(new Battle); }
+      auto options(Game game) { game.states.push(new Battle); }
+      auto quit(Game game)    { game.stop(); }
+
+      _entries.insert(MenuEntry("Play"    , menuPos(0), &play));
+      _entries.insert(MenuEntry("Options" , menuPos(1), &options));
+      _entries.insert(MenuEntry("Quit"    , menuPos(2), &quit));
 
       _entries[0].selected = true;
 
       void handleKeyDown(in ALLEGRO_EVENT ev) {
         switch (ev.keyboard.keycode) {
+          case ALLEGRO_KEY_J:
+            assert(_selectedEntry >= 0 && _selectedEntry < _entries.length);
+            _entries[_selectedEntry].action(game);
+            break;
           case ALLEGRO_KEY_W:
             if (_selectedEntry > 0) {
               _entries[_selectedEntry].selected   = false;
@@ -116,14 +128,18 @@ class Title : State!Game {
 }
 
 private struct MenuEntry {
+  alias Action = void delegate(Game);
+
   Vector2i center;
   string   text;
   bool     selected;
   float    progress;
+  Action   action;
 
-  this(string text, Vector2i center) {
+  this(string text, Vector2i center, Action action) {
     this.text     = text;
     this.center   = center;
+    this.action   = action;
     this.progress = 0;
   }
 
