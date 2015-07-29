@@ -31,6 +31,9 @@ class Title : State!Game {
           case ALLEGRO_KEY_J:
             _menu.confirmSelection(game);
             break;
+          case ALLEGRO_KEY_K:
+            _menu.backOut();
+            break;
           case ALLEGRO_KEY_W:
             _menu.moveSelectionUp();
             break;

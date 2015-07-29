@@ -19,7 +19,8 @@ private enum {
   selectedTint   = Color(1f,1f,1f,1f),
   unselectedTint = Color(1f,1f,1f,0.3f),
 
-  transitionDuration = 0.5,
+  selectionDuration = 0.5,
+  activationDuration = 0.5,
 }
 
 /// Show the title screen.
@@ -71,6 +72,10 @@ class TitleMenu {
     _entries[_selectedEntry].action(game);
   }
 
+  void backOut() {
+    foreach(ref entry ; _entries) entry.active = false;
+  }
+
   void update(Game game) {
     auto textBatch   = TextBatch(_font, textDepth);
     auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);
@@ -83,7 +88,7 @@ class TitleMenu {
 
       text.centered  = true;
       text.color     = entry.tint;
-      text.transform = entry.center;
+      text.transform = entry.textPos;
       text.text      = entry.text;
 
       sprite.centered  = true;
@@ -103,39 +108,65 @@ class TitleMenu {
 package struct MenuEntry {
   alias Action = void delegate(Game);
 
-  Vector2i center;
+  Vector2i activePos;
+  Vector2i inactivePos;
   string   text;
+  bool     active;
   bool     selected;
-  float    progress;
+  float    selectionProgress;
+  float    activationProgress;
   Action   action;
 
   this(string text, Vector2i center, Action action) {
-    this.text     = text;
-    this.center   = center;
-    this.action   = action;
-    this.progress = 0;
+    this.active             = true;
+    this.text               = text;
+    this.activePos          = center;
+    this.inactivePos        = center - Vector2i(300, 0);
+    this.action             = action;
+    this.activationProgress = 0;
+    this.selectionProgress  = 0;
   }
 
   void update(float time) {
-    if (selected && progress < transitionDuration) {
-      progress += time;
+    if (active) {
+      if (activationProgress < activationDuration) activationProgress += time;
+
+      if (selected && selectionProgress < selectionDuration) {
+        selectionProgress += time;
+      }
+      else if (!selected && selectionProgress > 0) {
+        selectionProgress -= time;
+      }
     }
-    else if (!selected && progress > 0) {
-      progress -= time;
+    else if (activationProgress > 0) {
+      activationProgress -= time;
+    }
+  }
+
+  auto textPos() {
+    if (active) {
+      auto factor = (activationProgress / activationDuration).pow(0.5);
+      return inactivePos.lerp(activePos, factor);
+    }
+    else {
+      auto factor = (1 - activationProgress / activationDuration).pow(0.5);
+      return activePos.lerp(inactivePos, factor);
     }
   }
 
   auto underlinePos() {
-    auto start = Vector2i(-100, center.y) + underlineOffset;
-    auto end   = center + underlineOffset;
+    auto start = Vector2i(-100, textPos.y) + underlineOffset;
+    auto end   = textPos + underlineOffset;
 
     // increases from 0 to 1, starting quickly then slowing down
-    auto factor = (progress / transitionDuration).pow(0.35);
+    auto factor = (selectionProgress / selectionDuration).pow(0.35);
 
     return start.lerp(end, factor);
   }
 
   auto tint() {
-    return unselectedTint.lerp(selectedTint, progress / transitionDuration);
+    return active ?
+      unselectedTint.lerp(selectedTint, selectionProgress / selectionDuration) :
+      unselectedTint;
   }
 }
