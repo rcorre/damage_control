@@ -48,6 +48,10 @@ class TitleMenu {
     _entries[0].selected = true;
   }
 
+  ~this() {
+    al_destroy_bitmap(_underlineBmp);
+  }
+
   void moveSelectionDown() {
     if (_selectedEntry < _entries.length - 1) {
       _entries[_selectedEntry].selected   = false;
