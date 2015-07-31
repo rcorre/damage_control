@@ -12,6 +12,7 @@ class Title : State!Game {
   private {
     TitleMenu _menu;
     EventHandler _handler;
+
   }
 
   override {

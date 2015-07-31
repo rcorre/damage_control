@@ -27,7 +27,6 @@ private enum {
 class TitleMenu {
   private {
     Array!MenuEntry    _entries;
-    Array!EventHandler _handlers;
     Font               _font;
     uint               _selectedEntry;
     Bitmap             _underlineBmp;
@@ -44,9 +43,9 @@ class TitleMenu {
 
     //auto entryPos(int idx) { return menuCenter + entryMargin * idx; }
 
-    _entries = entries;
+    _entries.insert(entries);
 
-    _entries[0].selected = true;
+    _entries[0].mode = MenuEntry.Mode.selected;
   }
 
   ~this() {
@@ -55,15 +54,15 @@ class TitleMenu {
 
   void moveSelectionDown() {
     if (_selectedEntry < _entries.length - 1) {
-      _entries[_selectedEntry].selected   = false;
-      _entries[++_selectedEntry].selected = true;
+      _entries[_selectedEntry].mode   = MenuEntry.Mode.active;
+      _entries[++_selectedEntry].mode = MenuEntry.Mode.selected;
     }
   }
 
   void moveSelectionUp() {
       if (_selectedEntry > 0) {
-        _entries[_selectedEntry].selected   = false;
-        _entries[--_selectedEntry].selected = true;
+        _entries[_selectedEntry].mode   = MenuEntry.Mode.active;
+        _entries[--_selectedEntry].mode = MenuEntry.Mode.selected;
       }
   }
 
@@ -73,7 +72,7 @@ class TitleMenu {
   }
 
   void backOut() {
-    foreach(ref entry ; _entries) entry.active = false;
+    foreach(ref entry ; _entries) entry.mode = MenuEntry.Mode.inactive;
   }
 
   void update(Game game) {
@@ -108,49 +107,63 @@ class TitleMenu {
 package struct MenuEntry {
   alias Action = void delegate(Game);
 
+  enum Mode { hidden, inactive, active, selected }
+
   Vector2i activePos;
   Vector2i inactivePos;
+  Vector2i hiddenPos;
   string   text;
-  bool     active;
-  bool     selected;
+  Mode     mode;
   float    selectionProgress;
   float    activationProgress;
+  float    hidingProgress;
   Action   action;
 
   this(string text, Vector2i center, Action action) {
-    this.active             = true;
+    this.mode               = Mode.active;
     this.text               = text;
     this.activePos          = center;
     this.inactivePos        = center - Vector2i(300, 0);
+    this.hiddenPos          = center + Vector2i(500, 0);
     this.action             = action;
     this.activationProgress = 0;
     this.selectionProgress  = 0;
   }
 
   void update(float time) {
-    if (active) {
-      if (activationProgress < activationDuration) activationProgress += time;
-
-      if (selected && selectionProgress < selectionDuration) {
-        selectionProgress += time;
-      }
-      else if (!selected && selectionProgress > 0) {
-        selectionProgress -= time;
-      }
-    }
-    else if (activationProgress > 0) {
-      activationProgress -= time;
+    final switch (mode) with (Mode) {
+      case hidden:
+        if (hidingProgress < activationDuration) hidingProgress += time;
+        if (selectionProgress > 0) selectionProgress -= time;
+        if (activationProgress > 0) activationProgress -= time;
+        break;
+      case inactive:
+        if (selectionProgress > 0) selectionProgress -= time;
+        if (activationProgress > 0) activationProgress -= time;
+        break;
+      case active:
+        if (activationProgress < activationDuration) activationProgress += time;
+        if (selectionProgress > 0) selectionProgress -= time;
+        break;
+      case selected:
+        if (activationProgress < activationDuration) activationProgress += time;
+        if (selectionProgress < selectionDuration) selectionProgress += time;
+        break;
     }
   }
 
   auto textPos() {
-    if (active) {
-      auto factor = (activationProgress / activationDuration).pow(0.5);
-      return inactivePos.lerp(activePos, factor);
-    }
-    else {
-      auto factor = (1 - activationProgress / activationDuration).pow(0.5);
-      return activePos.lerp(inactivePos, factor);
+    final switch (mode) with (Mode) {
+      case hidden:
+        auto factor = (hidingProgress / activationDuration).pow(0.5);
+        return activePos.lerp(hiddenPos, factor);
+      case inactive:
+        auto factor = (1 - activationProgress / activationDuration).pow(0.5);
+        return activePos.lerp(inactivePos, factor);
+      case active:
+      case selected:
+        auto factor = (activationProgress / activationDuration).pow(0.5);
+        return inactivePos.lerp(activePos, factor);
     }
   }
 
@@ -165,7 +178,7 @@ package struct MenuEntry {
   }
 
   auto tint() {
-    return active ?
+    return (mode == Mode.active || mode == Mode.selected) ?
       unselectedTint.lerp(selectedTint, selectionProgress / selectionDuration) :
       unselectedTint;
   }
