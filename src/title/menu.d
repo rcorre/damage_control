@@ -13,14 +13,17 @@ private enum {
 
   menuCenter      = Vector2i(400, 200),
   entryMargin     = Vector2i(  0, 100),
-  underlineOffset = Vector2i(  0,  30),
-  underlineSize   = Vector2i(150,   6),
 
-  selectedTint   = Color(1f,1f,1f,1f),
-  unselectedTint = Color(1f,1f,1f,0.3f),
+  underlineOffsetShown  = Vector2i(   0,  30),
+  underlineOffsetHidden = Vector2i(-200,  30),
+  underlineSize         = Vector2i( 150,   6),
 
-  selectionDuration = 0.5,
-  activationDuration = 0.5,
+  subduedTint    = Color(1f,1f,1f,0.25f),
+  neutralTint   = Color(1f,1f,1f,0.5f),
+  highlightTint = Color(1f,1f,1f,1f),
+
+  textDuration = 0.5,
+  underlineDuration = 0.5,
 }
 
 /// Show the title screen.
@@ -41,11 +44,11 @@ class TitleMenu {
 
     _font = game.fonts.get(fontName, fontSize);
 
-    //auto entryPos(int idx) { return menuCenter + entryMargin * idx; }
-
     _entries.insert(entries);
 
-    _entries[0].mode = MenuEntry.Mode.selected;
+    foreach(ref entry ; _entries) entry.exitToCenter();
+
+    entries[0].select;
   }
 
   ~this() {
@@ -54,15 +57,15 @@ class TitleMenu {
 
   void moveSelectionDown() {
     if (_selectedEntry < _entries.length - 1) {
-      _entries[_selectedEntry].mode   = MenuEntry.Mode.active;
-      _entries[++_selectedEntry].mode = MenuEntry.Mode.selected;
+      _entries[_selectedEntry].deselect();
+      _entries[++_selectedEntry].select();
     }
   }
 
   void moveSelectionUp() {
       if (_selectedEntry > 0) {
-        _entries[_selectedEntry].mode   = MenuEntry.Mode.active;
-        _entries[--_selectedEntry].mode = MenuEntry.Mode.selected;
+        _entries[_selectedEntry].deselect();
+        _entries[--_selectedEntry].select();
       }
   }
 
@@ -72,7 +75,7 @@ class TitleMenu {
   }
 
   void backOut() {
-    foreach(ref entry ; _entries) entry.mode = MenuEntry.Mode.inactive;
+    foreach(ref entry ; _entries) entry.centerToExit();
   }
 
   void update(Game game) {
@@ -86,12 +89,12 @@ class TitleMenu {
       Sprite sprite;
 
       text.centered  = true;
-      text.color     = entry.tint;
+      text.color     = entry.textColor;
       text.transform = entry.textPos;
       text.text      = entry.text;
 
       sprite.centered  = true;
-      sprite.color     = entry.tint;
+      sprite.color     = entry.underlineColor;
       sprite.transform = entry.underlinePos;
       sprite.region    = Rect2i(Vector2i.zero, underlineSize);
 
@@ -104,82 +107,120 @@ class TitleMenu {
   }
 }
 
-package struct MenuEntry {
+package:
+struct MenuEntry {
   alias Action = void delegate(Game);
 
-  enum Mode { hidden, inactive, active, selected }
+  string text;
+  Action action;
 
-  Vector2i activePos;
-  Vector2i inactivePos;
-  Vector2i hiddenPos;
-  string   text;
-  Mode     mode;
-  float    selectionProgress;
-  float    activationProgress;
-  float    hidingProgress;
-  Action   action;
+  private {
+    Vector2i   _activePos;
+    Vector2i   _inactivePos;
+    Vector2i   _exitPos;
+    Transition _textTransition;
+    Transition _underlineTransition;
+  }
 
   this(string text, Vector2i center, Action action) {
-    this.mode               = Mode.active;
-    this.text               = text;
-    this.activePos          = center;
-    this.inactivePos        = center - Vector2i(300, 0);
-    this.hiddenPos          = center + Vector2i(500, 0);
-    this.action             = action;
-    this.activationProgress = 0;
-    this.selectionProgress  = 0;
+    this.text    = text;
+    this.action  = action;
+    _activePos   = center;
+    _inactivePos = center - Vector2i(300, 0);
+    _exitPos     = center + Vector2i(500, 0);
+
+    _textTransition      = Transition(textDuration, x => x);
+    _underlineTransition = Transition(underlineDuration, x => x.pow(0.35));
+  }
+
+  void select() {
+    _textTransition.start(_activePos, _activePos, neutralTint, highlightTint);
+    _underlineTransition.start(
+        _inactivePos + underlineOffsetHidden,
+        _activePos + underlineOffsetShown,
+        neutralTint,
+        highlightTint);
+  }
+
+  void deselect() {
+    _textTransition.start(_activePos, _activePos, highlightTint, neutralTint);
+    _underlineTransition.start(
+        _activePos + underlineOffsetShown,
+        _inactivePos + underlineOffsetHidden,
+        highlightTint,
+        neutralTint);
+  }
+
+  void stackToCenter() {
+    _textTransition.start(_inactivePos, _activePos, subduedTint, neutralTint);
+  }
+
+  void centerToStack() {
+    _textTransition.start(_activePos, _inactivePos, neutralTint, subduedTint);
+  }
+
+  void exitToCenter() {
+    _textTransition.start(_exitPos, _activePos, subduedTint, neutralTint);
+  }
+
+  void centerToExit() {
+    _textTransition.start(_activePos, _exitPos, neutralTint, subduedTint);
   }
 
   void update(float time) {
-    final switch (mode) with (Mode) {
-      case hidden:
-        if (hidingProgress < activationDuration) hidingProgress += time;
-        if (selectionProgress > 0) selectionProgress -= time;
-        if (activationProgress > 0) activationProgress -= time;
-        break;
-      case inactive:
-        if (selectionProgress > 0) selectionProgress -= time;
-        if (activationProgress > 0) activationProgress -= time;
-        break;
-      case active:
-        if (activationProgress < activationDuration) activationProgress += time;
-        if (selectionProgress > 0) selectionProgress -= time;
-        break;
-      case selected:
-        if (activationProgress < activationDuration) activationProgress += time;
-        if (selectionProgress < selectionDuration) selectionProgress += time;
-        break;
-    }
+    _textTransition.update(time);
+    _underlineTransition.update(time);
   }
 
   auto textPos() {
-    final switch (mode) with (Mode) {
-      case hidden:
-        auto factor = (hidingProgress / activationDuration).pow(0.5);
-        return activePos.lerp(hiddenPos, factor);
-      case inactive:
-        auto factor = (1 - activationProgress / activationDuration).pow(0.5);
-        return activePos.lerp(inactivePos, factor);
-      case active:
-      case selected:
-        auto factor = (activationProgress / activationDuration).pow(0.5);
-        return inactivePos.lerp(activePos, factor);
-    }
+    return _textTransition.pos;
   }
 
   auto underlinePos() {
-    auto start = Vector2i(-100, textPos.y) + underlineOffset;
-    auto end   = textPos + underlineOffset;
-
-    // increases from 0 to 1, starting quickly then slowing down
-    auto factor = (selectionProgress / selectionDuration).pow(0.35);
-
-    return start.lerp(end, factor);
+    return _underlineTransition.pos;
   }
 
-  auto tint() {
-    return (mode == Mode.active || mode == Mode.selected) ?
-      unselectedTint.lerp(selectedTint, selectionProgress / selectionDuration) :
-      unselectedTint;
+  auto textColor() {
+    return _textTransition.color;
+  }
+
+  auto underlineColor() {
+    return _underlineTransition.color;
+  }
+}
+
+struct Transition {
+  Vector2i startPos;
+  Vector2i endPos;
+  Color    startColor;
+  Color    endColor;
+  float    progress;
+
+  float                 duration;
+  float function(float) lerpFactor;
+
+  this(float duration, float function(float) lerpFactor) {
+    this.duration = duration;
+    this.lerpFactor = lerpFactor;
+  }
+
+  void start(Vector2i pos1, Vector2i pos2, Color color1, Color color2) {
+    startPos   = pos1;
+    endPos     = pos2;
+    startColor = color1;
+    endColor   = color2;
+    progress   = 0;
+  }
+
+  void update(float timeElapsed) {
+    progress = min(1f, progress + timeElapsed / duration);
+  }
+
+  auto pos() {
+    return startPos.lerp(endPos, lerpFactor(progress));
+  }
+
+  auto color() {
+    return startColor.lerp(endColor, lerpFactor(progress));
   }
 }
