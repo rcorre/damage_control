@@ -46,9 +46,13 @@ class TitleMenu {
 
     _entries.insert(entries);
 
-    foreach(ref entry ; _entries) entry.exitToCenter();
+    // select the first entry
+    _entries[0].select();
 
-    entries[0].select;
+    // transition in the remaining entries without selecting
+    foreach(ref entry ; _entries) {
+      entry.exitToCenter();
+    }
   }
 
   ~this() {
@@ -127,10 +131,14 @@ struct MenuEntry {
     this.action  = action;
     _activePos   = center;
     _inactivePos = center - Vector2i(300, 0);
-    _exitPos     = center + Vector2i(500, 0);
+    _exitPos     = Vector2i(900, center.y);
 
-    _textTransition      = Transition(textDuration, x => x);
+    _textTransition      = Transition(textDuration, x => x.pow(0.35));
     _underlineTransition = Transition(underlineDuration, x => x.pow(0.35));
+
+    // make sure the underline starts hidden
+    _underlineTransition.start(
+        underlineHidePos, underlineHidePos, subduedTint, subduedTint);
   }
 
   void select() {
@@ -165,6 +173,8 @@ struct MenuEntry {
 
   void centerToExit() {
     _textTransition.start(_activePos, _exitPos, neutralTint, subduedTint);
+    _underlineTransition.start(_underlineTransition.pos, underlineHidePos, 
+        _underlineTransition.color, subduedTint);
   }
 
   void update(float time) {
@@ -186,6 +196,14 @@ struct MenuEntry {
 
   auto underlineColor() {
     return _underlineTransition.color;
+  }
+
+  private auto underlineHidePos() {
+    return Vector2i(-100, _activePos.y + underlineOffsetHidden.y);
+  }
+
+  private auto underlineShowPos() {
+    return _activePos + underlineOffsetShown;
   }
 }
 
