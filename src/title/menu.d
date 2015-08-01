@@ -166,7 +166,7 @@ struct MenuEntry {
     _textTransition.start(textPos, textPos, neutralTint, highlightTint);
 
     _underlineTransition.start(
-        _inactivePos + underlineOffsetHidden,
+        underlineHidePos,
         _activePos + underlineOffsetShown,
         neutralTint,
         highlightTint);
@@ -179,7 +179,7 @@ struct MenuEntry {
 
     _underlineTransition.start(
         _activePos + underlineOffsetShown,
-        _inactivePos + underlineOffsetHidden,
+        underlineHidePos,
         highlightTint,
         neutralTint);
   }
