@@ -10,35 +10,34 @@ import title.menu;
 /// Show the title screen.
 class Title : State!Game {
   private {
-    TitleMenu _menu;
-    EventHandler _handler;
+    Array!TitleMenu _menus;
+    TitleMenu       _poppedMenu;
+    EventHandler    _handler;
   }
 
   override {
     void enter(Game game) {
-      auto play(Game game)    { game.states.push(new Battle); }
-      auto options(Game game) { game.states.push(new Battle); }
-      auto quit(Game game)    { game.stop(); }
-
-      _menu = new TitleMenu(
-          game,
-          MenuEntry("Play"    , Vector2i(400, 200), &play),
-          MenuEntry("Options" , Vector2i(400, 300), &options),
-          MenuEntry("Quit"    , Vector2i(400, 400), &quit));
+      _menus ~= mainMenu(game);
 
       void handleKeyDown(in ALLEGRO_EVENT ev) {
         switch (ev.keyboard.keycode) {
           case ALLEGRO_KEY_J:
-            _menu.confirmSelection(game);
+            _menus.back.confirmSelection(game);
             break;
           case ALLEGRO_KEY_K:
-            _menu.backOut();
+            if (_menus.length > 1) {
+              _poppedMenu = _menus.back;
+              _menus.removeBack();
+              _poppedMenu.centerToExit();
+              _menus.back.setSelection(0);
+              _menus.back.stackToCenter();
+            }
             break;
           case ALLEGRO_KEY_W:
-            _menu.moveSelectionUp();
+            _menus.back.moveSelectionUp();
             break;
           case ALLEGRO_KEY_S:
-            _menu.moveSelectionDown();
+            _menus.back.moveSelectionDown();
             break;
           case ALLEGRO_KEY_ESCAPE:
             game.stop();
@@ -55,7 +54,34 @@ class Title : State!Game {
     }
 
     void run(Game game) {
-      _menu.update(game);
+      foreach(menu ; _menus) menu.update(game);
+      if (_poppedMenu) _poppedMenu.update(game);
     }
+  }
+
+  private:
+  auto mainMenu(Game game) {
+    auto play(Game game)    {
+      _menus.back.centerToStack();
+      _menus ~= playMenu(game);
+      _menus.back.exitToCenter();
+    }
+
+    auto options(Game game) { game.states.push(new Battle); }
+    auto quit(Game game)    { game.stop(); }
+
+    return new TitleMenu(game,
+        MenuEntry("Play"   , Vector2i(400, 200), &play),
+        MenuEntry("Options", Vector2i(400, 300), &options),
+        MenuEntry("Quit"   , Vector2i(400, 400), &quit));
+  }
+
+  auto playMenu(Game game) {
+    auto play(Game game) { game.states.push(new Battle); }
+
+    return new TitleMenu(game,
+        MenuEntry("Level1", Vector2i(400, 200), &play),
+        MenuEntry("Level2", Vector2i(400, 300), &play),
+        MenuEntry("Level3", Vector2i(400, 400), &play));
   }
 }

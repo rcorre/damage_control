@@ -59,6 +59,13 @@ class TitleMenu {
     al_destroy_bitmap(_underlineBmp);
   }
 
+  void setSelection(int idx) {
+    assert(idx >= 0 && idx < _entries.length);
+    _entries[_selectedEntry].deselect();
+    _selectedEntry = idx;
+    _entries[idx].select();
+  }
+
   void moveSelectionDown() {
     if (_selectedEntry < _entries.length - 1) {
       _entries[_selectedEntry].deselect();
@@ -78,8 +85,20 @@ class TitleMenu {
     _entries[_selectedEntry].action(game);
   }
 
-  void backOut() {
-    foreach(ref entry ; _entries) entry.centerToExit();
+  void stackToCenter() {
+    foreach(ref entry ; _entries) { entry.stackToCenter(); }
+  }
+
+  void centerToStack() {
+    foreach(ref entry ; _entries) { entry.centerToStack(); }
+  }
+
+  void exitToCenter() {
+    foreach(ref entry ; _entries) { entry.exitToCenter(); }
+  }
+
+  void centerToExit() {
+    foreach(ref entry ; _entries) { entry.centerToExit(); }
   }
 
   void update(Game game) {
@@ -142,7 +161,10 @@ struct MenuEntry {
   }
 
   void select() {
-    _textTransition.start(_activePos, _activePos, neutralTint, highlightTint);
+    // keep text where it is but transition color
+    auto textPos = _textTransition.pos;
+    _textTransition.start(textPos, textPos, neutralTint, highlightTint);
+
     _underlineTransition.start(
         _inactivePos + underlineOffsetHidden,
         _activePos + underlineOffsetShown,
@@ -151,7 +173,10 @@ struct MenuEntry {
   }
 
   void deselect() {
-    _textTransition.start(_activePos, _activePos, highlightTint, neutralTint);
+    // keep text where it is but transition color
+    auto textPos = _textTransition.pos;
+    _textTransition.start(textPos, textPos, highlightTint, neutralTint);
+
     _underlineTransition.start(
         _activePos + underlineOffsetShown,
         _inactivePos + underlineOffsetHidden,
@@ -160,20 +185,26 @@ struct MenuEntry {
   }
 
   void stackToCenter() {
-    _textTransition.start(_inactivePos, _activePos, subduedTint, neutralTint);
+    auto endColor = (_textTransition.endColor == highlightTint) ? highlightTint : neutralTint;
+
+    _textTransition.start(_inactivePos, _activePos, subduedTint, endColor);
   }
 
   void centerToStack() {
     _textTransition.start(_activePos, _inactivePos, neutralTint, subduedTint);
+    _underlineTransition.start(_underlineTransition.pos, underlineHidePos,
+        _underlineTransition.color, subduedTint);
   }
 
   void exitToCenter() {
-    _textTransition.start(_exitPos, _activePos, subduedTint, neutralTint);
+    auto endColor = (_textTransition.endColor == highlightTint) ? highlightTint : neutralTint;
+
+    _textTransition.start(_exitPos, _activePos, subduedTint, endColor);
   }
 
   void centerToExit() {
     _textTransition.start(_activePos, _exitPos, neutralTint, subduedTint);
-    _underlineTransition.start(_underlineTransition.pos, underlineHidePos, 
+    _underlineTransition.start(_underlineTransition.pos, underlineHidePos,
         _underlineTransition.color, subduedTint);
   }
 
