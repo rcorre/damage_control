@@ -149,7 +149,7 @@ struct MenuEntry {
     this.text    = text;
     this.action  = action;
     _activePos   = center;
-    _inactivePos = center - Vector2i(300, 0);
+    _inactivePos = center - Vector2i(200, 0);
     _exitPos     = Vector2i(900, center.y);
 
     _textTransition      = Transition(textDuration, x => x.pow(0.35));

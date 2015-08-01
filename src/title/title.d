@@ -71,17 +71,17 @@ class Title : State!Game {
     auto quit(Game game)    { game.stop(); }
 
     return new TitleMenu(game,
-        MenuEntry("Play"   , Vector2i(400, 200), &play),
-        MenuEntry("Options", Vector2i(400, 300), &options),
-        MenuEntry("Quit"   , Vector2i(400, 400), &quit));
+        MenuEntry("Play"   , Vector2i(300, 200), &play),
+        MenuEntry("Options", Vector2i(300, 300), &options),
+        MenuEntry("Quit"   , Vector2i(300, 400), &quit));
   }
 
   auto playMenu(Game game) {
     auto play(Game game) { game.states.push(new Battle); }
 
     return new TitleMenu(game,
-        MenuEntry("Level1", Vector2i(400, 200), &play),
-        MenuEntry("Level2", Vector2i(400, 300), &play),
-        MenuEntry("Level3", Vector2i(400, 400), &play));
+        MenuEntry("Level1", Vector2i(300, 200), &play),
+        MenuEntry("Level2", Vector2i(300, 300), &play),
+        MenuEntry("Level3", Vector2i(300, 400), &play));
   }
 }
