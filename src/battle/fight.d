@@ -18,7 +18,7 @@ private enum {
   projectileSpeed = 500,
   projectileDepth = 3,
 
-  explosionTime  = 0.10f,
+  explosionTime  = 0.30f,
   explosionSize  = 40,
   explosionTint  = Color(1, 1, 1, 1.0),
   explosionDepth = 3,
@@ -179,10 +179,12 @@ abstract class Fight : TimedPhase {
       sprite.centered = true;
       sprite.region = Rect2i(0, 0, explosionSize, explosionSize);
       sprite.transform.pos = expl.position;
-      sprite.transform.scale = Vector2f(1,1) * (1 - expl.duration / explosionTime);
+      sprite.transform.scale = (expl.duration > explosionTime / 2) ?
+        Vector2f(2,2) * (1 - expl.duration / explosionTime) :
+        Vector2f(1,1);
 
       // fade as time passes
-      sprite.color = Color.black.lerp(Color.white, expl.duration / explosionTime);
+      sprite.color = Color.clear.lerp(Color.white, expl.duration / explosionTime);
 
       batch ~= sprite;
     }
