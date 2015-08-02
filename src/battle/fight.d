@@ -141,7 +141,7 @@ abstract class Fight : TimedPhase {
 
       if (proj.duration < 0) {
         // turn this projectile into an explosion
-        _explosions.insert(Explosion(proj.position));
+        createExplosion(proj.position);
         onProjectileExplode(battle, proj.position, explosionSize);
         continue;
       }
@@ -223,6 +223,10 @@ abstract class Fight : TimedPhase {
 
   protected:
   bool allProjectilesExpired() { return _explosions.empty && _projectiles.empty; }
+
+  void createExplosion(Vector2f pos) {
+    _explosions.insert(Explosion(pos));
+  }
 }
 
 struct Projectile {

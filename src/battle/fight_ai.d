@@ -50,7 +50,7 @@ class FightAI : Fight {
       super.onProjectileExplode(battle, pos, radius);
       foreach(ref enemy ; _enemies) {
         if (enemy.pos.distance(pos) < radius) {
-          enemy.destroyed = true;
+          enemy.die(pos);
         }
       }
     }
@@ -69,6 +69,7 @@ class FightAI : Fight {
     context.targets         = _targets;
     context.tileMap         = battle.map;
     context.spawnProjectile = &super.spawnProjectile;
+    context.spawnExplosion  = &super.createExplosion;
 
     foreach(ref enemy ; _enemies) {
       enemy.update(context);

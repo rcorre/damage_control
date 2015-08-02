@@ -11,6 +11,7 @@ struct EnemyContext {
   RowCol[] targets;
   TileMap  tileMap;
   void delegate(Vector2f origin, Vector2f target) spawnProjectile;
+  void delegate(Vector2f origin) spawnExplosion;
 }
 
 class Enemy {
@@ -23,6 +24,12 @@ class Enemy {
 
     minHoverTime = 0.5,
     maxHoverTime = 2.0,
+
+    minCrashTime = 0.0,
+    maxCrashTime = 2.0,
+
+    minCrashSpeed =  50.0f,
+    maxCrashSpeed = 200.0f,
   }
 
   Transform!float transform;
@@ -41,6 +48,11 @@ class Enemy {
 
   void update(EnemyContext context) {
     states.run(this, context);
+  }
+
+  void die(Vector2f projectilePos) {
+    auto trajectory = (transform.pos - projectilePos).normalized;
+    states.push(new Mayday(this, trajectory));
   }
 }
 
@@ -157,5 +169,29 @@ class CircleTarget : EnemyState {
 
     // keep facing towards the target
     self.transform.angle = (targetPos - self.pos).angle;
+  }
+}
+
+/// Spin out of control, then explode.
+class Mayday : EnemyState {
+  private float    _timer;
+  private Vector2f _velocity;
+  private float    _angularVelocity;
+
+  this(Enemy self, Vector2f trajectory) {
+    _timer = uniform(self.minCrashTime, self.maxCrashTime);
+    _velocity = trajectory * uniform(self.minCrashSpeed, self.maxCrashSpeed);
+    _angularVelocity = uniform(-3f, 3f) * self.rotationSpeed;
+  }
+
+  override void run(Enemy self, EnemyContext context) {
+    _timer -= context.timeElapsed;
+    if (_timer < 0) {
+      self.destroyed = true;
+      context.spawnExplosion(self.pos);
+    }
+
+    self.pos += _velocity * context.timeElapsed;
+    self.transform.angle += _angularVelocity * context.timeElapsed;
   }
 }
