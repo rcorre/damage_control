@@ -6,51 +6,32 @@ import std.container : Array;
 import battle.battle;
 import dau;
 import title.menu;
+import jsonizer;
 
 /// Show the title screen.
 class Title : State!Game {
   private {
-    Array!TitleMenu _menus;
-    TitleMenu       _poppedMenu;
-    EventHandler    _handler;
+    Array!TitleMenu    _menus;
+    TitleMenu          _poppedMenu;
+    Array!EventHandler _handlers;
   }
 
   override {
     void enter(Game game) {
+      game.events.setControlScheme("controls.json".readJSON!ControlScheme);
       _menus ~= mainMenu(game);
 
-      void handleKeyDown(in ALLEGRO_EVENT ev) {
-        switch (ev.keyboard.keycode) {
-          case ALLEGRO_KEY_J:
-            _menus.back.confirmSelection(game);
-            break;
-          case ALLEGRO_KEY_K:
-            if (_menus.length > 1) {
-              _poppedMenu = _menus.back;
-              _menus.removeBack();
-              _poppedMenu.centerToExit();
-              _menus.back.setSelection(0);
-              _menus.back.stackToCenter();
-            }
-            break;
-          case ALLEGRO_KEY_W:
-            _menus.back.moveSelectionUp();
-            break;
-          case ALLEGRO_KEY_S:
-            _menus.back.moveSelectionDown();
-            break;
-          case ALLEGRO_KEY_ESCAPE:
-            game.stop();
-            break;
-          default:
-        }
-      }
+      _handlers.insert(game.events.onButtonDown("confirm",
+          () => _menus.back.confirmSelection(game)));
 
-      _handler = game.events.onKeyDown(&handleKeyDown);
+      _handlers.insert(game.events.onButtonDown("cancel", () => popMenu()));
+
+      _handlers.insert(game.events.onAxisMoved("move",
+          (pos) => _menus.back.moveSelectionDown()));
     }
 
     void exit(Game game) {
-      _handler.unregister();
+      foreach(h ; _handlers) h.unregister();
     }
 
     void run(Game game) {
@@ -64,6 +45,16 @@ class Title : State!Game {
     _menus.back.centerToStack();
     _menus ~= menu;
     _menus.back.exitToCenter();
+  }
+
+  void popMenu() {
+    if (_menus.length > 1) {
+      _poppedMenu = _menus.back;
+      _menus.removeBack();
+      _poppedMenu.centerToExit();
+      _menus.back.setSelection(0);
+      _menus.back.stackToCenter();
+    }
   }
 
   auto mainMenu(Game game) {

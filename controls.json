@@ -1,0 +1,34 @@
+{
+  "buttons": {
+    "confirm": {
+      "keys": [ "j", "enter", "space" ],
+      "buttons": [ 1 ]
+    },
+    "cancel": {
+      "keys": [ "k", "escape" ],
+      "buttons": [ 0 ]
+    },
+    "rotateCCW": {
+      "keys": [ "q" ],
+      "buttons": [ 4 ]
+    },
+    "rotateCW": {
+      "keys": [ "e" ],
+      "buttons": [ 5 ]
+    }
+  },
+  "axes": {
+    "move": {
+      "keys": {
+        "up"   : "w",
+        "down" : "s",
+        "left" : "a",
+        "right": "d"
+      },
+      "axes": {
+        "x": { "stick": 0, "axis": 0 },
+        "y": { "stick": 0, "axis": 1 }
+      }
+    }
+  }
+}
