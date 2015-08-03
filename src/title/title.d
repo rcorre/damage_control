@@ -26,8 +26,15 @@ class Title : State!Game {
 
       _handlers.insert(game.events.onButtonDown("cancel", () => popMenu()));
 
-      _handlers.insert(game.events.onAxisMoved("move",
-          (pos) => _menus.back.moveSelectionDown()));
+      auto moveMenuSelection(Vector2f pos) {
+      }
+
+      _handlers.insert(game.events.onAxisMoved("move", (pos) {
+        if      (pos.y > 0) _menus.back.moveSelectionDown();
+        else if (pos.y < 0) _menus.back.moveSelectionUp();
+        else if (pos.x < 0) popMenu();
+        else if (pos.x > 0) _menus.back.confirmSelection(game);
+      }));
     }
 
     void exit(Game game) {
