@@ -66,51 +66,59 @@ class Title : State!Game {
   }
 
   auto mainMenu(Game game) {
-    auto play(Game game)     { pushMenu(playMenu(game)); }
-    auto options(Game game)  { pushMenu(optionsMenu(game)); }
-    auto controls(Game game) { pushMenu(controlsMenu(game)); }
-    auto credits(Game game)  { pushMenu(creditsMenu(game)); }
-    auto quit(Game game)     { game.stop(); }
-
     return new TitleMenu(game,
-        MenuEntry("Play"    , Vector2i(300, 100), &play),
-        MenuEntry("Options" , Vector2i(300, 200), &options),
-        MenuEntry("Controls", Vector2i(300, 300), &controls),
-        MenuEntry("Credits" , Vector2i(300, 400), &credits),
-        MenuEntry("Quit"    , Vector2i(300, 500), &quit));
+      MenuEntry("Play"    , Vector2i(300, 100), g => pushMenu(playMenu(g))),
+      MenuEntry("Options" , Vector2i(300, 200), g => pushMenu(optionsMenu(g))),
+      MenuEntry("Controls", Vector2i(300, 300), g => pushMenu(controlsMenu(g))),
+      MenuEntry("Credits" , Vector2i(300, 400), g => pushMenu(creditsMenu(g))),
+      MenuEntry("Quit"    , Vector2i(300, 500), g => g.stop()));
   }
 
   auto playMenu(Game game) {
     auto play(Game game) { game.states.push(new Battle); }
 
     return new TitleMenu(game,
-        MenuEntry("Tutorial", Vector2i(400, 200), &play),
-        MenuEntry("1 Player", Vector2i(400, 300), &play),
-        MenuEntry("2 Player", Vector2i(400, 400), &play));
+      MenuEntry("Tutorial", Vector2i(400, 200), &play),
+      MenuEntry("1 Player", Vector2i(400, 300), &play),
+      MenuEntry("2 Player", Vector2i(400, 400), &play));
   }
 
   auto optionsMenu(Game game) {
     auto dummy(Game game) {}
 
     return new TitleMenu(game,
-        MenuEntry("Sound", Vector2i(400, 200), &dummy),
-        MenuEntry("Music", Vector2i(400, 400), &dummy));
+      MenuEntry("Sound", Vector2i(400, 200), &dummy),
+      MenuEntry("Music", Vector2i(400, 400), &dummy));
   }
 
   auto controlsMenu(Game game) {
+    return new TitleMenu(game,
+      MenuEntry("Keyboard", Vector2i(400, 200), g => pushMenu(keyboardMenu(g))),
+      MenuEntry("Gamepad" , Vector2i(400, 400), g => pushMenu(gamepadMenu(g))));
+  }
+
+  auto keyboardMenu(Game game) {
     auto dummy(Game game) {}
 
     return new TitleMenu(game,
-        MenuEntry("Sound", Vector2i(400, 200), &dummy),
-        MenuEntry("Music", Vector2i(400, 400), &dummy));
+      MenuEntry("Keyboard", Vector2i(400, 200), &dummy),
+      MenuEntry("Gamepad" , Vector2i(400, 400), &dummy));
+  }
+
+  auto gamepadMenu(Game game) {
+    auto dummy(Game game) {}
+
+    return new TitleMenu(game,
+      MenuEntry("Keyboard", Vector2i(400, 200), &dummy),
+      MenuEntry("Gamepad" , Vector2i(400, 400), &dummy));
   }
 
   auto creditsMenu(Game game) {
     return new TitleMenu(game,
-      MenuEntry("D"       , Vector2i(400, 100), (g) => browse("http://dlang.org")),
-      MenuEntry("Allegro" , Vector2i(400, 200), (g) => browse("https://allegro.cc/")),
-      MenuEntry("Aseprite", Vector2i(400, 300), (g) => browse("http://aseprite.org")),
-      MenuEntry("LMMS"    , Vector2i(400, 400), (g) => browse("https://lmms.io")),
-      MenuEntry("Tiled"   , Vector2i(400, 500), (g) => browse("http://mapeditor.org")));
+      MenuEntry("D"       , Vector2i(400, 100), g => browse("http://dlang.org")),
+      MenuEntry("Allegro" , Vector2i(400, 200), g => browse("https://allegro.cc/")),
+      MenuEntry("Aseprite", Vector2i(400, 300), g => browse("http://aseprite.org")),
+      MenuEntry("LMMS"    , Vector2i(400, 400), g => browse("https://lmms.io")),
+      MenuEntry("Tiled"   , Vector2i(400, 500), g => browse("http://mapeditor.org")));
   }
 }
