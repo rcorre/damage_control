@@ -2,6 +2,7 @@
 module title.title;
 
 import std.math      : pow;
+import std.process   : browse;
 import std.container : Array;
 import battle.battle;
 import dau;
@@ -105,13 +106,11 @@ class Title : State!Game {
   }
 
   auto creditsMenu(Game game) {
-    auto dummy(Game game) {}
-
     return new TitleMenu(game,
-        MenuEntry("D"       , Vector2i(400, 100), &dummy),
-        MenuEntry("Allegro" , Vector2i(400, 200), &dummy),
-        MenuEntry("Aseprite", Vector2i(400, 300), &dummy),
-        MenuEntry("LMMS"    , Vector2i(400, 400), &dummy),
-        MenuEntry("Tiled"   , Vector2i(400, 500), &dummy));
+      MenuEntry("D"       , Vector2i(400, 100), (g) => browse("http://dlang.org")),
+      MenuEntry("Allegro" , Vector2i(400, 200), (g) => browse("https://allegro.cc/")),
+      MenuEntry("Aseprite", Vector2i(400, 300), (g) => browse("http://aseprite.org")),
+      MenuEntry("LMMS"    , Vector2i(400, 400), (g) => browse("https://lmms.io")),
+      MenuEntry("Tiled"   , Vector2i(400, 500), (g) => browse("http://mapeditor.org")));
   }
 }
