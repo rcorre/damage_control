@@ -31,7 +31,7 @@ class TitleMenu {
   private {
     Array!MenuEntry    _entries;
     Font               _font;
-    uint               _selectedEntry;
+    size_t             _selectedEntry;
     Bitmap             _underlineBmp;
   }
 
@@ -67,17 +67,15 @@ class TitleMenu {
   }
 
   void moveSelectionDown() {
-    if (_selectedEntry < _entries.length - 1) {
-      _entries[_selectedEntry].deselect();
-      _entries[++_selectedEntry].select();
-    }
+    _entries[_selectedEntry].deselect();
+    _selectedEntry = (_selectedEntry + 1) % _entries.length;
+    _entries[_selectedEntry].select();
   }
 
   void moveSelectionUp() {
-      if (_selectedEntry > 0) {
-        _entries[_selectedEntry].deselect();
-        _entries[--_selectedEntry].select();
-      }
+    _entries[_selectedEntry].deselect();
+    _selectedEntry = (_selectedEntry - 1 + _entries.length) % _entries.length;
+    _entries[_selectedEntry].select();
   }
 
   void confirmSelection(Game game) {
