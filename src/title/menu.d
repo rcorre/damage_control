@@ -2,6 +2,7 @@
 module title.menu;
 
 import std.math      : pow;
+import std.range     : enumerate;
 import std.container : Array;
 import battle.battle;
 import dau;
@@ -11,28 +12,28 @@ private enum {
   fontSize  = 36,
   textDepth = 1,
 
-  menuCenter      = Vector2i(400, 200),
-  entryMargin     = Vector2i(  0, 100),
+  menuCenter  = Vector2i(400, 200),
+  entryMargin = Vector2i(  0, 100),
 
   underlineOffsetShown  = Vector2i(   0,  30),
   underlineOffsetHidden = Vector2i(-200,  30),
   underlineSize         = Vector2i( 150,   6),
 
-  subduedTint    = Color(1f,1f,1f,0.25f),
+  subduedTint   = Color(1f,1f,1f,0.25f),
   neutralTint   = Color(1f,1f,1f,0.5f),
   highlightTint = Color(1f,1f,1f,1f),
 
-  textDuration = 0.5,
-  underlineDuration = 0.5,
+  transitionDuration = 0.5,
 }
 
 /// Show the title screen.
 class TitleMenu {
   private {
-    Array!MenuEntry    _entries;
-    Font               _font;
-    size_t             _selectedEntry;
-    Bitmap             _underlineBmp;
+    Array!MenuEntry     _entries;
+    Font                _font;
+    size_t              _selection;
+    Bitmap              _underlineBmp;
+    Transition!Vector2i _position;
   }
 
   this(Game game, MenuEntry[] entries ...) {
@@ -46,85 +47,72 @@ class TitleMenu {
 
     _entries.insert(entries);
 
-    // select the first entry
-    _entries[0].select();
-
-    // transition in the remaining entries without selecting
-    foreach(ref entry ; _entries) {
-      entry.exitToCenter();
-    }
+    _position.hold(Vector2i(900, 100));
   }
 
   ~this() {
     al_destroy_bitmap(_underlineBmp);
   }
 
-  void setSelection(int idx) {
+  void setSelection(size_t idx) {
     assert(idx >= 0 && idx < _entries.length);
-    _entries[_selectedEntry].deselect();
-    _selectedEntry = idx;
-    _entries[idx].select();
+    _entries[_selection].deselect();
+    _entries[idx].select(_position.end.x);
+    _selection = idx;
   }
 
   void moveSelectionDown() {
-    _entries[_selectedEntry].deselect();
-    _selectedEntry = (_selectedEntry + 1) % _entries.length;
-    _entries[_selectedEntry].select();
+    setSelection((_selection + 1) % _entries.length);
   }
 
   void moveSelectionUp() {
-    _entries[_selectedEntry].deselect();
-    _selectedEntry = (_selectedEntry - 1 + _entries.length) % _entries.length;
-    _entries[_selectedEntry].select();
+    setSelection((_selection - 1) % _entries.length);
   }
 
   void confirmSelection(Game game) {
-    assert(_selectedEntry >= 0 && _selectedEntry < _entries.length);
-    _entries[_selectedEntry].action(game);
+    assert(_selection >= 0 && _selection < _entries.length);
+    _entries[_selection].action(game);
   }
 
-  void stackToCenter() {
-    foreach(ref entry ; _entries) { entry.stackToCenter(); }
+  void moveTo(Vector2i pos) {
+    _position.go(_position.value, pos);
   }
 
-  void centerToStack() {
-    foreach(ref entry ; _entries) { entry.centerToStack(); }
+  void deselect() {
+    _entries[_selection].deselect();
   }
 
-  void exitToCenter() {
-    foreach(ref entry ; _entries) { entry.exitToCenter(); }
+  void update(float time) {
+    foreach(ref entry ; _entries) entry.update(time);
+    _position.update(time);
   }
 
-  void centerToExit() {
-    foreach(ref entry ; _entries) { entry.centerToExit(); }
-  }
-
-  void update(Game game) {
+  void draw(Renderer renderer) {
     auto textBatch   = TextBatch(_font, textDepth);
     auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);
 
-    foreach(ref entry ; _entries) {
-      entry.update(game.deltaTime);
-
+    foreach(i , entry ; _entries[].enumerate!int) {
       Text text;
       Sprite sprite;
 
+      auto textPos = _position.value + Vector2i(0, 100 * i);
+
       text.centered  = true;
       text.color     = entry.textColor;
-      text.transform = entry.textPos;
+      text.transform = textPos;
       text.text      = entry.text;
 
       sprite.centered  = true;
       sprite.color     = entry.underlineColor;
-      sprite.transform = entry.underlinePos;
+      sprite.transform = Vector2i(entry.underlineX, textPos.y + 30);
       sprite.region    = Rect2i(Vector2i.zero, underlineSize);
 
       textBatch   ~= text;
       spriteBatch ~= sprite;
     }
 
-    game.renderer.draw(textBatch);
-    game.renderer.draw(spriteBatch);
+    renderer.draw(textBatch);
+    renderer.draw(spriteBatch);
   }
 }
 
@@ -136,138 +124,76 @@ struct MenuEntry {
   Action action;
 
   private {
-    Vector2i   _activePos;
-    Vector2i   _inactivePos;
-    Vector2i   _exitPos;
-    Transition _textTransition;
-    Transition _underlineTransition;
+    Transition!Color _textColor;
+    Transition!Color _underlineColor;
+    Transition!int   _underlineX;
   }
 
-  this(string text, Vector2i center, Action action) {
+  this(string text, Action action) {
     this.text    = text;
     this.action  = action;
-    _activePos   = center;
-    _inactivePos = center - Vector2i(200, 0);
-    _exitPos     = Vector2i(900, center.y);
 
-    _textTransition      = Transition(textDuration, x => x.pow(0.35));
-    _underlineTransition = Transition(underlineDuration, x => x.pow(0.35));
-
-    // make sure the underline starts hidden
-    _underlineTransition.start(
-        underlineHidePos, underlineHidePos, subduedTint, subduedTint);
+    _textColor.hold(neutralTint);
+    _underlineX.hold(-100);
   }
 
-  void select() {
-    // keep text where it is but transition color
-    auto textPos = _textTransition.pos;
-    _textTransition.start(textPos, textPos, neutralTint, highlightTint);
-
-    _underlineTransition.start(
-        underlineHidePos,
-        _activePos + underlineOffsetShown,
-        neutralTint,
-        highlightTint);
+  void select(int xPos) {
+    _textColor.go(neutralTint, highlightTint);
+    _underlineColor.go(subduedTint, highlightTint);
+    _underlineX.go(-100, xPos);
   }
 
   void deselect() {
-    // keep text where it is but transition color
-    auto textPos = _textTransition.pos;
-    _textTransition.start(textPos, textPos, highlightTint, neutralTint);
-
-    _underlineTransition.start(
-        _activePos + underlineOffsetShown,
-        underlineHidePos,
-        highlightTint,
-        neutralTint);
-  }
-
-  void stackToCenter() {
-    auto endColor = (_textTransition.endColor == highlightTint) ? highlightTint : neutralTint;
-
-    _textTransition.start(_inactivePos, _activePos, subduedTint, endColor);
-  }
-
-  void centerToStack() {
-    _textTransition.start(_activePos, _inactivePos, neutralTint, subduedTint);
-    _underlineTransition.start(_underlineTransition.pos, underlineHidePos,
-        _underlineTransition.color, subduedTint);
-  }
-
-  void exitToCenter() {
-    auto endColor = (_textTransition.endColor == highlightTint) ? highlightTint : neutralTint;
-
-    _textTransition.start(_exitPos, _activePos, subduedTint, endColor);
-  }
-
-  void centerToExit() {
-    _textTransition.start(_activePos, _exitPos, neutralTint, subduedTint);
-    _underlineTransition.start(_underlineTransition.pos, underlineHidePos,
-        _underlineTransition.color, subduedTint);
+    _textColor.go(neutralTint);
+    _underlineColor.go(subduedTint);
+    _underlineX.go(-100);
   }
 
   void update(float time) {
-    _textTransition.update(time);
-    _underlineTransition.update(time);
+    _textColor.update(time);
+    _underlineColor.update(time);
+    _underlineX.update(time);
   }
 
-  auto textPos() {
-    return _textTransition.pos;
-  }
-
-  auto underlinePos() {
-    return _underlineTransition.pos;
+  auto underlineX() {
+    return _underlineX.value;
   }
 
   auto textColor() {
-    return _textTransition.color;
+    return _textColor.value;
   }
 
   auto underlineColor() {
-    return _underlineTransition.color;
-  }
-
-  private auto underlineHidePos() {
-    return Vector2i(-100, _activePos.y + underlineOffsetHidden.y);
-  }
-
-  private auto underlineShowPos() {
-    return _activePos + underlineOffsetShown;
+    return _underlineColor.value;
   }
 }
 
-struct Transition {
-  Vector2i startPos;
-  Vector2i endPos;
-  Color    startColor;
-  Color    endColor;
-  float    progress;
+private struct Transition(T) if (is(typeof(T.init.lerp(T.init, 0f)) : T)) {
+  T     start;
+  T     end;
+  float progress;
 
-  float                 duration;
-  float function(float) lerpFactor;
-
-  this(float duration, float function(float) lerpFactor) {
-    this.duration = duration;
-    this.lerpFactor = lerpFactor;
+  void hold(T val) {
+    start = val;
+    end = val;
+    progress = 0f;
   }
 
-  void start(Vector2i pos1, Vector2i pos2, Color color1, Color color2) {
-    startPos   = pos1;
-    endPos     = pos2;
-    startColor = color1;
-    endColor   = color2;
-    progress   = 0;
+  void go(T to) {
+    go(this.value, to);
+  }
+
+  void go(T start, T end) {
+    this.start    = start;
+    this.end      = end;
+    this.progress = 0f;
   }
 
   void update(float timeElapsed) {
-    progress = min(1f, progress + timeElapsed / duration);
+    progress = min(1f, progress + timeElapsed / transitionDuration);
   }
 
-  auto pos() {
-    return startPos.lerp(endPos, lerpFactor(progress));
-  }
-
-  auto color() {
-    return startColor.lerp(endColor, lerpFactor(progress));
+  auto value() {
+    return start.lerp(end, progress.pow(0.35));
   }
 }
