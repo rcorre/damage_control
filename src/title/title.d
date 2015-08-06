@@ -22,6 +22,7 @@ class Title : State!Game {
       game.events.setControlScheme("controls.json".readJSON!ControlScheme);
       _menus ~= mainMenu(game);
       _menus.back.moveTo(targetPos(0));
+      _menus.back.activate();
 
       _handlers.insert(game.events.onButtonDown("confirm",
           () => _menus.back.confirmSelection(game)));
@@ -61,14 +62,14 @@ class Title : State!Game {
   }
 
   void pushMenu(TitleMenu newMenu) {
-    _menus.back.deselect();
+    _menus.back.deactivate();
     _menus ~= newMenu;
 
     foreach(i, menu ; _menus[].enumerate!int) {
       menu.moveTo(targetPos(i));
     }
 
-    newMenu.setSelection(0);
+    newMenu.activate();
   }
 
   void popMenu() {
@@ -82,8 +83,8 @@ class Title : State!Game {
     }
 
     _poppedMenu.moveTo(Vector2i(900, 100));
-    _poppedMenu.deselect();
-    _menus.back.setSelection(0);
+    _poppedMenu.deactivate();
+    _menus.back.activate();
   }
 
   auto mainMenu(Game game) {

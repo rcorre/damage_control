@@ -34,6 +34,7 @@ class TitleMenu {
     size_t              _selection;
     Bitmap              _underlineBmp;
     Transition!Vector2i _position;
+    Transition!Color    _color;
   }
 
   this(Game game, MenuEntry[] entries ...) {
@@ -48,10 +49,22 @@ class TitleMenu {
     _entries.insert(entries);
 
     _position.hold(Vector2i(900, 100));
+    _color.hold(subduedTint);
   }
 
   ~this() {
     al_destroy_bitmap(_underlineBmp);
+  }
+
+
+  void activate() {
+    setSelection(0);
+    _color.go(subduedTint, neutralTint);
+  }
+
+  void deactivate() {
+    _entries[_selection].deselect();
+    _color.go(neutralTint, subduedTint);
   }
 
   void setSelection(size_t idx) {
@@ -78,13 +91,10 @@ class TitleMenu {
     _position.go(_position.value, pos);
   }
 
-  void deselect() {
-    _entries[_selection].deselect();
-  }
-
   void update(float time) {
     foreach(ref entry ; _entries) entry.update(time);
     _position.update(time);
+    _color.update(time);
   }
 
   void draw(Renderer renderer) {
@@ -98,7 +108,7 @@ class TitleMenu {
       auto textPos = _position.value + Vector2i(0, 100 * i);
 
       text.centered  = true;
-      text.color     = entry.textColor;
+      text.color     = (i == _selection) ? entry.textColor : _color.value;
       text.transform = textPos;
       text.text      = entry.text;
 
