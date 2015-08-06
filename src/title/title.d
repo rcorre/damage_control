@@ -21,7 +21,7 @@ class Title : State!Game {
     void enter(Game game) {
       game.events.setControlScheme("controls.json".readJSON!ControlScheme);
       _menus ~= mainMenu(game);
-      _menus.back.moveTo(Vector2i(400, 100));
+      _menus.back.moveTo(targetPos(0));
 
       _handlers.insert(game.events.onButtonDown("confirm",
           () => _menus.back.confirmSelection(game)));
@@ -53,23 +53,37 @@ class Title : State!Game {
   }
 
   private:
-  void pushMenu(TitleMenu menu) {
-    _menus.back.moveTo(Vector2i(100, 100));
+  auto targetPos(int menuIdx) {
+    int n = cast(int) _menus.length;
+    int x = 500 - 140 * n + 220 * menuIdx;
+
+    return Vector2i(x, 100);
+  }
+
+  void pushMenu(TitleMenu newMenu) {
     _menus.back.deselect();
-    menu.moveTo(Vector2i(400, 100));
-    menu.setSelection(0);
-    _menus ~= menu;
+    _menus ~= newMenu;
+
+    foreach(i, menu ; _menus[].enumerate!int) {
+      menu.moveTo(targetPos(i));
+    }
+
+    newMenu.setSelection(0);
   }
 
   void popMenu() {
-    if (_menus.length > 1) {
-      _poppedMenu = _menus.back;
-      _menus.removeBack();
-      _poppedMenu.moveTo(Vector2i(900, 100));
-      _poppedMenu.deselect();
-      _menus.back.moveTo(Vector2i(400, 100));
-      _menus.back.setSelection(0);
+    if (_menus.length == 1) return;
+
+    _poppedMenu = _menus.back;
+    _menus.removeBack();
+
+    foreach(i, menu ; _menus[].enumerate!int) {
+      menu.moveTo(targetPos(i));
     }
+
+    _poppedMenu.moveTo(Vector2i(900, 100));
+    _poppedMenu.deselect();
+    _menus.back.setSelection(0);
   }
 
   auto mainMenu(Game game) {
