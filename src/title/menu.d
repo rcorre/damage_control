@@ -66,7 +66,7 @@ class TitleMenu {
   }
 
   void moveSelectionUp() {
-    setSelection((_selection - 1) % _entries.length);
+    setSelection((_selection + _entries.length - 1) % _entries.length);
   }
 
   void confirmSelection(Game game) {
