@@ -7,14 +7,15 @@ import std.container : Array;
 import battle.battle;
 import dau;
 import title.menu;
+import title.states.navigate;
 import jsonizer;
 
 /// Show the title screen.
 class Title : State!Game {
   private {
-    Array!TitleMenu    _menus;
-    TitleMenu          _poppedMenu;
-    Array!EventHandler _handlers;
+    Array!TitleMenu          _menus;
+    TitleMenu                _poppedMenu;
+    StateStack!(Title, Game) _states;
   }
 
   override {
@@ -23,23 +24,10 @@ class Title : State!Game {
       _menus ~= mainMenu(game);
       _menus.back.moveTo(targetX(0));
       _menus.back.activate();
-
-      _handlers.insert(game.events.onButtonDown("confirm",
-          () => _menus.back.confirmSelection(game)));
-
-      _handlers.insert(game.events.onButtonDown("cancel", () => popMenu()));
-
-      _handlers.insert(game.events.onAxisMoved("move", (pos) {
-        if      (pos.y > 0) _menus.back.moveSelectionDown();
-        else if (pos.y < 0) _menus.back.moveSelectionUp();
-        else if (pos.x < 0) popMenu();
-        else if (pos.x > 0) _menus.back.confirmSelection(game);
-      }));
+      _states.push(new NavigateMenus);
     }
 
-    void exit(Game game) {
-      foreach(h ; _handlers) h.unregister();
-    }
+    void exit(Game game) { }
 
     void run(Game game) {
       foreach(menu ; _menus) {
@@ -50,13 +38,21 @@ class Title : State!Game {
         _poppedMenu.update(game.deltaTime);
         _poppedMenu.draw(game.renderer);
       }
+
+      _states.run(this, game);
     }
   }
 
-  private:
-  auto targetX(int menuIdx) {
-    int n = cast(int) _menus.length;
-    return 500 - 140 * n + 220 * menuIdx;
+  package:
+  void select(Game game) {
+    _menus.back.confirmSelection(game);
+  }
+
+  void moveSelection(Vector2f direction, Game game) {
+    if      (direction.y > 0) _menus.back.moveSelectionDown();
+    else if (direction.y < 0) _menus.back.moveSelectionUp();
+    else if (direction.x < 0) popMenu();
+    else if (direction.x > 0) _menus.back.confirmSelection(game);
   }
 
   void pushMenu(TitleMenu newMenu) {
@@ -83,6 +79,12 @@ class Title : State!Game {
     _poppedMenu.moveTo(900);
     _poppedMenu.deactivate();
     _menus.back.activate();
+  }
+
+  private:
+  auto targetX(int menuIdx) {
+    int n = cast(int) _menus.length;
+    return 500 - 140 * n + 220 * menuIdx;
   }
 
   auto mainMenu(Game game) {
