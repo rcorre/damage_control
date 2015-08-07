@@ -8,21 +8,15 @@ import battle.battle;
 import dau;
 
 private enum {
-  fontName  = "Mecha",
-  fontSize  = 36,
-  textDepth = 1,
+  // x position of underline when not shown (entry not selected)
+  underlineHideX = -100,
 
-  menuCenter  = Vector2i(400, 200),
-  entryMargin = Vector2i(  0, 100),
-
-  underlineOffsetShown  = Vector2i(   0,  30),
-  underlineOffsetHidden = Vector2i(-200,  30),
-  underlineSize         = Vector2i( 150,   6),
-
+  // colors used for text and underlines
   subduedTint   = Color(1f,1f,1f,0.25f),
   neutralTint   = Color(1f,1f,1f,0.5f),
   highlightTint = Color(1f,1f,1f,1f),
 
+  // seconds it takes for menus or underlines to move between locations
   transitionDuration = 0.5,
 }
 
@@ -30,31 +24,17 @@ private enum {
 class TitleMenu {
   private {
     Array!MenuEntry  _entries;
-    Font             _font;
     size_t           _selection;
-    Bitmap           _underlineBmp;
     Transition!int   _positionX;
     Transition!Color _color;
   }
 
   this(Game game, MenuEntry[] entries ...) {
-    _underlineBmp = Bitmap(al_create_bitmap(underlineSize.x, underlineSize.y));
-
-    al_set_target_bitmap(_underlineBmp);
-    al_clear_to_color(Color.white);
-    al_set_target_backbuffer(game.display.display);
-
-    _font = game.fonts.get(fontName, fontSize);
-
     _entries.insert(entries);
 
     // start off-screen to the right and subdued in color
     _positionX.hold(900);
     _color.hold(subduedTint);
-  }
-
-  ~this() {
-    al_destroy_bitmap(_underlineBmp);
   }
 
   // y offsets are determined to space out the entries within the screen height
@@ -103,18 +83,12 @@ class TitleMenu {
     _color.update(time);
   }
 
-  void draw(Renderer renderer) {
-    auto textBatch   = TextBatch(_font, textDepth);
-    auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);
-
+  void draw(ref SpriteBatch spriteBatch, ref TextBatch textBatch) {
     foreach(i , entry ; _entries[].enumerate!int) {
       auto textPos = Vector2i(_positionX.value, entryY(i));
       bool isSelected = (i == _selection);
       drawEntry(entry, isSelected, textPos, textBatch, spriteBatch);
     }
-
-    renderer.draw(textBatch);
-    renderer.draw(spriteBatch);
   }
 
   protected void drawEntry(
@@ -135,7 +109,10 @@ class TitleMenu {
       sprite.centered  = true;
       sprite.color     = entry.underlineColor;
       sprite.transform = Vector2i(entry.underlineX, center.y + 30);
-      sprite.region    = Rect2i(Vector2i.zero, underlineSize);
+
+      auto sw = spriteBatch.bitmap.width;
+      auto sh = spriteBatch.bitmap.height;
+      sprite.region    = Rect2i(0, 0, sw, sh);
 
       textBatch   ~= text;
       spriteBatch ~= sprite;
@@ -160,19 +137,19 @@ struct MenuEntry {
     this.action  = action;
 
     _textColor.hold(neutralTint);
-    _underlineX.hold(-100);
+    _underlineX.hold(underlineHideX);
   }
 
   void select(int xPos) {
     _textColor.go(neutralTint, highlightTint);
     _underlineColor.go(subduedTint, highlightTint);
-    _underlineX.go(-100, xPos);
+    _underlineX.go(underlineHideX, xPos);
   }
 
   void deselect() {
     _textColor.go(neutralTint);
     _underlineColor.go(subduedTint);
-    _underlineX.go(-100);
+    _underlineX.go(underlineHideX);
   }
 
   void update(float time) {
