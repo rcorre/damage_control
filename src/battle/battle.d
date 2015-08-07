@@ -151,9 +151,9 @@ abstract class BattleState : State!Battle {
 
       _handlers.insert(events.onButtonDown("confirm", () => onConfirm(battle)));
       _handlers.insert(events.onButtonDown("cancel" , () => onCancel(battle)));
-      _handlers.insert(events.onButtonDown("rotateCW",
+      _handlers.insert(events.onButtonDown("rotateR",
             () => onRotate(battle, true)));
-      _handlers.insert(events.onButtonDown("rotateCCW",
+      _handlers.insert(events.onButtonDown("rotateL",
             () => onRotate(battle, false)));
       _handlers.insert(events.onAxisMoved("move",
             (pos) => battle.cursor.startMoving(pos)));

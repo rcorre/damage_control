@@ -8,11 +8,11 @@
       "keys": [ "k", "escape" ],
       "buttons": [ 0 ]
     },
-    "rotateCCW": {
+    "rotateR": {
       "keys": [ "q" ],
       "buttons": [ 4 ]
     },
-    "rotateCW": {
+    "rotateL": {
       "keys": [ "e" ],
       "buttons": [ 5 ]
     }

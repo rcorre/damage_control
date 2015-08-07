@@ -108,27 +108,37 @@ class TitleMenu {
     auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);
 
     foreach(i , entry ; _entries[].enumerate!int) {
-      Text text;
-      Sprite sprite;
-
       auto textPos = Vector2i(_positionX.value, entryY(i));
-
-      text.centered  = true;
-      text.color     = (i == _selection) ? entry.textColor : _color.value;
-      text.transform = textPos;
-      text.text      = entry.text;
-
-      sprite.centered  = true;
-      sprite.color     = entry.underlineColor;
-      sprite.transform = Vector2i(entry.underlineX, textPos.y + 30);
-      sprite.region    = Rect2i(Vector2i.zero, underlineSize);
-
-      textBatch   ~= text;
-      spriteBatch ~= sprite;
+      bool isSelected = (i == _selection);
+      drawEntry(entry, isSelected, textPos, textBatch, spriteBatch);
     }
 
     renderer.draw(textBatch);
     renderer.draw(spriteBatch);
+  }
+
+  protected void drawEntry(
+      MenuEntry       entry,
+      bool            isSelected,
+      Vector2i        center,
+      ref TextBatch   textBatch,
+      ref SpriteBatch spriteBatch)
+  {
+      Text text;
+      Sprite sprite;
+
+      text.centered  = true;
+      text.color     = isSelected ? entry.textColor : _color.value;
+      text.transform = center;
+      text.text      = entry.text;
+
+      sprite.centered  = true;
+      sprite.color     = entry.underlineColor;
+      sprite.transform = Vector2i(entry.underlineX, center.y + 30);
+      sprite.region    = Rect2i(Vector2i.zero, underlineSize);
+
+      textBatch   ~= text;
+      spriteBatch ~= sprite;
   }
 }
 

@@ -7,6 +7,7 @@ import std.container : Array;
 import battle.battle;
 import dau;
 import title.menu;
+import title.controls_menu;
 import title.states.navigate;
 import jsonizer;
 
@@ -20,7 +21,7 @@ class Title : State!Game {
 
   override {
     void enter(Game game) {
-      game.events.setControlScheme("controls.json".readJSON!ControlScheme);
+      game.events.controlScheme = "controls.json".readJSON!ControlScheme;
       _menus ~= mainMenu(game);
       _menus.back.moveTo(targetX(0));
       _menus.back.activate();
@@ -122,16 +123,7 @@ class Title : State!Game {
   auto keyboardMenu(Game game) {
     auto dummy(Game game) {}
 
-    return new TitleMenu(game,
-      MenuEntry("Up"     , &dummy),
-      MenuEntry("Down"   , &dummy),
-      MenuEntry("Left"   , &dummy),
-      MenuEntry("Right"  , &dummy),
-      MenuEntry("Confirm", &dummy),
-      MenuEntry("Cancel" , &dummy),
-      MenuEntry("RotateL", &dummy),
-      MenuEntry("RotateR", &dummy),
-      MenuEntry("Turbo"  , &dummy));
+    return new ControlsMenu(game, game.events.controlScheme);
   }
 
   auto gamepadMenu(Game game) {
