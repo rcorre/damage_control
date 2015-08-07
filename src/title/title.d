@@ -21,7 +21,7 @@ class Title : State!Game {
     void enter(Game game) {
       game.events.setControlScheme("controls.json".readJSON!ControlScheme);
       _menus ~= mainMenu(game);
-      _menus.back.moveTo(targetPos(0));
+      _menus.back.moveTo(targetX(0));
       _menus.back.activate();
 
       _handlers.insert(game.events.onButtonDown("confirm",
@@ -54,11 +54,9 @@ class Title : State!Game {
   }
 
   private:
-  auto targetPos(int menuIdx) {
+  auto targetX(int menuIdx) {
     int n = cast(int) _menus.length;
-    int x = 500 - 140 * n + 220 * menuIdx;
-
-    return Vector2i(x, 100);
+    return 500 - 140 * n + 220 * menuIdx;
   }
 
   void pushMenu(TitleMenu newMenu) {
@@ -66,7 +64,7 @@ class Title : State!Game {
     _menus ~= newMenu;
 
     foreach(i, menu ; _menus[].enumerate!int) {
-      menu.moveTo(targetPos(i));
+      menu.moveTo(targetX(i));
     }
 
     newMenu.activate();
@@ -79,10 +77,10 @@ class Title : State!Game {
     _menus.removeBack();
 
     foreach(i, menu ; _menus[].enumerate!int) {
-      menu.moveTo(targetPos(i));
+      menu.moveTo(targetX(i));
     }
 
-    _poppedMenu.moveTo(Vector2i(900, 100));
+    _poppedMenu.moveTo(900);
     _poppedMenu.deactivate();
     _menus.back.activate();
   }
@@ -123,8 +121,15 @@ class Title : State!Game {
     auto dummy(Game game) {}
 
     return new TitleMenu(game,
-      MenuEntry("Keyboard", &dummy),
-      MenuEntry("Gamepad" , &dummy));
+      MenuEntry("Up"     , &dummy),
+      MenuEntry("Down"   , &dummy),
+      MenuEntry("Left"   , &dummy),
+      MenuEntry("Right"  , &dummy),
+      MenuEntry("Confirm", &dummy),
+      MenuEntry("Cancel" , &dummy),
+      MenuEntry("RotateL", &dummy),
+      MenuEntry("RotateR", &dummy),
+      MenuEntry("Turbo"  , &dummy));
   }
 
   auto gamepadMenu(Game game) {

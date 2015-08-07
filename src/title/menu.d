@@ -29,12 +29,12 @@ private enum {
 /// Show the title screen.
 class TitleMenu {
   private {
-    Array!MenuEntry     _entries;
-    Font                _font;
-    size_t              _selection;
-    Bitmap              _underlineBmp;
-    Transition!Vector2i _position;
-    Transition!Color    _color;
+    Array!MenuEntry  _entries;
+    Font             _font;
+    size_t           _selection;
+    Bitmap           _underlineBmp;
+    Transition!int   _positionX;
+    Transition!Color _color;
   }
 
   this(Game game, MenuEntry[] entries ...) {
@@ -48,7 +48,8 @@ class TitleMenu {
 
     _entries.insert(entries);
 
-    _position.hold(Vector2i(900, 100));
+    // start off-screen to the right and subdued in color
+    _positionX.hold(900);
     _color.hold(subduedTint);
   }
 
@@ -56,6 +57,11 @@ class TitleMenu {
     al_destroy_bitmap(_underlineBmp);
   }
 
+  // y offsets are determined to space out the entries within the screen height
+  auto entryY(int idx) {
+    auto n = cast(int) _entries.length;
+    return (idx + 1) * 600 / (n + 1);
+  }
 
   void activate() {
     setSelection(0);
@@ -70,7 +76,7 @@ class TitleMenu {
   void setSelection(size_t idx) {
     assert(idx >= 0 && idx < _entries.length);
     _entries[_selection].deselect();
-    _entries[idx].select(_position.end.x);
+    _entries[idx].select(_positionX.end);
     _selection = idx;
   }
 
@@ -87,13 +93,13 @@ class TitleMenu {
     _entries[_selection].action(game);
   }
 
-  void moveTo(Vector2i pos) {
-    _position.go(_position.value, pos);
+  void moveTo(int xPos) {
+    _positionX.go(_positionX.value, xPos);
   }
 
   void update(float time) {
     foreach(ref entry ; _entries) entry.update(time);
-    _position.update(time);
+    _positionX.update(time);
     _color.update(time);
   }
 
@@ -105,7 +111,7 @@ class TitleMenu {
       Text text;
       Sprite sprite;
 
-      auto textPos = _position.value + Vector2i(0, 100 * i);
+      auto textPos = Vector2i(_positionX.value, entryY(i));
 
       text.centered  = true;
       text.color     = (i == _selection) ? entry.textColor : _color.value;
