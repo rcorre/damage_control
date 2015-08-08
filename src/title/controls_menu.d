@@ -39,7 +39,9 @@ class ControlsMenu : TitleMenu {
 
   void startMappingKey(Game game, string name) {
     // the next time a key is pressed, map it to the selected action
-    _handler = game.events.onAnyKeyDown(k => remapKey(game, name, k));
+    // consume the event so it is not handled by anything else
+    _handler = game.events.onAnyKeyDown(k => remapKey(game, name, k),
+        ConsumeEvent.yes);
   }
 
   void remapKey(Game game, string name, KeyCode keycode) {
