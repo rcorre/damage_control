@@ -8,17 +8,14 @@ import std.algorithm : map;
 import title.menu;
 import dau;
 
-private enum {
-  subduedTint   = Color(1f,1f,1f,0.25f),
-  neutralTint   = Color(1f,1f,1f,0.5f),
-  highlightTint = Color(1f,1f,1f,1f),
-}
+private enum neutralTint   = Color(1f,1f,1f,0.5f);
 
 /// Show the title screen.
 class ControlsMenu : TitleMenu {
   private {
     ControlScheme _controls;
     EventHandler  _handler;
+    string        _currentlyRemapping;
   }
 
   this(Game game, ControlScheme controls) {
@@ -42,15 +39,42 @@ class ControlsMenu : TitleMenu {
     // consume the event so it is not handled by anything else
     _handler = game.events.onAnyKeyDown(k => remapKey(game, name, k),
         ConsumeEvent.yes);
+    _currentlyRemapping = name;
   }
 
   void remapKey(Game game, string name, KeyCode keycode) {
-    // a key was pressed in mapping mode
-    _controls.buttons[name].keys[0] = keycode;
+    // a button was pressed while mapping 'name'
+    // figure out which contol 'name' corresponds to,
+    // and update the corresponding control scheme entry
+    switch (name) {
+      case "up":
+        _controls.axes["move"].upKey = keycode;
+        break;
+      case "down":
+        _controls.axes["move"].downKey = keycode;
+        break;
+      case "left":
+        _controls.axes["move"].leftKey = keycode;
+        break;
+      case "right":
+        _controls.axes["move"].rightKey = keycode;
+        break;
+      case "confirm":
+      case "cancel":
+      case "rotateL":
+      case "rotateR":
+        _controls.buttons[name].keys[0] = keycode;
+        break;
+      default: assert(0, "unknown key " ~ name);
+    }
+
+    // register the new control scheme
     game.events.controlScheme = _controls;
 
+    // stop intercepting key events
     _handler.unregister();
     _handler = null;
+    _currentlyRemapping = null;
   }
 
   override void moveSelectionDown() {
@@ -86,6 +110,10 @@ class ControlsMenu : TitleMenu {
   }
 
   string controlName(string entryText) {
+    if (entryText == _currentlyRemapping) {
+      return "-";
+    }
+
     switch (entryText) {
       case "up":
         return _controls.axes["move"].upKey.to!string.toUpper;
