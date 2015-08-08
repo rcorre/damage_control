@@ -18,22 +18,50 @@ private enum {
 class ControlsMenu : TitleMenu {
   private {
     ControlScheme _controls;
+    EventHandler  _handler;
   }
 
   this(Game game, ControlScheme controls) {
     super(game,
-      MenuEntry("up"     , (g) { }),
-      MenuEntry("down"   , (g) { }),
-      MenuEntry("left"   , (g) { }),
-      MenuEntry("right"  , (g) { }),
-      MenuEntry("confirm", (g) { }),
-      MenuEntry("cancel" , (g) { }),
-      MenuEntry("rotateL", (g) { }),
-      MenuEntry("rotateR", (g) { }));
+      MenuEntry("up"     , g => startMappingKey(g, "up"     )),
+      MenuEntry("down"   , g => startMappingKey(g, "down"   )),
+      MenuEntry("left"   , g => startMappingKey(g, "left"   )),
+      MenuEntry("right"  , g => startMappingKey(g, "right"  )),
+      MenuEntry("confirm", g => startMappingKey(g, "confirm")),
+      MenuEntry("cancel" , g => startMappingKey(g, "cancel" )),
+      MenuEntry("rotateL", g => startMappingKey(g, "rotateL")),
+      MenuEntry("rotateR", g => startMappingKey(g, "rotateR")));
+
     _controls = controls;
   }
 
-  void mapButton(string name) { }
+  @property bool isRemapping() { return _handler !is null; }
+
+  void startMappingKey(Game game, string name) {
+    // the next time a key is pressed, map it to the selected action
+    _handler = game.events.onAnyKeyDown(k => remapKey(game, name, k));
+  }
+
+  void remapKey(Game game, string name, KeyCode keycode) {
+    // a key was pressed in mapping mode
+    _controls.buttons[name].keys[0] = keycode;
+    game.events.controlScheme = _controls;
+
+    _handler.unregister();
+    _handler = null;
+  }
+
+  override void moveSelectionDown() {
+    // if remapping, a direction button should be captured by the remapping
+    // handler rather than the menu motion handler
+    if (!isRemapping) super.moveSelectionDown();
+  }
+
+  override void moveSelectionUp() {
+    // if remapping, a direction button should be captured by the remapping
+    // handler rather than the menu motion handler
+    if (!isRemapping) super.moveSelectionUp();
+  }
 
   protected override void drawEntry(
       MenuEntry       entry,
@@ -43,6 +71,7 @@ class ControlsMenu : TitleMenu {
       ref SpriteBatch spriteBatch)
   {
       super.drawEntry(entry, isSelected, center, textBatch, spriteBatch);
+
       Text text;
 
       text.centered  = true;
