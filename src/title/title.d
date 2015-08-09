@@ -7,7 +7,8 @@ import std.container : Array;
 import battle.battle;
 import dau;
 import title.menu;
-import title.controls_menu;
+import title.keyboard_menu;
+import title.gamepad_menu;
 import title.states.navigate;
 import jsonizer;
 
@@ -151,17 +152,11 @@ package:
   }
 
   auto keyboardMenu(Game game) {
-    auto dummy(Game game) {}
-
-    return new ControlsMenu(game, game.events.controlScheme);
+    return new KeyboardMenu(game, game.events.controlScheme);
   }
 
   auto gamepadMenu(Game game) {
-    auto dummy(Game game) {}
-
-    return new TitleMenu(game,
-        MenuEntry("Keyboard", &dummy),
-        MenuEntry("Gamepad" , &dummy));
+    return new GamepadMenu(game, game.events.controlScheme);
   }
 
   auto creditsMenu(Game game) {

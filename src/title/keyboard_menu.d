@@ -1,17 +1,16 @@
-/// Menu that allows configuration of controls
-module title.controls_menu;
+/// Menu that allows configuration of keyboard controls
+module title.keyboard_menu;
 
-import std.conv      : to;
-import std.array     : array;
-import std.string    : toUpper;
-import std.algorithm : map;
+import std.conv   : to;
+import std.array  : array;
+import std.string : toUpper;
 import title.menu;
 import dau;
 
-private enum neutralTint   = Color(1f,1f,1f,0.5f);
+private enum neutralTint = Color(1f,1f,1f,0.5f);
 
 /// Show the title screen.
-class ControlsMenu : TitleMenu {
+class KeyboardMenu : TitleMenu {
   private {
     ControlScheme _controls;
     EventHandler  _handler;
