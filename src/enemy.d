@@ -25,11 +25,11 @@ class Enemy {
     minHoverTime = 0.5,
     maxHoverTime = 2.0,
 
-    minCrashTime = 0.0,
-    maxCrashTime = 2.0,
+    minCrashTime = 0.5,
+    maxCrashTime = 1.5,
 
-    minCrashSpeed =  50.0f,
-    maxCrashSpeed = 200.0f,
+    minCrashSpeed =  30.0f,
+    maxCrashSpeed = 120.0f,
   }
 
   Transform!float transform;
@@ -177,11 +177,13 @@ class Mayday : EnemyState {
   private float    _timer;
   private Vector2f _velocity;
   private float    _angularVelocity;
+  private float    _deltaScale;
 
   this(Enemy self, Vector2f trajectory) {
     _timer = uniform(self.minCrashTime, self.maxCrashTime);
     _velocity = trajectory * uniform(self.minCrashSpeed, self.maxCrashSpeed);
     _angularVelocity = uniform(-3f, 3f) * self.rotationSpeed;
+    _deltaScale = uniform(0.3f, 0.7f) / _timer;
   }
 
   override void run(Enemy self, EnemyContext context) {
@@ -193,5 +195,6 @@ class Mayday : EnemyState {
 
     self.pos += _velocity * context.timeElapsed;
     self.transform.angle += _angularVelocity * context.timeElapsed;
+    self.transform.scale -= Vector2f(1,1) * _deltaScale * context.timeElapsed;
   }
 }
