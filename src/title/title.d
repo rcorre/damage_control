@@ -53,7 +53,11 @@ class Title : State!Game {
       _states.push(new NavigateMenus);
     }
 
-    void exit(Game game) { }
+    void exit(Game game) {
+      _states.pop();
+      _menus.clear();
+      _poppedMenu = null;
+    }
 
     void run(Game game) {
       auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);

@@ -174,7 +174,7 @@ abstract class BattleState : State!Battle {
   void onConfirm(Battle battle) { }
 
   // action to take when the "cancel" button is pressed
-  void onCancel(Battle battle) { 
+  void onCancel(Battle battle) {
     // TODO: easy exit for debugging. remove this later
     battle.game.stop();
   }
