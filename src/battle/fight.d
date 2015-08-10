@@ -39,6 +39,7 @@ abstract class Fight : TimedPhase {
     private ExplosionList _explosions;
     private Cannon[] _cannons;
     private Bitmap _projectileBmp, _explosionBmp, _targetBmp;
+    private SoundSample _cannonSound;
   }
 
   this(Battle battle) {
@@ -106,6 +107,7 @@ abstract class Fight : TimedPhase {
         _cannons.front.cooldown = cannonCooldown;
 
         spawnProjectile(_cannons.front.position, battle.cursor.center);
+        _cannonSound.play();
       }
     }
   }
