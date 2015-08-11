@@ -5,6 +5,7 @@ import std.random;
 import dau;
 import dtiled;
 import tilemap;
+import constants;
 
 struct EnemyContext {
   float    timeElapsed;
@@ -204,8 +205,21 @@ class CircleTarget : EnemyState {
     auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
     auto offset = self.pos - targetPos;
-    offset.rotate(self.circlingSpeed * context.timeElapsed * _factor);
-    self.pos = targetPos + offset;
+    auto rotation = self.circlingSpeed * context.timeElapsed * _factor;
+    offset.rotate(rotation);
+
+    auto newTarget = targetPos + offset;
+
+    // try not to rotate out of the map bounds
+    if (newTarget.x < 0 || newTarget.x > screenW ||
+        newTarget.y < 0 || newTarget.y > screenH)
+    {
+      // rotate in the opposite direction instead
+      offset = self.pos - targetPos;
+      offset.rotate(-rotation);
+    }
+
+    self.pos = newTarget;
 
     // keep facing towards the target
     self.transform.angle = (targetPos - self.pos).angle;
