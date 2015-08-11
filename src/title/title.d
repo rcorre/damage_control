@@ -28,6 +28,9 @@ class Title : State!Game {
     StateStack!(Title, Game) _states;
     Bitmap                   _underlineBmp;
     Font                     _font;
+    SoundSample              _menuMoveSound;
+    SoundSample              _menuSelectSound;
+    SoundSample              _menuPopSound;
   }
 
   this(Game game) {
@@ -39,6 +42,10 @@ class Title : State!Game {
 
     // load font for menu text
     _font = game.fonts.get(fontName, fontSize);
+
+    _menuMoveSound   = game.audio.getSample("menu_move");
+    _menuSelectSound = game.audio.getSample("menu_select");
+    _menuPopSound = game.audio.getSample("menu_pop");
   }
 
   ~this() {
@@ -81,14 +88,21 @@ class Title : State!Game {
 
 package:
   void select(Game game) {
+    _menuSelectSound.play();
     _menus.back.confirmSelection(game);
   }
 
   void moveSelection(Vector2f direction, Game game) {
-    if      (direction.y > 0) _menus.back.moveSelectionDown();
-    else if (direction.y < 0) _menus.back.moveSelectionUp();
+    if (direction.y > 0) {
+      _menus.back.moveSelectionDown();
+      _menuMoveSound.play();
+    }
+    else if (direction.y < 0) {
+      _menus.back.moveSelectionUp();
+      _menuMoveSound.play();
+    }
     else if (direction.x < 0) popMenu();
-    else if (direction.x > 0) _menus.back.confirmSelection(game);
+    else if (direction.x > 0) select(game);
   }
 
   void pushMenu(TitleMenu newMenu) {
@@ -104,6 +118,8 @@ package:
 
   void popMenu() {
     if (_menus.length == 1) return;
+
+    _menuPopSound.play();
 
     _poppedMenu = _menus.back;
     _menus.removeBack();

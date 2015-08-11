@@ -21,6 +21,11 @@ class InitializeGame : State!Game {
     void enter(Game game) {
       // load control scheme
       game.events.controlScheme = "controls.json".readJSON!ControlScheme;
+
+      // load content
+      game.audio.loadSamples("./content/sound", "*.wav");
+
+      // start on title state
       game.states.replace(new Title(game));
     }
 
