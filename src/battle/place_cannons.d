@@ -8,6 +8,7 @@ import dtiled;
 import battle.battle;
 import battle.timed_phase;
 import tilemap;
+import constants;
 
 private enum {
   phaseTime       = 5,
@@ -18,7 +19,7 @@ private enum {
 
   cannonCountFormat = "Cannons: %d",
 
-  cannonCountPos = Vector2i(600, 10),
+  cannonCountPos = Vector2i(screenW * 3/4, 10),
 }
 
 /// Player may place cannons within wall bounds

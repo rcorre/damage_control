@@ -1,16 +1,17 @@
 import dau;
 import jsonizer;
+import constants;
 import title.title;
 
 int main(char[][] args) {
   Game.Settings settings;
 
   // general settings
-  settings.fps = 60;
+  settings.fps = frameRate;
 
   // display settings
-  settings.display.windowSize = [800, 600];
-  settings.display.canvasSize = [800, 600];
+  settings.display.windowSize = [screenW, screenH];
+  settings.display.canvasSize = [screenW, screenH];
   settings.display.color = Color.black;
 
   return Game.run(new InitializeGame(), settings);
