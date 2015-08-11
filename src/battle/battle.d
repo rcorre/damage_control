@@ -19,11 +19,6 @@ private enum {
   cannonBarrelCol = 0,
   cannonSize      = 32, // width and height of cannon sprite in pixels
 
-  enemySpriteRow = 6,
-  enemySpriteCol = 4,
-  enemySize      = 32,
-  enemyDepth = 3,
-
   animationTime = 0.06,            // seconds per frame of tilesheet animation
   tilesetSize   = Vector2i(128, 0), // size of the tileset image for one frame of animation
 }
@@ -50,6 +45,7 @@ class Battle : State!Game {
   }
 
   @property auto cursor() { return _cursor; }
+  @property auto tileAtlas() { return _tileAtlas; }
 
   override {
     void enter(Game game) {
@@ -112,30 +108,6 @@ class Battle : State!Game {
     sprite.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
 
     batch ~= sprite;
-
-    game.renderer.draw(batch);
-  }
-
-  void drawEnemies(R)(R r)
-    if (isInputRange!R && is(ElementType!R == Transform!float))
-  {
-    auto batch = SpriteBatch(_tileAtlas, enemyDepth);
-
-    foreach(transform ; r) {
-      Sprite sprite;
-
-      sprite.color     = Color.white;
-      sprite.centered  = true;
-      sprite.transform = transform;
-
-      sprite.region = Rect2i(
-          enemySpriteCol * map.tileWidth  + animationOffset.x,
-          enemySpriteRow * map.tileHeight + animationOffset.y,
-          enemySize,
-          enemySize);
-
-      batch ~= sprite;
-    }
 
     game.renderer.draw(batch);
   }

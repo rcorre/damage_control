@@ -8,7 +8,7 @@ import battle.battle;
 import battle.fight;
 
 private enum {
-  enemySize = Vector2i(32,32),
+  enemyDepth  = 3,
 }
 
 class FightAI : Fight {
@@ -43,14 +43,14 @@ class FightAI : Fight {
       super.run(battle);
 
       updateEnemies(battle);
-      battle.drawEnemies(_enemies[].map!(x => x.transform));
+      drawEnemies(battle);
     }
 
     void onProjectileExplode(Battle battle, Vector2f pos, float radius) {
       super.onProjectileExplode(battle, pos, radius);
       foreach(ref enemy ; _enemies) {
         if (enemy.pos.distance(pos) < radius) {
-          enemy.die(pos);
+          enemy.die(pos, &spawnFragment);
         }
       }
     }
@@ -74,5 +74,17 @@ class FightAI : Fight {
     foreach(ref enemy ; _enemies) {
       enemy.update(context);
     }
+  }
+
+  void drawEnemies(Battle battle) {
+    auto batch = SpriteBatch(battle.tileAtlas, enemyDepth);
+
+    foreach(enemy ; _enemies) enemy.draw(batch, battle.animationOffset);
+
+    battle.game.renderer.draw(batch);
+  }
+
+  void spawnFragment(Enemy enemy) {
+    _enemies.insert(enemy);
   }
 }

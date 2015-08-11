@@ -107,7 +107,7 @@ abstract class Fight : TimedPhase {
         _cannons.front.cooldown = cannonCooldown;
 
         spawnProjectile(_cannons.front.position, battle.cursor.center);
-        _cannonSound.play();
+        //_cannonSound.play();
       }
     }
   }

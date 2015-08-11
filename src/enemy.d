@@ -10,8 +10,9 @@ struct EnemyContext {
   float    timeElapsed;
   RowCol[] targets;
   TileMap  tileMap;
+
   void delegate(Vector2f origin, Vector2f target) spawnProjectile;
-  void delegate(Vector2f origin) spawnExplosion;
+  void delegate(Vector2f origin)                  spawnExplosion;
 }
 
 class Enemy {
@@ -28,20 +29,27 @@ class Enemy {
     minCrashTime = 0.5,
     maxCrashTime = 1.5,
 
-    minCrashSpeed =  30.0f,
-    maxCrashSpeed = 120.0f,
+    minCrashSpeed = 30.0f,
+    maxCrashSpeed = 90.0f,
+
+    fragmentProbability = 0.1f, // chance to split into fragments on die()
+
+    spriteOffset = Vector2i(4 * 16, 6 * 16),
+    spriteSize   = Vector2i(32, 32),
   }
 
   Transform!float transform;
   float           fireCooldown;
   RowCol          target;
   bool            destroyed;
+  Rect2i          spriteRect;
 
   protected StateStack!(Enemy, EnemyContext) states;
 
   this(Vector2f position) {
     this.transform = position;
     states.push(new SelectTarget);
+    spriteRect = Rect2i(spriteOffset, spriteSize);
   }
 
   ref auto pos() { return transform.pos; }
@@ -50,9 +58,41 @@ class Enemy {
     states.run(this, context);
   }
 
-  void die(Vector2f projectilePos) {
+  void draw(ref SpriteBatch batch, in Vector2i animationOffset) {
+    Sprite sprite;
+
+    sprite.color     = Color.white;
+    sprite.centered  = true;
+    sprite.transform = transform;
+
+    sprite.region = spriteRect;
+    sprite.region.x += animationOffset.x;
+    sprite.region.y += animationOffset.y;
+
+    batch ~= sprite;
+  }
+
+  void die(Vector2f projectilePos, void delegate(Enemy) spawnFragment) {
     auto trajectory = (transform.pos - projectilePos).normalized;
-    states.push(new Mayday(this, trajectory));
+
+    if (uniform01 < fragmentProbability) {
+      foreach (i ; 0..4) {
+        auto fragment = new Enemy(this.transform.pos);
+
+        fragment.spriteRect.x += (i % 2) * spriteRect.width / 2;
+        fragment.spriteRect.y += (i / 2) * spriteRect.height / 2;
+        fragment.spriteRect.width = spriteRect.width / 2;
+        fragment.spriteRect.height = spriteRect.height / 2;
+
+        fragment.states.push(new Mayday(this, trajectory));
+        spawnFragment(fragment);
+      }
+
+      this.destroyed = true;
+    }
+    else {
+      states.push(new Mayday(this, trajectory));
+    }
   }
 }
 
