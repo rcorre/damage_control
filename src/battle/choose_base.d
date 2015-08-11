@@ -26,7 +26,7 @@ class ChooseBase : BattleState {
       selectReactor(battle, _currentCoord);
     }
 
-    void onCursorMove(Battle battle, Vector2i direction) {
+    void onCursorMove(Battle battle, Vector2f direction) {
       auto dist(RowCol coord) { return _currentCoord.manhattan(coord); }
 
       // try to pick the closest reactor in the direction the cursor was moved

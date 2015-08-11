@@ -128,7 +128,7 @@ abstract class BattleState : State!Battle {
       _handlers.insert(events.onButtonDown("rotateL",
             () => onRotate(battle, false)));
       _handlers.insert(events.onAxisMoved("move",
-            (pos) => battle.cursor.startMoving(pos)));
+            (pos) => onCursorMove(battle, pos)));
     }
 
     void exit(Battle battle) {
@@ -140,7 +140,9 @@ abstract class BattleState : State!Battle {
   }
 
   // action to take when cursor is moved in the given direction
-  void onCursorMove(Battle battle, Vector2i direction) { }
+  void onCursorMove(Battle battle, Vector2f direction) {
+    battle.cursor.startMoving(direction);
+  }
 
   // action to take when the "confirm" button is pressed
   void onConfirm(Battle battle) { }
