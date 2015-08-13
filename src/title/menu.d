@@ -1,11 +1,11 @@
 /// Title menu
 module title.menu;
 
-import std.math      : pow;
 import std.range     : enumerate;
 import std.container : Array;
 import battle.battle;
 import dau;
+import transition;
 
 private enum {
   // x position of underline when not shown (entry not selected)
@@ -17,7 +17,7 @@ private enum {
   highlightTint = Color(1f,1f,1f,1f),
 
   // seconds it takes for menus or underlines to move between locations
-  transitionDuration = 0.5,
+  transitionDuration = 0.5f,
 }
 
 /// Show the title screen.
@@ -33,8 +33,8 @@ class TitleMenu {
     _entries.insert(entries);
 
     // start off-screen to the right and subdued in color
-    _positionX.hold(900);
-    _color.hold(subduedTint);
+    _positionX.initialize(900, transitionDuration);
+    _color.initialize(subduedTint, transitionDuration);
   }
 
   // y offsets are determined to space out the entries within the screen height
@@ -136,8 +136,9 @@ struct MenuEntry {
     this.text    = text;
     this.action  = action;
 
-    _textColor.hold(neutralTint);
-    _underlineX.hold(underlineHideX);
+    _textColor.initialize(neutralTint, transitionDuration);
+    _underlineColor.initialize(subduedTint, transitionDuration);
+    _underlineX.initialize(underlineHideX, transitionDuration);
   }
 
   void select(int xPos) {
@@ -168,35 +169,5 @@ struct MenuEntry {
 
   auto underlineColor() {
     return _underlineColor.value;
-  }
-}
-
-private struct Transition(T) if (is(typeof(T.init.lerp(T.init, 0f)) : T)) {
-  T     start;
-  T     end;
-  float progress;
-
-  void hold(T val) {
-    start = val;
-    end = val;
-    progress = 0f;
-  }
-
-  void go(T to) {
-    go(this.value, to);
-  }
-
-  void go(T start, T end) {
-    this.start    = start;
-    this.end      = end;
-    this.progress = 0f;
-  }
-
-  void update(float timeElapsed) {
-    progress = min(1f, progress + timeElapsed / transitionDuration);
-  }
-
-  auto value() {
-    return start.lerp(end, progress.pow(0.35));
   }
 }

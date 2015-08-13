@@ -11,7 +11,7 @@ import music;
 import battle.cursor;
 import battle.choose_base;
 import battle.start_round;
-import battle.transition;
+import battle.introduction;
 
 private enum {
   cannonBaseRow   = 6,
@@ -40,7 +40,6 @@ class Battle : State!Game {
     int          _numAnimationFrames;
     int          _animationCounter;
     Cursor       _cursor;
-    MusicMixer   _music;
   }
 
   @property auto animationOffset() {
@@ -59,7 +58,7 @@ class Battle : State!Game {
       _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
 
-      states.push(new BattleTransition("Choose Base"),
+      states.push(new BattleIntroduction("Choose Base", MusicLevel.basic),
                   new ChooseBase,
                   new StartRound);
 
@@ -84,6 +83,7 @@ class Battle : State!Game {
       }
 
       _cursor.update(game.deltaTime);
+      music.update(game.deltaTime);
     }
   }
 

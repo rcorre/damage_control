@@ -41,8 +41,6 @@ class PlaceCannons : TimedPhase {
         cannonsPerRound +                      // base cannon count
         numNodes * cannonsPerNode +            // node bonus
         territory.walkLength / tilesPerCannon; // territory bonus
-
-      battle.music.setTracks(0, 1);
     }
 
     void run(Battle battle) {

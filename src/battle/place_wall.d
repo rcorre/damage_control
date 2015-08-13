@@ -35,8 +35,6 @@ class PlaceWall : TimedPhase {
       super.enter(battle);
       _piece = Piece.random;
       _tileAtlas = battle.game.bitmaps.get("tileset");
-
-      battle.music.setTracks(0, 1);
     }
 
     void run(Battle battle) {

@@ -1,11 +1,12 @@
 module battle.start_round;
 
 import dau;
+import music;
 import battle.battle;
 import battle.place_wall;
 import battle.place_cannons;
 import battle.fight_ai;
-import battle.transition;
+import battle.introduction;
 
 private enum {
   cannonsTitle = "Install Cannons",
@@ -22,13 +23,13 @@ class StartRound : State!Battle {
   override void enter(Battle battle) {
     // TODO: check if just finished last round
     battle.states.push(
-        new BattleTransition(cannonsTitle),
+        new BattleIntroduction(cannonsTitle, MusicLevel.moderate),
         new PlaceCannons(battle), 
 
-        new BattleTransition(fightTitle),
+        new BattleIntroduction(fightTitle, MusicLevel.intense),
         new FightAI(battle, _currentRound++), 
 
-        new BattleTransition(rebuildTitle),
+        new BattleIntroduction(rebuildTitle, MusicLevel.basic),
         new PlaceWall(battle));
   }
 

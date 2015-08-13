@@ -1,4 +1,4 @@
-module battle.transition;
+module battle.introduction;
 
 import std.math;
 import std.format : format;
@@ -7,6 +7,7 @@ import dau;
 import dtiled;
 import battle.battle;
 import tilemap;
+import music;
 
 private enum {
   fontName  = "Mecha",
@@ -25,7 +26,7 @@ private enum {
 }
 
 /// Play a short animation before entering the next phase
-class BattleTransition : BattleState {
+class BattleIntroduction : BattleState {
   private {
     static Bitmap _underline;
 
@@ -33,10 +34,15 @@ class BattleTransition : BattleState {
     Transition _underlineTransition;
     string     _title;
     Font       _font;
+
+    // How many music streams to enable.
+    // More intense parts of the battle enable more streams.
+    MusicLevel _musicLevel;
   }
 
-  this(string title) {
+  this(string title, MusicLevel musicLevel) {
     _title = title;
+    _musicLevel = musicLevel;
   }
 
   static ~this() {
@@ -71,6 +77,8 @@ class BattleTransition : BattleState {
       _underlineTransition.endPos      = underlineExitPos;
       _underlineTransition.timeElapsed = 0;
       _underlineTransition.totalTime   = transitionDuration;
+
+      battle.music.enableTracksUpTo(_musicLevel);
     }
 
     void run(Battle battle) {
@@ -117,6 +125,7 @@ class BattleTransition : BattleState {
   }
 }
 
+// TODO: eventually merge with the Transition struct used in menus
 private struct Transition {
   Vector2f startPos, endPos;
   float timeElapsed, totalTime;

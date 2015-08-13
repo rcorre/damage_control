@@ -97,8 +97,6 @@ abstract class Fight : TimedPhase {
       battle.cannonTarget = battle.cursor.center;
 
       drawTarget(battle.game.renderer, battle.cursor.center);
-
-      battle.music.setTracks(0, 1, 2);
     }
 
     override void onConfirm(Battle battle) {
