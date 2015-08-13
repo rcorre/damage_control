@@ -7,6 +7,7 @@ import dau;
 import dtiled;
 import tilemap;
 import player;
+import music;
 import battle.cursor;
 import battle.choose_base;
 import battle.start_round;
@@ -31,6 +32,7 @@ class Battle : State!Game {
   StateStack!Battle states;
   Player player;
   Vector2f cannonTarget = Vector2f.zero;
+  MusicMixer music;
 
   private {
     Bitmap       _tileAtlas;
@@ -38,6 +40,7 @@ class Battle : State!Game {
     int          _numAnimationFrames;
     int          _animationCounter;
     Cursor       _cursor;
+    MusicMixer   _music;
   }
 
   @property auto animationOffset() {
@@ -63,6 +66,7 @@ class Battle : State!Game {
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
       _cursor = new Cursor(this);
+      music = new MusicMixer(game.audio, 0);
     }
 
     void exit(Game game) {

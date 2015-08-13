@@ -24,6 +24,8 @@ class ChooseBase : BattleState {
 
       _currentCoord = _reactorCoords.front;
       selectReactor(battle, _currentCoord);
+
+      battle.music.setTracks(0);
     }
 
     void onCursorMove(Battle battle, Vector2f direction) {
