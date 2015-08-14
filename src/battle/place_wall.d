@@ -22,12 +22,16 @@ private enum {
 /// Player is holding a wall segment they can place with a mouse click
 class PlaceWall : TimedPhase {
   private {
-    Piece _piece;
-    Bitmap _tileAtlas;
+    Piece       _piece;
+    Bitmap      _tileAtlas;
+    SoundSample _soundOk;
+    SoundSample _soundBad;
   }
 
   this(Battle battle) {
     super(battle, phaseTime);
+    _soundOk  = battle.game.audio.getSample("place_ok");
+    _soundBad = battle.game.audio.getSample("place_bad");
   }
 
   override {
@@ -49,7 +53,12 @@ class PlaceWall : TimedPhase {
       auto wallCoords = map.maskCoordsAround(battle.cursor.coord, _piece.layout);
 
       // No room to place piece
-      if (!wallCoords.all!(x => map.canBuildAt(x))) return;
+      if (!wallCoords.all!(x => map.canBuildAt(x))) {
+        _soundBad.play();
+        return;
+      }
+
+      _soundOk.play();
 
       foreach(coord ; wallCoords) {
         map.tileAt(coord).construct = Construct.wall;

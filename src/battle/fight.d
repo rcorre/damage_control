@@ -48,6 +48,7 @@ abstract class Fight : TimedPhase {
     _explosions = new ExplosionList;
 
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
+    _cannonSound = battle.game.audio.getSample("cannon");
 
     // don't forget to re-target the display after creating the bitmaps
     scope(exit) al_set_target_backbuffer(battle.game.display.display);
@@ -107,7 +108,7 @@ abstract class Fight : TimedPhase {
         _cannons.front.cooldown = cannonCooldown;
 
         spawnProjectile(_cannons.front.position, battle.cursor.center);
-        //_cannonSound.play();
+        _cannonSound.play();
       }
     }
   }

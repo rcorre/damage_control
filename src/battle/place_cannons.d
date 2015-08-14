@@ -24,10 +24,14 @@ private enum {
 
 /// Player may place cannons within wall bounds
 class PlaceCannons : TimedPhase {
-  private ulong _cannons;
+  private ulong       _cannons;
+  private SoundSample _soundOk;
+  private SoundSample _soundBad;
 
   this(Battle battle) {
     super(battle, phaseTime);
+    _soundOk  = battle.game.audio.getSample("place_ok");
+    _soundBad = battle.game.audio.getSample("place_bad");
   }
 
   override {
@@ -66,6 +70,10 @@ class PlaceCannons : TimedPhase {
       {
         --_cannons;
         map.tileAt(coord).construct = Construct.cannon;
+        _soundOk.play();
+      }
+      else {
+        _soundBad.play();
       }
     }
   }
