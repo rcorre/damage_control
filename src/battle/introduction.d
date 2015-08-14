@@ -45,6 +45,14 @@ class BattleIntroduction : BattleState {
     _title      = title;
     _musicLevel = musicLevel;
     _sound      = game.audio.getSample("battle_intro");
+    _font       = game.fonts.get(fontName, fontSize);
+
+    // create underline bitmap
+    _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
+
+    al_set_target_bitmap(_underline);
+    al_clear_to_color(Color.white);
+    al_set_target_backbuffer(game.display.display);
   }
 
   static ~this() {
@@ -54,21 +62,6 @@ class BattleIntroduction : BattleState {
   override {
     void enter(Battle battle) {
       super.enter(battle);
-      if (_underline is null) {
-        // TODO: what a hack ...
-        // problem here is that the renderer is holding on to the bitmap through
-        // the SpriteBatch
-        // eventually need to have the renderer manage bitmaps itself.
-
-        // create underline bitmap
-        _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
-
-        al_set_target_bitmap(_underline);
-        al_clear_to_color(Color.white);
-        al_set_target_backbuffer(battle.game.display.display);
-      }
-
-      _font = battle.game.fonts.get(fontName, fontSize);
 
       _textTransition.startPos    = titleEnterPos;
       _textTransition.endPos      = titleExitPos;
