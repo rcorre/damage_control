@@ -23,13 +23,13 @@ class StartRound : State!Battle {
   override void enter(Battle battle) {
     // TODO: check if just finished last round
     battle.states.push(
-        new BattleIntroduction(cannonsTitle, MusicLevel.moderate),
+        new BattleIntroduction(cannonsTitle, MusicLevel.moderate, battle.game),
         new PlaceCannons(battle), 
 
-        new BattleIntroduction(fightTitle, MusicLevel.intense),
+        new BattleIntroduction(fightTitle, MusicLevel.intense, battle.game),
         new FightAI(battle, _currentRound++), 
 
-        new BattleIntroduction(rebuildTitle, MusicLevel.basic),
+        new BattleIntroduction(rebuildTitle, MusicLevel.basic, battle.game),
         new PlaceWall(battle));
   }
 

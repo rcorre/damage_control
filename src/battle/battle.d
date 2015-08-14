@@ -58,7 +58,7 @@ class Battle : State!Game {
       _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
 
-      states.push(new BattleIntroduction("Choose Base", MusicLevel.basic),
+      states.push(new BattleIntroduction("Choose Base", MusicLevel.basic, game),
                   new ChooseBase,
                   new StartRound);
 

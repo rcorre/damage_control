@@ -30,19 +30,21 @@ class BattleIntroduction : BattleState {
   private {
     static Bitmap _underline;
 
-    Transition _textTransition;
-    Transition _underlineTransition;
-    string     _title;
-    Font       _font;
+    Transition  _textTransition;
+    Transition  _underlineTransition;
+    string      _title;
+    Font        _font;
+    SoundSample _sound;
 
     // How many music streams to enable.
     // More intense parts of the battle enable more streams.
     MusicLevel _musicLevel;
   }
 
-  this(string title, MusicLevel musicLevel) {
-    _title = title;
+  this(string title, MusicLevel musicLevel, Game game) {
+    _title      = title;
     _musicLevel = musicLevel;
+    _sound      = game.audio.getSample("battle_intro");
   }
 
   static ~this() {
@@ -79,6 +81,7 @@ class BattleIntroduction : BattleState {
       _underlineTransition.totalTime   = transitionDuration;
 
       battle.music.enableTracksUpTo(_musicLevel);
+      _sound.play();
     }
 
     void run(Battle battle) {
