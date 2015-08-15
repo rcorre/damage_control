@@ -1,4 +1,4 @@
-module battle.timed_phase;
+module battle.states.timed_phase;
 
 import std.format : format;
 import dau;

@@ -1,12 +1,12 @@
-module battle.start_round;
+module battle.states.start_round;
 
 import dau;
 import music;
 import battle.battle;
-import battle.place_wall;
-import battle.place_cannons;
-import battle.fight_ai;
-import battle.introduction;
+import battle.states.place_wall;
+import battle.states.place_cannons;
+import battle.states.fight_ai;
+import battle.states.introduction;
 
 private enum {
   cannonsTitle = "Install Cannons",

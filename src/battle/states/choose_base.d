@@ -1,4 +1,4 @@
-module battle.choose_base;
+module battle.states.choose_base;
 
 import std.range;
 import std.random;

@@ -9,9 +9,9 @@ import tilemap;
 import player;
 import music;
 import battle.cursor;
-import battle.choose_base;
-import battle.start_round;
-import battle.introduction;
+import battle.states.choose_base;
+import battle.states.start_round;
+import battle.states.introduction;
 
 private enum {
   cannonBaseRow   = 6,

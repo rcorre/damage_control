@@ -1,4 +1,4 @@
-module battle.fight;
+module battle.states.fight;
 
 import std.array     : array;
 import std.range     : walkLength;
@@ -6,7 +6,7 @@ import std.algorithm : sort, count, filter;
 import dau;
 import dtiled;
 import battle.battle;
-import battle.timed_phase;
+import battle.states.timed_phase;
 import tilemap;
 
 private enum {

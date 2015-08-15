@@ -1,4 +1,4 @@
-module battle.place_cannons;
+module battle.states.place_cannons;
 
 import std.range     : walkLength;
 import std.format    : format;
@@ -6,7 +6,7 @@ import std.algorithm : count, filter;
 import dau;
 import dtiled;
 import battle.battle;
-import battle.timed_phase;
+import battle.states.timed_phase;
 import tilemap;
 import constants;
 

@@ -1,4 +1,4 @@
-module battle.introduction;
+module battle.states.introduction;
 
 import std.math;
 import std.format : format;

@@ -1,11 +1,11 @@
-module battle.fight_ai;
+module battle.states.fight_ai;
 
 import std.array  : array;
 import dau;
 import dtiled;
 import enemy;
 import battle.battle;
-import battle.fight;
+import battle.states.fight;
 
 private enum {
   enemyDepth  = 3,
