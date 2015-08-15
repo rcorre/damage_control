@@ -1,4 +1,4 @@
-module battle.cursor;
+module battle.entities.cursor;
 
 import dau;
 import dtiled;

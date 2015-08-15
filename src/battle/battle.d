@@ -8,7 +8,7 @@ import dtiled;
 import tilemap;
 import player;
 import music;
-import battle.cursor;
+import battle.entities.cursor;
 import battle.states.choose_base;
 import battle.states.start_round;
 import battle.states.introduction;

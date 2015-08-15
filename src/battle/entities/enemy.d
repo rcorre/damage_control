@@ -1,4 +1,4 @@
-module enemy;
+module battle.entities.enemy;
 
 import std.math;
 import std.random;
