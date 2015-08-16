@@ -7,15 +7,13 @@ import dau;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;
+import battle.entities.rocket;
 import tilemap;
 
 private enum {
   phaseTime      = 15,
   cannonCooldown = 4,
 
-  projectileSize  = Vector2i(12, 8),
-  projectileTint  = Color(1, 1, 1, 0.5),
-  projectileSpeed = 500,
   projectileDepth = 3,
 
   explosionTime  = 0.30f,
@@ -24,7 +22,7 @@ private enum {
   explosionDepth = 3,
 
   targetDepth       = 6,
-  targetSpriteRow   = 8,
+  targetSpriteRow   = 9,
   targetSpriteCol   = 2,
   targetSpriteSheet = "tileset",
 }
@@ -32,13 +30,13 @@ private enum {
 /// Base battle state for fight vs ai or fight vs player.
 abstract class Fight : TimedPhase {
   private {
-    alias ProjectileList = DropList!(Projectile, x => x.duration < 0);
+    alias ProjectileList = DropList!(Rocket, x => x.destroyed);
     alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
 
     private ProjectileList _projectiles;
     private ExplosionList _explosions;
     private Cannon[] _cannons;
-    private Bitmap _projectileBmp, _explosionBmp, _targetBmp;
+    private Bitmap _explosionBmp, _targetBmp;
     private SoundSample _cannonSound;
   }
 
@@ -50,15 +48,6 @@ abstract class Fight : TimedPhase {
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
     _cannonSound = battle.game.audio.getSample("cannon");
 
-    // don't forget to re-target the display after creating the bitmaps
-    scope(exit) al_set_target_backbuffer(battle.game.display.display);
-
-    // create the projectile bitmap
-    _projectileBmp = Bitmap(al_create_bitmap(projectileSize.x,
-          projectileSize.y));
-    al_set_target_bitmap(_projectileBmp);
-    al_clear_to_color(projectileTint);
-
     // create the explosion bitmap
     _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
     al_set_target_bitmap(_explosionBmp);
@@ -67,6 +56,9 @@ abstract class Fight : TimedPhase {
         explosionSize / 2, explosionSize / 2, // center x,y
         explosionSize / 2, explosionSize / 2, // radius x,y
         explosionTint);                       // color
+
+    // re-target the display after creating the bitmap
+    al_set_target_backbuffer(battle.game.display.display);
   }
 
   override {
@@ -114,7 +106,6 @@ abstract class Fight : TimedPhase {
   }
 
   ~this() {
-    al_destroy_bitmap(_projectileBmp);
     al_destroy_bitmap(_explosionBmp);
   }
 
@@ -126,46 +117,26 @@ abstract class Fight : TimedPhase {
   }
 
   void spawnProjectile(Vector2f origin, Vector2f target) {
-    auto path = target - origin; // path along which projectile will travel
-
-    Projectile proj;
-    proj.position = origin;
-    proj.velocity = path.normalized * projectileSpeed;
-    proj.duration = path.len / projectileSpeed;
-    _projectiles.insert(proj);
+    _projectiles.insert(Rocket(origin, target));
   }
 
   private:
   void processProjectiles(Battle battle) {
-    auto batch = SpriteBatch(_projectileBmp, projectileDepth);
+    auto batch = SpriteBatch(battle.tileAtlas, projectileDepth);
 
     foreach(ref proj ; _projectiles) {
-      proj.duration -= battle.game.deltaTime;
+      proj.update(battle.game.deltaTime);
 
-      if (proj.duration < 0) {
+      if (proj.destroyed) {
         // turn this projectile into an explosion
         createExplosion(proj.position);
         onProjectileExplode(battle, proj.position, explosionSize);
-        continue;
       }
-
-      proj.position += proj.velocity * battle.game.deltaTime;
-
-      Sprite sprite;
-      sprite.region          = Rect2i(Vector2i.zero, projectileSize);
-      sprite.transform       = proj.position;
-      sprite.color           = Color.white;
-      sprite.transform.angle = proj.velocity.angle;
-
-      // draw the projectile as a 'trail' of fading rects
-      while (sprite.color.a > 0) {
-        batch ~= sprite;
-        sprite.color.a -= 0.15;
-        sprite.transform.pos -= proj.velocity * battle.game.deltaTime;
-
-        batch ~= sprite;
+      else {
+        proj.draw(batch);
       }
     }
+
 
     battle.game.renderer.draw(batch);
   }
