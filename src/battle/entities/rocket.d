@@ -23,28 +23,41 @@ struct Rocket {
     fragmentProbability = 0.1f, // chance to split into fragments on die()
 
     spriteRect = Rect2i(2 * 16, 8 * 16, 16, 16), // col 2, row 8
+
+    particleInterval = 0.01f,
   }
 
   private {
     Transform!float _transform;
     Vector2f        _velocity;
     float           _duration;
+    float           _particleTimer;
   }
 
   this(Vector2f start, Vector2f target) {
-    _transform = start;
+    _transform.pos = start;
 
     auto path = target - start;
     _velocity = path.normalized * speed;
     _duration = path.len / speed;
+
+    _transform.angle = _velocity.angle;
+
+    _particleTimer = particleInterval;
   }
 
   @property bool destroyed() { return _duration < 0; }
   @property auto position() { return _transform.pos; }
 
-  void update(float timeElapsed) {
+  void update(float timeElapsed, void delegate(Vector2f) spawnParticle) {
     _duration -= timeElapsed;
     _transform.pos += _velocity * timeElapsed;
+
+    _particleTimer -= timeElapsed;
+    if (_particleTimer < 0) {
+      _particleTimer = particleInterval;
+      spawnParticle(_transform.pos);
+    }
   }
 
   void draw(ref SpriteBatch batch) {
@@ -53,8 +66,6 @@ struct Rocket {
     sprite.color     = Color.white;
     sprite.centered  = true;
     sprite.transform = _transform;
-
-    sprite.transform.angle = _velocity.angle;
 
     sprite.region = spriteRect;
 

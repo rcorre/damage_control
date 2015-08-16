@@ -7,7 +7,7 @@ import dau;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;
-import battle.entities.rocket;
+import battle.entities;
 import tilemap;
 
 private enum {
@@ -15,6 +15,7 @@ private enum {
   cannonCooldown = 4,
 
   projectileDepth = 3,
+  particleDepth   = 2,
 
   explosionTime  = 0.30f,
   explosionSize  = 40,
@@ -32,18 +33,21 @@ abstract class Fight : TimedPhase {
   private {
     alias ProjectileList = DropList!(Rocket, x => x.destroyed);
     alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
+    alias ParticleList = DropList!(Particle, x => x.destroyed);
 
     private ProjectileList _projectiles;
-    private ExplosionList _explosions;
-    private Cannon[] _cannons;
-    private Bitmap _explosionBmp, _targetBmp;
-    private SoundSample _cannonSound;
+    private ExplosionList  _explosions;
+    private ParticleList   _particles;
+    private Cannon[]       _cannons;
+    private Bitmap         _explosionBmp, _targetBmp;
+    private SoundSample    _cannonSound;
   }
 
   this(Battle battle) {
     super(battle, phaseTime);
     _projectiles = new ProjectileList;
     _explosions = new ExplosionList;
+    _particles = new ParticleList;
 
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
     _cannonSound = battle.game.audio.getSample("cannon");
@@ -82,6 +86,7 @@ abstract class Fight : TimedPhase {
 
       processProjectiles(battle);
       processExplosions(game);
+      processParticles(battle);
 
       foreach(ref cannon ; _cannons) {
         cannon.cooldown -= game.deltaTime;
@@ -125,7 +130,7 @@ abstract class Fight : TimedPhase {
     auto batch = SpriteBatch(battle.tileAtlas, projectileDepth);
 
     foreach(ref proj ; _projectiles) {
-      proj.update(battle.game.deltaTime);
+      proj.update(battle.game.deltaTime, &spawnParticle);
 
       if (proj.destroyed) {
         // turn this projectile into an explosion
@@ -166,6 +171,17 @@ abstract class Fight : TimedPhase {
     game.renderer.draw(batch);
   }
 
+  void processParticles(Battle battle) {
+    auto batch = SpriteBatch(battle.tileAtlas, particleDepth);
+
+    foreach(ref particle ; _particles) {
+      particle.update(battle.game.deltaTime);
+      batch ~= particle.sprite;
+    }
+
+    battle.game.renderer.draw(batch);
+  }
+
   void destroyWall(Battle battle, RowCol wallCoord) {
     auto map = battle.map;
     map.tileAt(wallCoord).construct = Construct.none;
@@ -200,6 +216,10 @@ abstract class Fight : TimedPhase {
 
   void createExplosion(Vector2f pos) {
     _explosions.insert(Explosion(pos));
+  }
+
+  void spawnParticle(Vector2f pos) {
+    _particles.insert(Particle(pos));
   }
 }
 
