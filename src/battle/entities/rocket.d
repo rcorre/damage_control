@@ -22,8 +22,6 @@ struct Rocket {
 
     fragmentProbability = 0.1f, // chance to split into fragments on die()
 
-    spriteRect = Rect2i(2 * 16, 8 * 16, 16, 16), // col 2, row 8
-
     particleInterval = 0.01f,
   }
 
@@ -67,7 +65,7 @@ struct Rocket {
     sprite.centered  = true;
     sprite.transform = _transform;
 
-    sprite.region = spriteRect;
+    sprite.region = SpriteRegion.rocket;
 
     batch ~= sprite;
   }

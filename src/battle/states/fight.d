@@ -9,6 +9,7 @@ import battle.battle;
 import battle.states.timed_phase;
 import battle.entities;
 import tilemap;
+import constants;
 
 private enum {
   phaseTime      = 15,
@@ -23,8 +24,6 @@ private enum {
   explosionDepth = 3,
 
   targetDepth       = 6,
-  targetSpriteRow   = 9,
-  targetSpriteCol   = 2,
   targetSpriteSheet = "tileset",
 }
 
@@ -38,9 +37,9 @@ abstract class Fight : TimedPhase {
     private ProjectileList _projectiles;
     private ExplosionList  _explosions;
     private ParticleList   _particles;
-    private Cannon[]       _cannons;
+    private Launcher[]     _launchers;
     private Bitmap         _explosionBmp, _targetBmp;
-    private SoundSample    _cannonSound;
+    private SoundSample    _launcherSound;
   }
 
   this(Battle battle) {
@@ -50,7 +49,7 @@ abstract class Fight : TimedPhase {
     _particles = new ParticleList;
 
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
-    _cannonSound = battle.game.audio.getSample("cannon");
+    _launcherSound = battle.game.audio.getSample("cannon");
 
     // create the explosion bitmap
     _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
@@ -70,9 +69,9 @@ abstract class Fight : TimedPhase {
       super.enter(battle);
 
       // create an entry in the cannon list for each cannon in player territory
-      _cannons = battle.map.allCoords
+      _launchers = battle.map.allCoords
         .filter!(x => battle.map.tileAt(x).hasCannon)
-        .map!(x => Cannon(battle.map.tileOffset(x + RowCol(1,1)).as!Vector2f))
+        .map!(x => Launcher(battle.map.tileOffset(x + RowCol(1,1)).as!Vector2f))
         .array;
     }
 
@@ -88,24 +87,20 @@ abstract class Fight : TimedPhase {
       processExplosions(game);
       processParticles(battle);
 
-      foreach(ref cannon ; _cannons) {
-        cannon.cooldown -= game.deltaTime;
-      }
-
       battle.cannonTarget = battle.cursor.center;
 
       drawTarget(battle.game.renderer, battle.cursor.center);
     }
 
     override void onConfirm(Battle battle) {
-      // fire the cannons with the lowest cooldowns first
-      _cannons.sort!((a,b) => a.cooldown < b.cooldown);
+      auto res = _launchers.find!(x => x.ammo > 0);
 
-      if (_cannons.front.cooldown < 0) {
-        _cannons.front.cooldown = cannonCooldown;
+      if (!res.empty) {
+        auto launcher = res.front;
+        launcher.ammo -= 1;
 
-        spawnProjectile(_cannons.front.position, battle.cursor.center);
-        _cannonSound.play();
+        spawnProjectile(launcher.position, battle.cursor.center);
+        _launcherSound.play();
       }
     }
   }
@@ -204,7 +199,7 @@ abstract class Fight : TimedPhase {
 
     sprite.transform = pos;
     sprite.centered = true;
-    sprite.region = Rect2i(16 * targetSpriteCol, 16 * targetSpriteRow, 16, 16);
+    sprite.region = SpriteRegion.crossHairs;
 
     auto batch = SpriteBatch(_targetBmp, targetDepth);
     batch ~= sprite;
@@ -238,15 +233,5 @@ struct Explosion {
     // center the rectangle on the given point
     this.position = position;
     this.duration = explosionTime;
-  }
-}
-
-struct Cannon {
-  Vector2f position;
-  float cooldown;
-
-  this(Vector2f position) {
-    this.position = position;
-    this.cooldown = 0;
   }
 }

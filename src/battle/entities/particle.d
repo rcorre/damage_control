@@ -10,7 +10,6 @@ struct Particle {
     startColor = Color(1f,1f,1f,1f),
     endColor   = Color(1f,1f,1f,0f),
     duration   = 0.5f,
-    spriteRect = Rect2i(3 * 16, 8 * 16, 16, 16), // col 3, row 8, 16x16
   }
 
   Vector2f pos;
@@ -34,7 +33,7 @@ struct Particle {
     sprite.transform.angle = 0;
     sprite.transform.scale = Vector2f(1,1) * lerpFactor;
 
-    sprite.region = spriteRect;
+    sprite.region = SpriteRegion.particle;
 
     return sprite;
   }
