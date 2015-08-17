@@ -39,7 +39,7 @@ abstract class Fight : TimedPhase {
     private ParticleList   _particles;
     private Launcher[]     _launchers;
     private Bitmap         _explosionBmp, _targetBmp;
-    private SoundSample    _launcherSound;
+    private SampleInstance _launcherSound;
   }
 
   this(Battle battle) {

@@ -28,9 +28,9 @@ class Title : State!Game {
     StateStack!(Title, Game) _states;
     Bitmap                   _underlineBmp;
     Font                     _font;
-    SoundSample              _menuMoveSound;
-    SoundSample              _menuSelectSound;
-    SoundSample              _menuPopSound;
+    SampleInstance           _menuMoveSound;
+    SampleInstance           _menuSelectSound;
+    SampleInstance           _menuPopSound;
   }
 
   this(Game game) {

@@ -30,11 +30,11 @@ class BattleIntroduction : BattleState {
   private {
     static Bitmap _underline;
 
-    Transition  _textTransition;
-    Transition  _underlineTransition;
-    string      _title;
-    Font        _font;
-    SoundSample _sound;
+    Transition     _textTransition;
+    Transition     _underlineTransition;
+    string         _title;
+    Font           _font;
+    SampleInstance _sound;
 
     // How many music streams to enable.
     // More intense parts of the battle enable more streams.

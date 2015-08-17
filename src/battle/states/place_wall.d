@@ -22,10 +22,10 @@ private enum {
 /// Player is holding a wall segment they can place with a mouse click
 class PlaceWall : TimedPhase {
   private {
-    Piece       _piece;
-    Bitmap      _tileAtlas;
-    SoundSample _soundOk;
-    SoundSample _soundBad;
+    Piece          _piece;
+    Bitmap         _tileAtlas;
+    SampleInstance _soundOk;
+    SampleInstance _soundBad;
   }
 
   this(Battle battle) {

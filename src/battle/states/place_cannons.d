@@ -24,9 +24,9 @@ private enum {
 
 /// Player may place cannons within wall bounds
 class PlaceCannons : TimedPhase {
-  private ulong       _cannons;
-  private SoundSample _soundOk;
-  private SoundSample _soundBad;
+  private ulong          _cannons;
+  private SampleInstance _soundOk;
+  private SampleInstance _soundBad;
 
   this(Battle battle) {
     super(battle, phaseTime);
