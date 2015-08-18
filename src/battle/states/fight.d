@@ -39,7 +39,7 @@ abstract class Fight : TimedPhase {
     private ParticleList   _particles;
     private Launcher[]     _launchers;
     private Bitmap         _explosionBmp, _targetBmp;
-    private SampleInstance _launcherSound;
+    private SoundEffect    _launcherSound;
   }
 
   this(Battle battle) {
@@ -49,7 +49,7 @@ abstract class Fight : TimedPhase {
     _particles = new ParticleList;
 
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
-    _launcherSound = battle.game.audio.getSample("cannon");
+    _launcherSound = battle.game.audio.getSound("cannon");
 
     // create the explosion bitmap
     _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));

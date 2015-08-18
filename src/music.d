@@ -24,13 +24,9 @@ class MusicMixer {
     foreach(i ; 0..numStreams) {
       _streams[i] = manager.loadStream("%s/stream%d.ogg".format(basePath, i));
       _streams[i].gain = 0; // don't enable any streams to start
-      _streams[i].playMode = AudioPlayMode.loop;
+      _streams[i].playmode = AudioPlayMode.loop;
       _gains[i].initialize(0, fadeDuration);
     }
-  }
-
-  ~this() {
-    foreach(stream ; _streams) stream.unload();
   }
 
   void update(float timeElapsed) {

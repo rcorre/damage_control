@@ -28,9 +28,9 @@ class Title : State!Game {
     StateStack!(Title, Game) _states;
     Bitmap                   _underlineBmp;
     Font                     _font;
-    SampleInstance           _menuMoveSound;
-    SampleInstance           _menuSelectSound;
-    SampleInstance           _menuPopSound;
+    SoundEffect              _menuMoveSound;
+    SoundEffect              _menuSelectSound;
+    SoundEffect              _menuPopSound;
   }
 
   this(Game game) {
@@ -43,9 +43,9 @@ class Title : State!Game {
     // load font for menu text
     _font = game.fonts.get(fontName, fontSize);
 
-    _menuMoveSound   = game.audio.getSample("menu_move");
-    _menuSelectSound = game.audio.getSample("menu_select");
-    _menuPopSound = game.audio.getSample("menu_pop");
+    _menuMoveSound   = game.audio.getSound("menu_move");
+    _menuSelectSound = game.audio.getSound("menu_select");
+    _menuPopSound    = game.audio.getSound("menu_pop");
   }
 
   ~this() {

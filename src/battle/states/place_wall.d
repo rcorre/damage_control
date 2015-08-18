@@ -22,16 +22,16 @@ private enum {
 /// Player is holding a wall segment they can place with a mouse click
 class PlaceWall : TimedPhase {
   private {
-    Piece          _piece;
-    Bitmap         _tileAtlas;
-    SampleInstance _soundOk;
-    SampleInstance _soundBad;
+    Piece       _piece;
+    Bitmap      _tileAtlas;
+    SoundEffect _soundOk;
+    SoundEffect _soundBad;
   }
 
   this(Battle battle) {
     super(battle, phaseTime);
-    _soundOk  = battle.game.audio.getSample("place_ok");
-    _soundBad = battle.game.audio.getSample("place_bad");
+    _soundOk  = battle.game.audio.getSound("place_ok");
+    _soundBad = battle.game.audio.getSound("place_bad");
   }
 
   override {

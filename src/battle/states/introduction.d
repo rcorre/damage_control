@@ -30,11 +30,11 @@ class BattleIntroduction : BattleState {
   private {
     static Bitmap _underline;
 
-    Transition     _textTransition;
-    Transition     _underlineTransition;
-    string         _title;
-    Font           _font;
-    SampleInstance _sound;
+    Transition  _textTransition;
+    Transition  _underlineTransition;
+    string      _title;
+    Font        _font;
+    SoundEffect _sound;
 
     // How many music streams to enable.
     // More intense parts of the battle enable more streams.
@@ -44,7 +44,7 @@ class BattleIntroduction : BattleState {
   this(string title, MusicLevel musicLevel, Game game) {
     _title      = title;
     _musicLevel = musicLevel;
-    _sound      = game.audio.getSample("battle_intro");
+    _sound      = game.audio.getSound("battle_intro");
     _font       = game.fonts.get(fontName, fontSize);
 
     // create underline bitmap
