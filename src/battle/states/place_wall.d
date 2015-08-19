@@ -24,14 +24,14 @@ class PlaceWall : TimedPhase {
   private {
     Piece       _piece;
     Bitmap      _tileAtlas;
-    SoundEffect _soundOk;
-    SoundEffect _soundBad;
+    SoundBank _soundOk;
+    SoundBank _soundBad;
   }
 
   this(Battle battle) {
     super(battle, phaseTime);
-    _soundOk  = battle.game.audio.getSound("place_ok");
-    _soundBad = battle.game.audio.getSound("place_bad");
+    _soundOk  = battle.game.audio.getSoundBank("place_ok");
+    _soundBad = battle.game.audio.getSoundBank("place_bad");
   }
 
   override {

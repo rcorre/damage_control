@@ -25,13 +25,13 @@ private enum {
 /// Player may place cannons within wall bounds
 class PlaceCannons : TimedPhase {
   private ulong       _cannons;
-  private SoundEffect _soundOk;
-  private SoundEffect _soundBad;
+  private SoundBank _soundOk;
+  private SoundBank _soundBad;
 
   this(Battle battle) {
     super(battle, phaseTime);
-    _soundOk  = battle.game.audio.getSound("place_ok");
-    _soundBad = battle.game.audio.getSound("place_bad");
+    _soundOk  = battle.game.audio.getSoundBank("place_ok");
+    _soundBad = battle.game.audio.getSoundBank("place_bad");
   }
 
   override {
