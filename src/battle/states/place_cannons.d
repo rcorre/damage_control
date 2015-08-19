@@ -7,7 +7,7 @@ import dau;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;
-import tilemap;
+import battle.entities.tilemap;
 import constants;
 
 private enum {

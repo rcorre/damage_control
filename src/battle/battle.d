@@ -5,7 +5,7 @@ import std.string    : startsWith;
 import std.container : Array;
 import dau;
 import dtiled;
-import tilemap;
+import battle.entities.tilemap;
 import player;
 import music;
 import battle.entities.cursor;

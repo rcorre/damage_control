@@ -7,7 +7,7 @@ import std.algorithm;
 import dau;
 import dtiled;
 import jsonizer;
-import tilemap;
+import battle.entities.tilemap;
 import battle.battle;
 import battle.states.timed_phase;
 

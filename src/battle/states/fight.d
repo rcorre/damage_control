@@ -8,7 +8,7 @@ import dtiled;
 import battle.battle;
 import battle.states.timed_phase;
 import battle.entities;
-import tilemap;
+import battle.entities.tilemap;
 import constants;
 
 private enum {

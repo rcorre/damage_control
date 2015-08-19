@@ -6,7 +6,7 @@ import std.container : Array;
 import dau;
 import dtiled;
 import battle.battle;
-import tilemap;
+import battle.entities.tilemap;
 import music;
 
 private enum {

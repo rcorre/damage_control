@@ -2,7 +2,7 @@ module battle.entities.cursor;
 
 import dau;
 import dtiled;
-import tilemap;
+import battle.entities.tilemap;
 import battle.battle;
 
 private enum {

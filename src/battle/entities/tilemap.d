@@ -1,4 +1,4 @@
-module tilemap;
+module battle.entities.tilemap;
 
 import std.conv      : to;
 import std.array     : array;

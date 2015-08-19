@@ -4,7 +4,7 @@ import std.math;
 import std.random;
 import dau;
 import dtiled;
-import tilemap;
+import battle.entities.tilemap;
 import constants;
 
 struct EnemyContext {

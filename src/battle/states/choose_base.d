@@ -7,7 +7,7 @@ import std.container : Array;
 import dau;
 import dtiled;
 import jsonizer;
-import tilemap;
+import battle.entities.tilemap;
 import battle.battle;
 
 /// Player is holding a wall segment they can place with a mouse click
