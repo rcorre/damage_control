@@ -157,4 +157,22 @@ struct TileMap {
   void clear(RowCol coord) {
     tileAt(coord).construct = null;
   }
+
+  /**
+   * Set the sprite of the wall at the given coord based on surrounding walls.
+   *
+   * A wall's sprite is determined by the pattern of surrounding walls.
+   * When a wall is destroyed or a new wall is placed, this needs to be
+   * re-evaluated for all nearby walls.
+   */
+  void regenerateWallSprite(RowCol coord) {
+    // just ignore if there is no wall here
+    // easier to check here than have all callers verify this
+    if (!tileAt(coord).hasWall) return;
+
+    uint[3][3] mask;
+
+    createMaskAround!(x => x.hasWall ? 1 : 0)(this, coord, mask);
+    tileAt(coord).wall.adjustSprite(mask);
+  }
 }

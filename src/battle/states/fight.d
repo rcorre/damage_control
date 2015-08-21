@@ -182,6 +182,7 @@ abstract class Fight : TimedPhase {
     map.tileAt(wallCoord).construct = null;
 
     foreach(neighbor ; wallCoord.adjacent(Diagonals.yes)) {
+      map.regenerateWallSprite(neighbor);
       if (map.tileAt(neighbor).isEnclosed &&
           map.enclosedCoords!(x => x.hasWall)(neighbor, Diagonals.yes).empty)
       {

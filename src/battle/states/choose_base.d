@@ -71,10 +71,7 @@ class ChooseBase : BattleState {
 
     // The walls need to evaluate their sprites
     foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-      uint[3][3] mask;
-
-      battle.map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, mask);
-      battle.map.tileAt(coord).wall.adjustSprite(mask);
+      battle.map.regenerateWallSprite(coord);
     }
   }
 }
