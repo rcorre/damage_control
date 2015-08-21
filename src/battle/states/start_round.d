@@ -3,8 +3,8 @@ module battle.states.start_round;
 import dau;
 import music;
 import battle.battle;
-import battle.states.place_wall;
-import battle.states.place_cannons;
+import battle.states.place_walls;
+import battle.states.place_turrets;
 import battle.states.fight_ai;
 import battle.states.introduction;
 
@@ -24,13 +24,13 @@ class StartRound : State!Battle {
     // TODO: check if just finished last round
     battle.states.push(
         new BattleIntroduction(cannonsTitle, MusicLevel.moderate, battle.game),
-        new PlaceCannons(battle), 
+        new PlaceTurrets(battle), 
 
         new BattleIntroduction(fightTitle, MusicLevel.intense, battle.game),
         new FightAI(battle, _currentRound++), 
 
         new BattleIntroduction(rebuildTitle, MusicLevel.basic, battle.game),
-        new PlaceWall(battle));
+        new PlaceWalls(battle));
   }
 
   override void exit(Battle battle) { }

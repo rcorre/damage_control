@@ -1,4 +1,4 @@
-module battle.states.place_wall;
+module battle.states.place_walls;
 
 import std.range;
 import std.array;
@@ -20,7 +20,7 @@ private enum {
 }
 
 /// Player is holding a wall segment they can place with a mouse click
-class PlaceWall : TimedPhase {
+class PlaceWalls : TimedPhase {
   private {
     Piece       _piece;
     Bitmap      _tileAtlas;

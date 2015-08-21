@@ -1,4 +1,4 @@
-module battle.states.place_cannons;
+module battle.states.place_turrets;
 
 import std.range     : walkLength;
 import std.format    : format;
@@ -23,7 +23,7 @@ private enum {
 }
 
 /// Player may place cannons within wall bounds
-class PlaceCannons : TimedPhase {
+class PlaceTurrets : TimedPhase {
   private {
     ulong     _turretsLeft;
     Turret    _turret;

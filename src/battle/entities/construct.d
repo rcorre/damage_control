@@ -53,7 +53,6 @@ class Wall : Construct {
     auto layout = r.front;
     return Rect2i(wallSize * layout.col, wallSize * layout.row, wallSize, wallSize);
   }
-
 }
 
 class Turret : Construct {
