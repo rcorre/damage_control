@@ -11,23 +11,28 @@ private enum {
 
 /// Represents an entity that is placed on a tile
 abstract class Construct {
-  Vector2f position;
+  Vector2f center;
   bool enclosed;
 
+  @property auto size() { return Vector2i(1,1) * tileSize * gridSize; }
+  @property auto topLeft() { return center - size / 2; }
+  @property void topLeft(Vector2f val) { center = val + size / 2; }
+
 abstract:
-  @property bool isLarge();
+  /// Region covered, in number of tiles (the region is always square).
+  @property int gridSize();
   void draw(ref SpriteBatch batch, Vector2i animationOffset);
 }
 
 class Wall : Construct {
   private Rect2i _spriteRegion;
 
-  override @property bool isLarge() { return false; }
+  override @property int gridSize() { return 1; }
 
   override void draw(ref SpriteBatch batch, Vector2i animationOffset) {
     Sprite sprite;
 
-    sprite.transform = position;
+    sprite.transform = center;
     sprite.centered  = true;
     sprite.region    = _spriteRegion;
     sprite.region.x += animationOffset.x;
@@ -51,7 +56,8 @@ class Wall : Construct {
     assert(!r.empty, "no data for wall layout %s".format(mask));
 
     auto layout = r.front;
-    return Rect2i(wallSize * layout.col, wallSize * layout.row, wallSize, wallSize);
+    return Rect2i(tileSize * layout.col, tileSize * layout.row, tileSize,
+        tileSize);
   }
 }
 
@@ -61,7 +67,7 @@ class Turret : Construct {
   private float _angle = 0f;
   int ammo;
 
-  override @property bool isLarge() { return true; }
+  override @property int gridSize() { return 2; }
 
   override void draw(ref SpriteBatch batch, Vector2i animationOffset) {
     Sprite sprite;
@@ -69,7 +75,7 @@ class Turret : Construct {
     sprite.centered  = true;
 
     // draw the base
-    sprite.transform = position;
+    sprite.transform = center;
     sprite.region = SpriteRegion.turretBase;
 
     batch ~= sprite;
@@ -87,20 +93,20 @@ class Turret : Construct {
   }
 
   void aimAt(Vector2f target) {
-    _angle = (target - position).angle;
+    _angle = (target - center).angle;
   }
 
   void refillAmmo() { this.ammo = maxAmmo; }
 }
 
 class Reactor : Construct {
-  override @property bool isLarge() { return true; }
+  override @property int gridSize() { return 2; }
 
   override void draw(ref SpriteBatch batch, Vector2i animationOffset) {
     Sprite sprite;
 
     sprite.centered = true;
-    sprite.transform = position;
+    sprite.transform = center;
 
     sprite.region = SpriteRegion.reactor;
 

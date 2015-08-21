@@ -7,7 +7,7 @@ enum {
   screenH   = 600,
   frameRate = 60,
 
-  wallSize = 16,
+  tileSize = 16,
 }
 
 enum SpriteRegion {

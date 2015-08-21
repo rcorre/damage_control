@@ -39,7 +39,6 @@ class Tile {
   bool hasTurret()  { return turret !is null; }
 
   bool isEmpty()           { return _construct is null; }
-  bool hasLargeConstruct() { return _construct !is null && _construct.isLarge; }
 
   auto wall()    { return cast(Wall)    _construct; }
   auto turret()  { return cast(Turret)  _construct; }
@@ -134,24 +133,25 @@ struct TileMap {
   }
 
   bool canBuildAt(RowCol coord) {
-    return
-      tileAt(coord).isEmpty                  &&
-      tileAt(coord).canBuild                 &&
-      !tileAt(coord.north).hasLargeConstruct &&
-      !tileAt(coord.west).hasLargeConstruct  &&
-      !tileAt(coord.north.west).hasLargeConstruct;
+    return tileAt(coord).isEmpty && tileAt(coord).canBuild;
   }
 
-  void place(Construct construct, RowCol coord) {
-    auto tile = tileAt(coord);
-    assert(tile.construct is null,
-        "Tried to build %s at %s, but tile already contains %s"
-        .format(typeid(construct), coord, typeid(tile.construct)));
+  void place(Construct construct, RowCol topLeft) {
+    construct.center = tileOffset(topLeft).as!Vector2f + construct.size / 2;
 
-    tile.construct = construct;
-    construct.position = construct.isLarge ?
-      tileOffset(coord.south.east).as!Vector2f :
-      tileCenter(coord).as!Vector2f;
+    // depending on the size of the construct, it may cover more than 1 tile
+    auto bottomRight = topLeft + RowCol(1, 1) * construct.gridSize;
+
+    // give each covered tile a reference to the construct
+    foreach(coord ; topLeft.span(bottomRight)) {
+      auto tile = tileAt(coord);
+
+      assert(tile.construct is null,
+          "Tried to place %s at %s, but tile already contains %s"
+          .format(typeid(construct), coord, typeid(tile.construct)));
+
+      tile.construct = construct;
+    }
   }
 
   void clear(RowCol coord) {

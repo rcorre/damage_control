@@ -101,7 +101,7 @@ abstract class Fight : TimedPhase {
         auto launcher = res.front;
         launcher.ammo -= 1;
 
-        spawnProjectile(launcher.position, battle.cursor.center);
+        spawnProjectile(launcher.center, battle.cursor.center);
         _launcherSound.play();
       }
     }

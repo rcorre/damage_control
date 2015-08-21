@@ -57,7 +57,7 @@ class PlaceTurrets : TimedPhase {
 
       // position the turret at the cursor and draw it to the screen
       if (_turret !is null) {
-        _turret.position = battle.cursor.center;
+        _turret.topLeft = battle.cursor.topLeft;
         auto batch = SpriteBatch(battle.tileAtlas, newTurretDepth);
         _turret.draw(batch, battle.animationOffset);
         battle.game.renderer.draw(batch);

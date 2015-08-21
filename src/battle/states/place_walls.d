@@ -103,7 +103,7 @@ struct Piece {
       if (!layout[coord.row][coord.col]) continue;
 
       auto offset = Vector2i(cast(int) coord.col - 2, cast(int) coord.row - 2) *
-        wallSize;
+        tileSize;
 
       uint[3][3] mask;
 
