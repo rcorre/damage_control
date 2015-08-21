@@ -73,6 +73,8 @@ abstract class Fight : TimedPhase {
         .map!(x => x.turret)
         .filter!(x => x !is null)
         .array;
+
+      foreach(turret ; _turrets) turret.refillAmmo();
     }
 
     void exit(Battle battle) { super.exit(battle); }

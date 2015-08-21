@@ -56,8 +56,10 @@ class Wall : Construct {
 }
 
 class Turret : Construct {
+  enum maxAmmo = 2;
+
   private float _angle = 0f;
-  int ammo = 2;
+  int ammo;
 
   override @property bool isLarge() { return true; }
 
@@ -87,6 +89,8 @@ class Turret : Construct {
   void aimAt(Vector2f target) {
     _angle = (target - position).angle;
   }
+
+  void refillAmmo() { this.ammo = maxAmmo; }
 }
 
 class Reactor : Construct {
