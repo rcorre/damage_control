@@ -61,7 +61,6 @@ class Turret : Construct {
 
   override @property bool isLarge() { return true; }
 
-
   override void draw(ref SpriteBatch batch, Vector2i animationOffset) {
     Sprite sprite;
     sprite.color     = Color.white;
@@ -79,7 +78,7 @@ class Turret : Construct {
       case 2  : sprite.region = SpriteRegion.turret2; break;
       case 1  : sprite.region = SpriteRegion.turret1; break;
       case 0  : sprite.region = SpriteRegion.turret0; break;
-      default : assert(0, "unknown ammo count for cannon");
+      default : assert(0, "unknown ammo count for turret");
     }
 
     batch ~= sprite;

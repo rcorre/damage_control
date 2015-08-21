@@ -39,7 +39,7 @@ class Tile {
   bool hasTurret()  { return turret !is null; }
 
   bool isEmpty()           { return _construct is null; }
-  bool hasLargeConstruct() { return _construct.isLarge; }
+  bool hasLargeConstruct() { return _construct !is null && _construct.isLarge; }
 
   auto wall()    { return cast(Wall)    _construct; }
   auto turret()  { return cast(Turret)  _construct; }

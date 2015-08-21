@@ -55,12 +55,12 @@ class PlaceTurrets : TimedPhase {
     void run(Battle battle) {
       super.run(battle);
 
-      auto coord = battle.cursor.coord;
-
-      // draw cannon at current tile under mouse if the player has another cannon to place
+      // position the turret at the cursor and draw it to the screen
       if (_turret !is null) {
+        _turret.position = battle.cursor.center;
         auto batch = SpriteBatch(battle.tileAtlas, newTurretDepth);
         _turret.draw(batch, battle.animationOffset);
+        battle.game.renderer.draw(batch);
       }
     }
 
@@ -68,7 +68,7 @@ class PlaceTurrets : TimedPhase {
       auto map = battle.map;
       auto coord = battle.cursor.coord;
 
-      if (_turretsLeft > 0                 &&
+      if (_turretsLeft > 0             &&
           map.tileAt(coord).isEnclosed &&
           map.canBuildAt(coord)        &&
           map.canBuildAt(coord.south)  &&
@@ -76,8 +76,10 @@ class PlaceTurrets : TimedPhase {
           map.canBuildAt(coord.south.east))
       {
         --_turretsLeft;
-        map.place(new Turret, coord);
+        map.place(_turret, coord);
         _soundOk.play();
+
+        _turret = (_turretsLeft > 0) ? new Turret : null;
       }
       else {
         _soundBad.play();
