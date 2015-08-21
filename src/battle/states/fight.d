@@ -37,7 +37,7 @@ abstract class Fight : TimedPhase {
     private ProjectileList _projectiles;
     private ExplosionList  _explosions;
     private ParticleList   _particles;
-    private Launcher[]     _launchers;
+    private Turret[]       _turrets;
     private Bitmap         _explosionBmp, _targetBmp;
     private SoundBank      _launcherSound;
   }
@@ -69,9 +69,9 @@ abstract class Fight : TimedPhase {
       super.enter(battle);
 
       // create an entry in the cannon list for each cannon in player territory
-      _launchers = battle.map.allCoords
-        .filter!(x => battle.map.tileAt(x).hasCannon)
-        .map!(x => Launcher(battle.map.tileOffset(x + RowCol(1,1)).as!Vector2f))
+      _turrets = battle.map.allTiles
+        .map!(x => x.turret)
+        .filter!(x => x !is null)
         .array;
     }
 
@@ -87,13 +87,13 @@ abstract class Fight : TimedPhase {
       processExplosions(game);
       processParticles(battle);
 
-      battle.cannonTarget = battle.cursor.center;
+      foreach(turret ; _turrets) turret.aimAt(battle.cursor.center);
 
       drawTarget(battle.game.renderer, battle.cursor.center);
     }
 
     override void onConfirm(Battle battle) {
-      auto res = _launchers.find!(x => x.ammo > 0);
+      auto res = _turrets.find!(x => x.ammo > 0);
 
       if (!res.empty) {
         auto launcher = res.front;
@@ -179,7 +179,7 @@ abstract class Fight : TimedPhase {
 
   void destroyWall(Battle battle, RowCol wallCoord) {
     auto map = battle.map;
-    map.tileAt(wallCoord).construct = Construct.none;
+    map.tileAt(wallCoord).construct = null;
 
     foreach(neighbor ; wallCoord.adjacent(Diagonals.yes)) {
       if (map.tileAt(neighbor).isEnclosed &&

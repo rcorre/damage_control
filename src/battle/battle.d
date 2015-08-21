@@ -3,6 +3,7 @@ module battle.battle;
 import std.array     : array;
 import std.string    : startsWith;
 import std.container : Array;
+import std.algorithm : sort, uniq;
 import dau;
 import dtiled;
 import battle.entities.tilemap;
@@ -31,7 +32,6 @@ class Battle : State!Game {
   Game game;
   StateStack!Battle states;
   Player player;
-  Vector2f cannonTarget = Vector2f.zero;
   MusicMixer music;
 
   private {
@@ -53,7 +53,7 @@ class Battle : State!Game {
     void enter(Game game) {
       this.game = game;
       auto mapData = MapData.load("./content/map/map1.json");
-      this.map = buildMap(mapData);
+      this.map = TileMap(mapData);
       this.data = BattleData(mapData);
       _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
@@ -73,7 +73,7 @@ class Battle : State!Game {
 
     void run(Game game) {
       states.run(this);
-      map.draw(_tileAtlas, this, animationOffset, cannonTarget);
+      map.draw(_tileAtlas, game.renderer, animationOffset);
 
       // animation
       _animationTimer -= game.deltaTime;
@@ -85,35 +85,6 @@ class Battle : State!Game {
       _cursor.update(game.deltaTime);
       music.update(game.deltaTime);
     }
-  }
-
-  void drawCannon(RowCol coord, float angle, int depth) {
-    auto batch = SpriteBatch(_tileAtlas, depth);
-    Sprite sprite;
-
-    sprite.color     = Color.white;
-    sprite.centered  = true;
-
-    // draw the base
-    sprite.transform = map.tileOffset(coord.south.east).as!Vector2f;
-
-    sprite.region = Rect2i(
-        cannonBaseCol * map.tileWidth + animationOffset.x,
-        cannonBaseRow * map.tileHeight + animationOffset.y,
-        cannonSize,
-        cannonSize);
-
-    batch ~= sprite;
-
-    // draw the barrel
-    sprite.transform.angle = angle;
-
-    sprite.region.x = cannonBarrelCol * map.tileWidth + animationOffset.x;
-    sprite.region.y = cannonBarrelRow * map.tileHeight + animationOffset.y;
-
-    batch ~= sprite;
-
-    game.renderer.draw(batch);
   }
 }
 
@@ -198,6 +169,11 @@ struct BattleData {
     return _enemyWaves[round];
   }
 
+  /**
+   * Each reactor is associated with a set of walls that will be granted if the
+   * player chooses it as their starting location.
+   * This method returns the coordinates of those walls.
+   */
   auto getWallCoordsForReactor(RowCol coord) {
     auto region = _wallRegions
       .find!(region =>
@@ -213,9 +189,9 @@ struct BattleData {
     auto botRight = region.end;
 
     return chain(
-        topLeft.span(topRight  + RowCol(1,0)),  // top row
-        botLeft.span(botRight  + RowCol(1,0)),  // bottom row
-        topLeft.span(botLeft   + RowCol(0,1)),  // left column
-        topRight.span(botRight + RowCol(1,1))); // right column
+        span!"[]"(topLeft       , topRight),        // top row
+        span!"[]"(botLeft       , botRight),        // bottom row
+        span!"[]"(topLeft.south , botLeft.north),   // left column
+        span!"[]"(topRight.south, botRight.north)); // right column
   }
 }

@@ -7,14 +7,14 @@ import std.algorithm;
 import dau;
 import dtiled;
 import jsonizer;
-import battle.entities.tilemap;
+import constants;
 import battle.battle;
+import battle.entities;
 import battle.states.timed_phase;
 
 private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 5,
-  spriteSize = 16,
   wallDepth  = 3,
   phaseTime  = 15,
 }
@@ -61,7 +61,7 @@ class PlaceWall : TimedPhase {
       _soundOk.play();
 
       foreach(coord ; wallCoords) {
-        map.tileAt(coord).construct = Construct.wall;
+        map.place(new Wall, coord);
 
         // check if any surrounding tile is now part of an enclosed area
         foreach(neighbor ; coord.adjacent(Diagonals.yes)) {
@@ -69,6 +69,14 @@ class PlaceWall : TimedPhase {
             tile.isEnclosed = true;
           }
         }
+      }
+
+      // placing a new wall may change the sprites of nearby walls
+      foreach(coord ; wallCoords) {
+        uint[3][3] mask;
+
+        map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, mask);
+        map.tileAt(coord).wall.adjustSprite(mask);
       }
 
       _piece = Piece.random(); // generate a new piece
@@ -96,7 +104,8 @@ struct Piece {
       // no wall at this slot
       if (!layout[coord.row][coord.col]) continue;
 
-      auto offset = Vector2i(cast(int) coord.col - 2, cast(int) coord.row - 2) * spriteSize;
+      auto offset = Vector2i(cast(int) coord.col - 2, cast(int) coord.row - 2) *
+        wallSize;
 
       uint[3][3] mask;
 
@@ -104,7 +113,7 @@ struct Piece {
 
       Sprite sprite;
       sprite.transform = center + offset;
-      sprite.region = getWallSpriteRegion(mask, spriteSize, spriteSize);
+      sprite.region = Wall.spriteRegionFor(mask);
 
       batch ~= sprite;
     }

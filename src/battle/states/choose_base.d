@@ -7,8 +7,8 @@ import std.container : Array;
 import dau;
 import dtiled;
 import jsonizer;
-import battle.entities.tilemap;
 import battle.battle;
+import battle.entities;
 
 /// Player is holding a wall segment they can place with a mouse click
 class ChooseBase : BattleState {
@@ -42,7 +42,7 @@ class ChooseBase : BattleState {
       if (!res.empty) {
         // clear walls from previous selection
         foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-          battle.map.tileAt(coord).construct = Construct.none;
+          battle.map.tileAt(coord).construct = null;
         }
 
         selectReactor(battle, res.front);
@@ -60,13 +60,21 @@ class ChooseBase : BattleState {
     }
   }
 
-  private void selectReactor(Battle battle, RowCol coord) {
+  private void selectReactor(Battle battle, RowCol reactorCoord) {
     // set walls for new selection
-    _currentCoord = coord;
+    _currentCoord = reactorCoord;
 
-    // clear walls from previous selection
-    foreach(neighbor ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-      battle.map.tileAt(neighbor).construct = Construct.wall;
+    // place walls around new base
+    foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
+      battle.map.place(new Wall, coord);
+    }
+
+    // The walls need to evaluate their sprites
+    foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
+      uint[3][3] mask;
+
+      battle.map.createMaskAround!(x => x.hasWall ? 1 : 0)(coord, mask);
+      battle.map.tileAt(coord).wall.adjustSprite(mask);
     }
   }
 }

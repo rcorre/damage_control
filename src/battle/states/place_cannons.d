@@ -6,16 +6,16 @@ import std.algorithm : count, filter;
 import dau;
 import dtiled;
 import battle.battle;
+import battle.entities;
 import battle.states.timed_phase;
-import battle.entities.tilemap;
 import constants;
 
 private enum {
-  phaseTime       = 5,
-  cannonDepth     = 5,
-  cannonsPerRound = 1,
-  cannonsPerNode  = 1,
-  tilesPerCannon  = 30,
+  phaseTime         = 5,
+  newTurretDepth    = 5,
+  turretsPerRound   = 1,
+  turretsPerReactor = 1,
+  tilesPerTurret    = 30,
 
   cannonCountFormat = "Cannons: %d",
 
@@ -24,9 +24,12 @@ private enum {
 
 /// Player may place cannons within wall bounds
 class PlaceCannons : TimedPhase {
-  private ulong       _cannons;
-  private SoundBank _soundOk;
-  private SoundBank _soundBad;
+  private {
+    ulong     _turretsLeft;
+    Turret    _turret;
+    SoundBank _soundOk;
+    SoundBank _soundBad;
+  }
 
   this(Battle battle) {
     super(battle, phaseTime);
@@ -41,10 +44,12 @@ class PlaceCannons : TimedPhase {
       auto territory = battle.map.allTiles.filter!(x => x.isEnclosed);
       auto numNodes = territory.count!(x => x.hasReactor);
 
-      _cannons =
-        cannonsPerRound +                      // base cannon count
-        numNodes * cannonsPerNode +            // node bonus
-        territory.walkLength / tilesPerCannon; // territory bonus
+      _turretsLeft =
+        turretsPerRound +                      // base cannon count
+        numNodes * turretsPerReactor +            // node bonus
+        territory.walkLength / tilesPerTurret; // territory bonus
+
+      if (_turretsLeft > 0) _turret = new Turret;
     }
 
     void run(Battle battle) {
@@ -53,23 +58,25 @@ class PlaceCannons : TimedPhase {
       auto coord = battle.cursor.coord;
 
       // draw cannon at current tile under mouse if the player has another cannon to place
-      if (_cannons > 0) battle.drawCannon(coord, 0, cannonDepth);
-
+      if (_turret !is null) {
+        auto batch = SpriteBatch(battle.tileAtlas, newTurretDepth);
+        _turret.draw(batch, battle.animationOffset);
+      }
     }
 
     override void onConfirm(Battle battle) {
       auto map = battle.map;
       auto coord = battle.cursor.coord;
 
-      if (_cannons > 0                 &&
+      if (_turretsLeft > 0                 &&
           map.tileAt(coord).isEnclosed &&
           map.canBuildAt(coord)        &&
           map.canBuildAt(coord.south)  &&
           map.canBuildAt(coord.east)   &&
           map.canBuildAt(coord.south.east))
       {
-        --_cannons;
-        map.tileAt(coord).construct = Construct.cannon;
+        --_turretsLeft;
+        map.place(new Turret, coord);
         _soundOk.play();
       }
       else {
