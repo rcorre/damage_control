@@ -1,6 +1,7 @@
 /// Title menu
 module title.menu;
 
+import std.math      : pow;
 import std.range     : enumerate;
 import std.container : Array;
 import battle.battle;
@@ -18,6 +19,9 @@ private enum {
 
   // seconds it takes for menus or underlines to move between locations
   transitionDuration = 0.5f,
+
+  // smooth motion transition for text and colors
+  transitionFn = (float x) => x.pow(0.35),
 }
 
 /// Show the title screen.
@@ -25,8 +29,9 @@ class TitleMenu {
   private {
     Array!MenuEntry  _entries;
     size_t           _selection;
-    Transition!int   _positionX;
-    Transition!Color _color;
+
+    Transition!(int, transitionFn)   _positionX;
+    Transition!(Color, transitionFn) _color;
   }
 
   this(Game game, MenuEntry[] entries ...) {
@@ -127,9 +132,9 @@ struct MenuEntry {
   Action action;
 
   private {
-    Transition!Color _textColor;
-    Transition!Color _underlineColor;
-    Transition!int   _underlineX;
+    Transition!(Color, transitionFn) _textColor;
+    Transition!(Color, transitionFn) _underlineColor;
+    Transition!(int  , transitionFn) _underlineX;
   }
 
   this(string text, Action action) {

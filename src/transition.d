@@ -4,11 +4,16 @@ module transition;
 import dau;
 import std.math : pow;
 
-struct Transition(T) if (is(typeof(T.init.lerp(T.init, 0f)) : T)) {
+struct Transition(T, alias fn = x => x)
+  if (is(typeof(T.init.lerp(T.init, 0f)) : T) && is(typeof(fn(0f)) : float))
+{
   T     start;
   T     end;
   float progress;
   float duration;
+
+  @property auto value() { return start.lerp(end, fn(progress)); }
+  @property bool done() { return progress == 1f; }
 
   void initialize(T initial, float duration) {
     hold(initial);
@@ -33,9 +38,5 @@ struct Transition(T) if (is(typeof(T.init.lerp(T.init, 0f)) : T)) {
 
   void update(float timeElapsed) {
     progress = min(1f, progress + timeElapsed / duration);
-  }
-
-  auto value() {
-    return start.lerp(end, progress.pow(0.35));
   }
 }

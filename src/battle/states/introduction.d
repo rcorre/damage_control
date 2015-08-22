@@ -8,6 +8,7 @@ import dtiled;
 import battle.battle;
 import battle.entities.tilemap;
 import music;
+import transition;
 
 private enum {
   fontName  = "Mecha",
@@ -23,6 +24,9 @@ private enum {
   underlineSize = Vector2i(150, 6),
 
   transitionDuration = 2,
+
+  // this represents position relative to the transition progress (0 to 1)
+  transitionFn = (float x) => (((2 * x) - 1).pow(5) + 1) / 2 + x / 8,
 }
 
 /// Play a short animation before entering the next phase
@@ -30,11 +34,12 @@ class BattleIntroduction : BattleState {
   private {
     static Bitmap _underline;
 
-    Transition  _textTransition;
-    Transition  _underlineTransition;
-    string      _title;
-    Font        _font;
-    SoundEffect _sound;
+    Transition!(Vector2i, transitionFn) _textTransition;
+    Transition!(Vector2i, transitionFn) _underlineTransition;
+
+    string          _title;
+    Font            _font;
+    SoundEffect     _sound;
 
     // How many music streams to enable.
     // More intense parts of the battle enable more streams.
@@ -63,15 +68,11 @@ class BattleIntroduction : BattleState {
     void enter(Battle battle) {
       super.enter(battle);
 
-      _textTransition.startPos    = titleEnterPos;
-      _textTransition.endPos      = titleExitPos;
-      _textTransition.timeElapsed = 0;
-      _textTransition.totalTime   = transitionDuration;
+      _textTransition.initialize(titleEnterPos, transitionDuration);
+      _textTransition.go(titleExitPos);
 
-      _underlineTransition.startPos    = underlineEnterPos;
-      _underlineTransition.endPos      = underlineExitPos;
-      _underlineTransition.timeElapsed = 0;
-      _underlineTransition.totalTime   = transitionDuration;
+      _underlineTransition.initialize(underlineEnterPos, transitionDuration);
+      _underlineTransition.go(underlineExitPos);
 
       battle.music.enableTracksUpTo(_musicLevel);
       _sound.play();
@@ -81,8 +82,8 @@ class BattleIntroduction : BattleState {
       super.run(battle);
       auto game = battle.game;
 
-      _textTransition.timeElapsed += game.deltaTime;
-      _underlineTransition.timeElapsed += game.deltaTime;
+      _textTransition.update(game.deltaTime);
+      _underlineTransition.update(game.deltaTime);
 
       drawText(game.renderer);
       drawUnderline(game.renderer);
@@ -100,7 +101,7 @@ class BattleIntroduction : BattleState {
     // title
     text.centered  = true;
     text.color     = Color.white;
-    text.transform = _textTransition.getPos();
+    text.transform = _textTransition.value;
     text.text      = _title;
     batch ~= text;
 
@@ -113,30 +114,10 @@ class BattleIntroduction : BattleState {
 
     sprite.centered  = true;
     sprite.color     = Color.white;
-    sprite.transform = _underlineTransition.getPos();
+    sprite.transform = _underlineTransition.value;
     sprite.region    = Rect2i(Vector2i.zero, underlineSize);
     batch ~= sprite;
 
     renderer.draw(batch);
-  }
-}
-
-// TODO: eventually merge with the Transition struct used in menus
-private struct Transition {
-  Vector2f startPos, endPos;
-  float timeElapsed, totalTime;
-
-  auto getPos() {
-    // x increases linearly from 0 to 1
-    auto x = timeElapsed / totalTime;
-
-    // y = ((2x - 1)^5 + 1) / 2
-    auto y = (((2 * x) - 1).pow(5) + 1) / 2 + x / 8;
-
-    return startPos.lerp(endPos, y);
-  }
-
-  bool done() {
-    return timeElapsed > totalTime;
   }
 }
