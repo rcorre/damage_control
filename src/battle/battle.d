@@ -65,7 +65,7 @@ class Battle : State!Game {
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
       _cursor = new Cursor(this);
-      music = new MusicMixer(game.audio, 0);
+      music = new MusicMixer(game.audio, 1);
     }
 
     void exit(Game game) {
