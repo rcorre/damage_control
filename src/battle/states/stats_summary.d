@@ -82,7 +82,7 @@ class StatsSummary : BattleState {
 
       _tickers ~= ScoreTicker(
           "Total:",
-          800,
+          battle.player.statsThisRound.totalScore,
           firstLabelPos + tickerMargin * 3,
           firstValuePos + tickerMargin * 3);
 
