@@ -47,6 +47,15 @@ class PlaceWalls : TimedPhase {
       _piece.draw(battle.cursor.topLeft, _tileAtlas, battle.game.renderer);
     }
 
+    void exit(Battle battle) {
+      // record the count of tiles and reactors the player managed to enclose
+      auto territory = battle.map.allTiles.filter!(x => x.isEnclosed);
+      auto numReactors = territory.count!(x => x.hasReactor);
+
+      battle.player.statsThisRound.tilesEnclosed = cast(int) territory.walkLength;
+      battle.player.statsThisRound.reactorsEnclosed = cast(int) numReactors;
+    }
+
     void onConfirm(Battle battle) {
       auto map = battle.map;
 

@@ -16,8 +16,8 @@ class FightAI : Fight {
     alias EnemyList = DropList!(Enemy, x => x.destroyed);
 
     EnemyList _enemies;
-    int _round;
-    RowCol[] _targets;  // coordinates enemies should target
+    int       _round;
+    RowCol[]  _targets; // coordinates enemies should target
   }
 
   this(Battle battle, int round) {
@@ -51,6 +51,9 @@ class FightAI : Fight {
       foreach(ref enemy ; _enemies) {
         if (enemy.pos.distance(pos) < radius) {
           enemy.die(pos, &spawnFragment);
+
+          // record each kill for the end-of-round stats report
+          battle.player.statsThisRound.enemiesDestroyed += 1;
         }
       }
     }

@@ -3,6 +3,7 @@ module transition;
 
 import dau;
 import std.math : pow;
+import std.algorithm : swap;
 
 struct Transition(T, alias fn = x => x)
   if (is(typeof(T.init.lerp(T.init, 0f)) : T) && is(typeof(fn(0f)) : float))
@@ -38,5 +39,10 @@ struct Transition(T, alias fn = x => x)
 
   void update(float timeElapsed) {
     progress = min(1f, progress + timeElapsed / duration);
+  }
+
+  void reverse() {
+    progress = 1f - progress;
+    swap(start, end);
   }
 }

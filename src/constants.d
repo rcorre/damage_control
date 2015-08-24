@@ -20,3 +20,9 @@ enum SpriteRegion {
   turret1    = Rect2i(2 * 16, 8 * 16, 32, 32), // turret with 1 ammo
   turret0    = Rect2i(4 * 16, 8 * 16, 32, 32), // turret with 0 ammo
 }
+
+enum ScoreFactor {
+  territory = 10, // points per tile enclosed in player territory
+  enemy     = 20, // points per enemy destroyed
+  reactor   = 80, // points per reactor enclosed
+}
