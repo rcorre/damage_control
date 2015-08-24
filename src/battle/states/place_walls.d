@@ -48,6 +48,7 @@ class PlaceWalls : TimedPhase {
     }
 
     void exit(Battle battle) {
+      super.exit(battle);
       // record the count of tiles and reactors the player managed to enclose
       auto territory = battle.map.allTiles.filter!(x => x.isEnclosed);
       auto numReactors = territory.count!(x => x.hasReactor);
