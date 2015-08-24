@@ -10,7 +10,7 @@ import battle.states.stats_summary;
 import battle.states.introduction;
 
 private enum {
-  cannonsTitle = "Install Cannons",
+  cannonsTitle = "Install Turrets",
   fightTitle   = "Engage!",
   rebuildTitle = "Rebuild",
 }
