@@ -70,7 +70,7 @@ abstract class Fight : TimedPhase {
       // create an entry in the cannon list for each cannon in player territory
       _turrets = battle.map.allTiles
         .map!(x => x.turret)
-        .filter!(x => x !is null)
+        .filter!(x => x !is null && x.isEnclosed)
         .array;
 
       foreach(turret ; _turrets) turret.refillAmmo();
