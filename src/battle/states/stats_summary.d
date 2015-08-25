@@ -6,6 +6,7 @@ import std.format    : format;
 import std.container : Array;
 import dau;
 import battle.battle;
+import constants;
 import transition;
 
 private enum {
@@ -32,6 +33,10 @@ private enum {
 
   // this represents position relative to the transition progress (0 to 1)
   transitionFn = (float x) => x.pow(0.25),
+
+  // max opacity with which to dim the background
+  backgroundOpacity = 0.5f,
+  backgroundDepth = 4
 }
 
 /// Play a short animation before entering the next phase
@@ -40,23 +45,38 @@ class StatsSummary : BattleState {
     ScoreTicker[] _tickers;
     Font          _font;
     SoundEffect   _tickSound;
+    Bitmap        _background;
 
     const string                        _titleText;
     Transition!(Vector2i, transitionFn) _titlePos;
+    Transition!(float,    transitionFn) _backgroundOpacity;
   }
 
   this(Battle battle, int currentRound) {
     _font = battle.game.fonts.get(fontName, fontSize);
     _tickSound = battle.game.audio.getSound("score_ticker");
     _titlePos.initialize(titleStartPos, slideDuration);
-    _titlePos.go(titleEndPos);
 
     _titleText = "Round %d Summary:".format(currentRound);
+
+    _background = Bitmap(al_create_bitmap(screenW, screenH));
+    al_set_target_bitmap(_background);
+    al_clear_to_color(Color.black);
+    al_set_target_backbuffer(battle.game.display.display);
+
+    _backgroundOpacity.initialize(0, slideDuration);
+  }
+
+  ~this() {
+    al_destroy_bitmap(_background);
   }
 
   override {
     void enter(Battle battle) {
       super.enter(battle);
+
+      _titlePos.go(titleEndPos);
+      _backgroundOpacity.go(backgroundOpacity);
 
       battle.player.statsThisRound.enemiesDestroyed = 5;
       battle.player.statsThisRound.tilesEnclosed    = 15;
@@ -99,6 +119,9 @@ class StatsSummary : BattleState {
       auto game = battle.game;
 
       _titlePos.update(game.deltaTime);
+      _backgroundOpacity.update(game.deltaTime);
+
+      dimBackground(battle.game.renderer);
 
       // update and draw the ticker text entries
       auto batch = TextBatch(_font, textDepth);
@@ -126,6 +149,7 @@ class StatsSummary : BattleState {
   private void slideOut() {
     foreach(ref ticker ; _tickers) ticker.exitScreen();
     _titlePos.reverse();
+    _backgroundOpacity.reverse();
   }
 
   private void drawTitleText(ref TextBatch batch) {
@@ -136,6 +160,16 @@ class StatsSummary : BattleState {
     text.text = _titleText;
 
     batch ~= text;
+  }
+
+  private void dimBackground(Renderer renderer) {
+    Sprite sprite;
+    sprite.region = Rect2i(0, 0, screenW, screenH);
+    sprite.color  = Color(0, 0, 0, _backgroundOpacity.value);
+
+    auto batch = SpriteBatch(_background, backgroundDepth);
+    batch ~= sprite;
+    renderer.draw(batch);
   }
 }
 
