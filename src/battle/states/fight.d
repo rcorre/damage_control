@@ -13,7 +13,6 @@ import constants;
 
 private enum {
   phaseTime      = 15,
-  cannonCooldown = 4,
 
   projectileDepth = 3,
   particleDepth   = 2,
@@ -219,12 +218,6 @@ abstract class Fight : TimedPhase {
   void spawnParticle(Vector2f pos) {
     _particles.insert(Particle(pos));
   }
-}
-
-struct Projectile {
-  Vector2f position;
-  Vector2f velocity;
-  float duration;
 }
 
 private:
