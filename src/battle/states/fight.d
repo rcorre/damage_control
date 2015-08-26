@@ -24,6 +24,8 @@ private enum {
 
   targetDepth       = 6,
   targetSpriteSheet = "tileset",
+
+  aimingSpeed = 200, // how far the crosshairs slide (per second)
 }
 
 /// Base battle state for fight vs ai or fight vs player.
@@ -33,12 +35,14 @@ abstract class Fight : TimedPhase {
     alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
     alias ParticleList = DropList!(Particle, x => x.destroyed);
 
-    private ProjectileList _projectiles;
-    private ExplosionList  _explosions;
-    private ParticleList   _particles;
-    private Turret[]       _turrets;
-    private Bitmap         _explosionBmp, _targetBmp;
-    private SoundBank      _launcherSound;
+    ProjectileList _projectiles;
+    ExplosionList  _explosions;
+    ParticleList   _particles;
+    Turret[]       _turrets;
+    Bitmap         _explosionBmp, _targetBmp;
+    SoundBank      _launcherSound;
+    Vector2f       _targetPos;
+    Vector2f       _targetVelocity;
   }
 
   this(Battle battle) {
@@ -63,6 +67,10 @@ abstract class Fight : TimedPhase {
     al_set_target_backbuffer(battle.game.display.display);
   }
 
+  ~this() {
+    al_destroy_bitmap(_explosionBmp);
+  }
+
   override {
     void enter(Battle battle) {
       super.enter(battle);
@@ -79,6 +87,10 @@ abstract class Fight : TimedPhase {
       foreach(turret ; _turrets) {
         ammoLeft = turret.refillAmmo(ammoLeft);
       }
+
+      // the crosshairs should start at one of the turrets
+      _targetPos = _turrets.empty ? Vector2f.zero : _turrets.front.center;
+      _targetVelocity = Vector2f.zero;
     }
 
     void exit(Battle battle) { super.exit(battle); }
@@ -93,26 +105,28 @@ abstract class Fight : TimedPhase {
       processExplosions(game);
       processParticles(battle);
 
-      foreach(turret ; _turrets) turret.aimAt(battle.cursor.center);
+      foreach(turret ; _turrets) turret.aimAt(_targetPos);
 
-      drawTarget(battle.game.renderer, battle.cursor.center);
+      _targetPos += _targetVelocity * battle.game.deltaTime;
+      drawTarget(battle.game.renderer, _targetPos);
     }
 
-    override void onConfirm(Battle battle) {
+    void onConfirm(Battle battle) {
       auto res = _turrets.find!(x => x.ammo > 0);
 
       if (!res.empty) {
         auto launcher = res.front;
         launcher.ammo -= 1;
 
-        spawnProjectile(launcher.center, battle.cursor.center);
+        spawnProjectile(launcher.center, _targetPos);
         _launcherSound.play();
       }
     }
-  }
 
-  ~this() {
-    al_destroy_bitmap(_explosionBmp);
+    // action to take when cursor is moved in the given direction
+    void onCursorMove(Battle battle, Vector2f direction) {
+      _targetVelocity = direction * aimingSpeed;
+    }
   }
 
   void onProjectileExplode(Battle battle, Vector2f position, float radius) {
