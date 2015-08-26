@@ -2,7 +2,7 @@ module battle.states.fight;
 
 import std.array     : array;
 import std.range     : walkLength;
-import std.algorithm : sort, count, filter;
+import std.algorithm : map, sum, filter;
 import dau;
 import dtiled;
 import battle.battle;
@@ -67,13 +67,18 @@ abstract class Fight : TimedPhase {
     void enter(Battle battle) {
       super.enter(battle);
 
-      // create an entry in the cannon list for each cannon in player territory
-      _turrets = battle.map.allTiles
-        .map!(x => x.turret)
-        .filter!(x => x !is null && x.isEnclosed)
-        .array;
+      // only turrets enclosed in the player territory are useable
+      _turrets = battle.map.turrets.filter!(x => x.enclosed).array;
 
-      foreach(turret ; _turrets) turret.refillAmmo();
+      // sum the ammo bonuses from all enclosed constructs
+      int ammoLeft = battle.map.constructs
+        .filter!(x => x.enclosed)
+        .map!(x => x.ammoBonus)
+        .sum;
+
+      foreach(turret ; _turrets) {
+        ammoLeft = turret.refillAmmo(ammoLeft);
+      }
     }
 
     void exit(Battle battle) { super.exit(battle); }
@@ -180,7 +185,7 @@ abstract class Fight : TimedPhase {
 
   void destroyWall(Battle battle, RowCol wallCoord) {
     auto map = battle.map;
-    map.tileAt(wallCoord).construct = null;
+    map.clear(wallCoord);
 
     foreach(neighbor ; wallCoord.adjacent(Diagonals.yes)) {
       map.regenerateWallSprite(neighbor);

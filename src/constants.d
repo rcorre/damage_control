@@ -8,6 +8,9 @@ enum {
   frameRate = 60,
 
   tileSize = 16,
+
+  // mechanics
+  ammoPerReactor = 6, /// How much ammo each reactor can refill
 }
 
 enum SpriteRegion {

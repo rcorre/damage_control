@@ -42,7 +42,7 @@ class ChooseBase : BattleState {
       if (!res.empty) {
         // clear walls from previous selection
         foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-          battle.map.tileAt(coord).construct = null;
+          battle.map.clear(coord);
         }
 
         selectReactor(battle, res.front);

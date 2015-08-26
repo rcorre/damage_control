@@ -53,7 +53,7 @@ class Battle : State!Game {
     void enter(Game game) {
       this.game = game;
       auto mapData = MapData.load("./content/map/map1.json");
-      this.map = TileMap(mapData);
+      this.map = new TileMap(mapData);
       this.data = BattleData(mapData);
       _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));

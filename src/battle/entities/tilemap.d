@@ -4,7 +4,7 @@ import std.conv      : to;
 import std.array     : array;
 import std.range     : chunks;
 import std.format    : format;
-import std.algorithm : map;
+import std.algorithm : map, find, remove;
 import dau;
 import dtiled;
 import jsonizer;
@@ -45,7 +45,8 @@ class Tile {
   auto reactor() { return cast(Reactor) _construct; }
 
   auto construct() { return _construct; }
-  void construct(Construct c) {
+
+  private void construct(Construct c) {
     assert(c is null || construct is null, "cannot overwrite construct");
     _construct = c;
   }
@@ -56,9 +57,11 @@ class Tile {
   }
 }
 
-struct TileMap {
+class TileMap {
   OrthoMap!Tile _map;
   alias _map this;
+
+  Construct[] _constructs;
 
   this(MapData data) {
     auto buildTile(TiledGid groundGid) {
@@ -93,6 +96,12 @@ struct TileMap {
       auto pos = _map.tileOffset(coord.south.east).as!Vector2f;
       place(new Reactor, coord);
     }
+  }
+
+  @property auto constructs() { return _constructs[]; }
+
+  @property auto turrets() {
+    return _constructs.map!(x => cast(Turret) x).filter!(x => x !is null);
   }
 
   void draw(Bitmap tileAtlas, Renderer renderer, Vector2i animationOffset) {
@@ -142,6 +151,8 @@ struct TileMap {
     // depending on the size of the construct, it may cover more than 1 tile
     auto bottomRight = topLeft + RowCol(1, 1) * construct.gridSize;
 
+    bool enclosed = true;
+
     // give each covered tile a reference to the construct
     foreach(coord ; topLeft.span(bottomRight)) {
       auto tile = tileAt(coord);
@@ -151,10 +162,20 @@ struct TileMap {
           .format(typeid(construct), coord, typeid(tile.construct)));
 
       tile.construct = construct;
+      enclosed = enclosed && tile.isEnclosed;
     }
+
+    construct.enclosed = enclosed;
+
+    _constructs ~= construct;
   }
 
   void clear(RowCol coord) {
+    auto removeMe = tileAt(coord).construct;
+    if (removeMe !is null) {
+      _constructs.remove!(x => x == removeMe);
+    }
+
     tileAt(coord).construct = null;
   }
 
