@@ -78,10 +78,6 @@ class StatsSummary : BattleState {
       _titlePos.go(titleEndPos);
       _backgroundOpacity.go(backgroundOpacity);
 
-      battle.player.statsThisRound.enemiesDestroyed = 5;
-      battle.player.statsThisRound.tilesEnclosed    = 15;
-      battle.player.statsThisRound.reactorsEnclosed = 2;
-
       _tickers ~= ScoreTicker(
           "Territory:",
           battle.player.statsThisRound.territoryScore,
