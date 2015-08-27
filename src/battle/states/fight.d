@@ -41,6 +41,7 @@ abstract class Fight : TimedPhase {
     Turret[]       _turrets;
     Bitmap         _explosionBmp, _targetBmp;
     SoundBank      _launcherSound;
+    SoundEffect    _noAmmoSound;
     Vector2f       _targetPos;
     Vector2f       _targetVelocity;
   }
@@ -53,6 +54,7 @@ abstract class Fight : TimedPhase {
 
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
     _launcherSound = battle.game.audio.getSoundBank("cannon");
+    _noAmmoSound = battle.game.audio.getSound("place_bad");
 
     // create the explosion bitmap
     _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
@@ -108,13 +110,17 @@ abstract class Fight : TimedPhase {
       foreach(turret ; _turrets) turret.aimAt(_targetPos);
 
       _targetPos += _targetVelocity * battle.game.deltaTime;
-      drawTarget(battle.game.renderer, _targetPos);
+      drawTarget(battle.game.renderer, _targetPos, battle.animationOffset);
     }
 
     void onConfirm(Battle battle) {
       auto res = _turrets.find!(x => x.ammo > 0);
 
-      if (!res.empty) {
+      if (res.empty) {
+        // no ammo left
+        _noAmmoSound.play();
+      }
+      else {
         auto launcher = res.front;
         launcher.ammo -= 1;
 
@@ -215,12 +221,21 @@ abstract class Fight : TimedPhase {
     }
   }
 
-  void drawTarget(Renderer renderer, Vector2f pos) {
+  void drawTarget(Renderer renderer, Vector2f pos, Vector2i animationOffset) {
     Sprite sprite;
 
     sprite.transform = pos;
     sprite.centered = true;
     sprite.region = SpriteRegion.crossHairs;
+
+    if (_turrets.canFind!(x => x.ammo > 0)) {
+      // if player can fire, animate the crossHairs
+      sprite.region.topLeft = sprite.region.topLeft + animationOffset;
+    }
+    else {
+      // otherwise, dim the crosshairs by reducing alpha
+      sprite.color.a = 0.5;
+    }
 
     auto batch = SpriteBatch(_targetBmp, targetDepth);
     batch ~= sprite;
