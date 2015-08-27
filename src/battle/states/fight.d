@@ -47,6 +47,7 @@ abstract class Fight : TimedPhase {
     Bitmap         _explosionBmp;
     Bitmap         _targetBmp;
     SoundBank      _launcherSound;
+    SoundBank      _explosionSound;
     SoundEffect    _noAmmoSound;
     Vector2f       _targetPos;
     Vector2f       _targetVelocity;
@@ -61,6 +62,7 @@ abstract class Fight : TimedPhase {
 
     _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
     _launcherSound = battle.game.audio.getSoundBank("cannon");
+    _explosionSound = battle.game.audio.getSoundBank("explosion");
     _noAmmoSound = battle.game.audio.getSound("place_bad");
 
     // create the explosion bitmap
@@ -264,6 +266,7 @@ abstract class Fight : TimedPhase {
 
   void createExplosion(Vector2f pos) {
     _explosions.insert(Explosion(pos));
+    _explosionSound.play();
   }
 
   void spawnParticle(Vector2f pos) {
