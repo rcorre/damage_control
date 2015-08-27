@@ -11,7 +11,7 @@ private enum {
   cursorDepth = 6,
   cursorSize  = 16,
   cursorColor = Color(0.0, 0.5 ,0.0, 0.5),
-  cursorSpeed = 150
+  cursorSpeed = 80
 }
 
 class Cursor {
@@ -35,6 +35,20 @@ class Cursor {
   }
 
   void startMoving(Vector2f direction) {
+    // check if we are changing directions
+    if (direction.y > 0 && _velocity.y <= 0) {
+      _position = _map.tileCenter(coord.south).as!Vector2f;
+    }
+    else if (direction.y < 0 && _velocity.y >= 0) {
+      _position = _map.tileCenter(coord.north).as!Vector2f;
+    }
+    else if (direction.x > 0 && _velocity.x <= 0) {
+      _position = _map.tileCenter(coord.east).as!Vector2f;
+    }
+    else if (direction.x < 0 && _velocity.x >= 0) {
+      _position = _map.tileCenter(coord.west).as!Vector2f;
+    }
+
     _velocity = direction * cursorSpeed;
   }
 
