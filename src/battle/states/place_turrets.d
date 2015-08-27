@@ -40,15 +40,7 @@ class PlaceTurrets : TimedPhase {
       super.enter(battle);
       if (_turretsLeft > 0) _turret = new Turret;
 
-      // try to place the cursor at a reactor the player owns.
-      auto allReactors = battle.map.constructs
-        .map!(x => cast(Reactor) x)
-        .filter!(x => x !is null);
-
-      auto ownedReactors = allReactors.filter!(x => x.enclosed);
-
-      battle.cursor.center = ownedReactors.empty ?
-        allReactors.front.center : ownedReactors.front.center;
+      battle.cursor.positionInPlayerTerritory();
     }
 
     void run(Battle battle) {
