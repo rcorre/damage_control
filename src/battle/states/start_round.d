@@ -2,6 +2,7 @@ module battle.states.start_round;
 
 import dau;
 import music;
+import constants;
 import battle.battle;
 import battle.states.place_walls;
 import battle.states.place_turrets;
@@ -22,12 +23,16 @@ class StartRound : State!Battle {
   private int _currentRound; // the round to start the next time this stated is entered
 
   override void enter(Battle battle) {
+    int numTurrets = _currentRound == 0 ?
+      initialTurretCount :
+      battle.player.statsThisRound.tilesEnclosed / tilesPerTurret;
+
     battle.player.startNewRound();
 
     // TODO: check if just finished last round
     battle.states.push(
         new BattleIntroduction(cannonsTitle, MusicLevel.moderate, battle.game),
-        new PlaceTurrets(battle),
+        new PlaceTurrets(battle, numTurrets),
 
         new BattleIntroduction(fightTitle, MusicLevel.intense, battle.game),
         new FightAI(battle, _currentRound),

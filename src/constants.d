@@ -10,7 +10,9 @@ enum {
   tileSize = 16,
 
   // mechanics
-  ammoPerReactor = 6, /// How much ammo each reactor can refill
+  ammoPerReactor = 6,     /// How much ammo each reactor can refill
+  tilesPerTurret = 30,    /// A new turret is rewarded for this many tiles
+  initialTurretCount = 3, /// You can place this many turrets on the first round
 }
 
 enum SpriteRegion {
