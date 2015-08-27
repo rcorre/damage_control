@@ -65,6 +65,11 @@ abstract class Fight : TimedPhase {
     _explosionSound = battle.game.audio.getSoundBank("explosion");
     _noAmmoSound = battle.game.audio.getSound("place_bad");
 
+    // apply some variance to the sounds
+    _explosionSound.gainFactor  = [0.6, 1];
+    _explosionSound.panFactor   = [-0.5, 0.5];
+    _explosionSound.speedFactor = [0.8, 1.2];
+
     // create the explosion bitmap
     _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
     al_set_target_bitmap(_explosionBmp);
