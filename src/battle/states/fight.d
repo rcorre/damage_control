@@ -1,5 +1,6 @@
 module battle.states.fight;
 
+import std.math      : PI_2;
 import std.array     : array;
 import std.range     : walkLength;
 import std.algorithm : map, sum, filter;
@@ -10,6 +11,7 @@ import battle.states.timed_phase;
 import battle.entities;
 import battle.entities.tilemap;
 import constants;
+import transition;
 
 private enum {
   phaseTime      = 15,
@@ -26,6 +28,9 @@ private enum {
   targetSpriteSheet = "tileset",
 
   aimingSpeed = 200, // how far the crosshairs slide (per second)
+
+  // time between successive shots
+  reloadTime = 0.2f
 }
 
 /// Base battle state for fight vs ai or fight vs player.
@@ -39,11 +44,13 @@ abstract class Fight : TimedPhase {
     ExplosionList  _explosions;
     ParticleList   _particles;
     Turret[]       _turrets;
-    Bitmap         _explosionBmp, _targetBmp;
+    Bitmap         _explosionBmp;
+    Bitmap         _targetBmp;
     SoundBank      _launcherSound;
     SoundEffect    _noAmmoSound;
     Vector2f       _targetPos;
     Vector2f       _targetVelocity;
+    float          _reloadCountdown;
   }
 
   this(Battle battle) {
@@ -67,6 +74,8 @@ abstract class Fight : TimedPhase {
 
     // re-target the display after creating the bitmap
     al_set_target_backbuffer(battle.game.display.display);
+
+    _reloadCountdown = 0;
   }
 
   ~this() {
@@ -107,6 +116,8 @@ abstract class Fight : TimedPhase {
       processExplosions(game);
       processParticles(battle);
 
+      _reloadCountdown = max(0, _reloadCountdown - game.deltaTime);
+
       foreach(turret ; _turrets) turret.aimAt(_targetPos);
 
       _targetPos += _targetVelocity * battle.game.deltaTime;
@@ -120,12 +131,13 @@ abstract class Fight : TimedPhase {
         // no ammo left
         _noAmmoSound.play();
       }
-      else {
+      else if (_reloadCountdown <= 0) {
         auto launcher = res.front;
         launcher.ammo -= 1;
 
         spawnProjectile(launcher.center, _targetPos);
         _launcherSound.play();
+        _reloadCountdown = reloadTime;
       }
     }
 
@@ -224,9 +236,14 @@ abstract class Fight : TimedPhase {
   void drawTarget(Renderer renderer, Vector2f pos, Vector2i animationOffset) {
     Sprite sprite;
 
-    sprite.transform = pos;
-    sprite.centered = true;
-    sprite.region = SpriteRegion.crossHairs;
+    sprite.transform.pos = pos;
+    sprite.centered      = true;
+    sprite.region        = SpriteRegion.crossHairs;
+    // the crosshairs scale up and rotate after firing
+
+    float reloadFactor = _reloadCountdown / reloadTime;
+    sprite.transform.angle = lerp(0, -PI_2, reloadFactor);
+    sprite.transform.scale = Vector2i(1,1) * lerp(1f, 2f, reloadFactor);
 
     if (_turrets.canFind!(x => x.ammo > 0)) {
       // if player can fire, animate the crossHairs

@@ -14,6 +14,7 @@ struct Transition(T, alias fn = x => x)
   float duration;
 
   @property auto value() { return start.lerp(end, fn(progress)); }
+  @property bool started() { return progress > 0f; }
   @property bool done() { return progress == 1f; }
 
   void initialize(T initial, float duration) {
