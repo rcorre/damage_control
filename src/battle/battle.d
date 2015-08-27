@@ -35,11 +35,12 @@ class Battle : State!Game {
   MusicMixer music;
 
   private {
-    Bitmap       _tileAtlas;
-    float        _animationTimer;
-    int          _numAnimationFrames;
-    int          _animationCounter;
-    Cursor       _cursor;
+    Bitmap _tileAtlas;
+    float  _animationTimer;
+    int    _numAnimationFrames;
+    int    _animationCounter;
+    Cursor _cursor;
+    bool   _turboMode;
   }
 
   @property auto animationOffset() {
@@ -48,6 +49,7 @@ class Battle : State!Game {
 
   @property auto cursor() { return _cursor; }
   @property auto tileAtlas() { return _tileAtlas; }
+  @property auto turboMode() { return _turboMode; }
 
   override {
     void enter(Game game) {
@@ -82,7 +84,7 @@ class Battle : State!Game {
         _animationCounter = (_animationCounter + 1) % _numAnimationFrames;
       }
 
-      _cursor.update(game.deltaTime);
+      _cursor.update(game.deltaTime, _turboMode);
       music.update(game.deltaTime);
     }
   }
@@ -98,6 +100,10 @@ abstract class BattleState : State!Battle {
 
       _handlers.insert(events.onButtonDown("confirm", () => onConfirm(battle)));
       _handlers.insert(events.onButtonDown("cancel" , () => onCancel(battle)));
+      _handlers.insert(events.onButtonDown("turbo",
+            { battle._turboMode = true; }));
+      _handlers.insert(events.onButtonUp("turbo",
+            { battle._turboMode = false; }));
       _handlers.insert(events.onButtonDown("rotateR",
             () => onRotate(battle, true)));
       _handlers.insert(events.onButtonDown("rotateL",

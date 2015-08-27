@@ -127,7 +127,9 @@ abstract class Fight : TimedPhase {
 
       foreach(turret ; _turrets) turret.aimAt(_targetPos);
 
-      _targetPos += _targetVelocity * battle.game.deltaTime;
+      _targetPos += _targetVelocity * battle.game.deltaTime *
+        (battle.turboMode ? turboSpeedFactor : 1);
+
       drawTarget(battle.game.renderer, _targetPos, battle.animationOffset);
     }
 

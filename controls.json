@@ -8,6 +8,10 @@
       "keys": [ "k", "escape" ],
       "buttons": [ 0 ]
     },
+    "turbo": {
+      "keys": [ "lshift" ],
+      "buttons": [ 3 ]
+    },
     "rotateR": {
       "keys": [ "q" ],
       "buttons": [ 4 ]

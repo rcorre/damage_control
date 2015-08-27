@@ -13,6 +13,8 @@ enum {
   ammoPerReactor = 6,     /// How much ammo each reactor can refill
   tilesPerTurret = 30,    /// A new turret is rewarded for this many tiles
   initialTurretCount = 3, /// You can place this many turrets on the first round
+
+  turboSpeedFactor = 2, /// How much to multiply cursor speed in turbo mode
 }
 
 enum SpriteRegion {

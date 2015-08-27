@@ -19,12 +19,13 @@ class GamepadMenu : TitleMenu {
 
   this(Game game, ControlScheme controls) {
     super(game,
-      MenuEntry("up"     , g => startMappingAxis(g, "up"     )),
-      MenuEntry("down"   , g => startMappingAxis(g, "down"   )),
-      MenuEntry("left"   , g => startMappingAxis(g, "left"   )),
-      MenuEntry("right"  , g => startMappingAxis(g, "right"  )),
+      MenuEntry("up"     , g => startMappingAxis  (g, "up"     )),
+      MenuEntry("down"   , g => startMappingAxis  (g, "down"   )),
+      MenuEntry("left"   , g => startMappingAxis  (g, "left"   )),
+      MenuEntry("right"  , g => startMappingAxis  (g, "right"  )),
       MenuEntry("confirm", g => startMappingButton(g, "confirm")),
       MenuEntry("cancel" , g => startMappingButton(g, "cancel" )),
+      MenuEntry("turbo"  , g => startMappingButton(g, "turbo"  )),
       MenuEntry("rotateL", g => startMappingButton(g, "rotateL")),
       MenuEntry("rotateR", g => startMappingButton(g, "rotateR")));
 
@@ -56,6 +57,7 @@ class GamepadMenu : TitleMenu {
         break;
       case "confirm":
       case "cancel":
+      case "turbo":
       case "rotateL":
       case "rotateR":
         _controls.buttons[name].buttons[0] = button;

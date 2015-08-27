@@ -3,21 +3,17 @@ module battle.entities.cursor;
 import std.algorithm : map, filter;
 import dau;
 import dtiled;
+import constants;
 import battle.entities.tilemap;
 import battle.entities.construct;
 import battle.battle;
-
-private enum {
-  cursorDepth = 6,
-  cursorSize  = 16,
-  cursorColor = Color(0.0, 0.5 ,0.0, 0.5),
-  cursorSpeed = 80
-}
 
 class Cursor {
   enum Direction : uint { north, south, east, west }
 
   private {
+    enum speed = 80;
+
     TileMap  _map;
     Vector2f _velocity = Vector2f.zero;
     Vector2f _position = Vector2f.zero;
@@ -49,11 +45,11 @@ class Cursor {
       _position = _map.tileCenter(coord.west).as!Vector2f;
     }
 
-    _velocity = direction * cursorSpeed;
+    _velocity = direction * speed;
   }
 
-  void update(float timeElapsed) {
-    _position += _velocity * timeElapsed;
+  void update(float timeElapsed, bool turboMode) {
+    _position += _velocity * timeElapsed * (turboMode ? turboSpeedFactor : 1);
 
     _position.x = _position.x.clamp(0, _map.tileWidth * _map.numCols);
     _position.y = _position.y.clamp(0, _map.tileHeight * _map.numRows);
