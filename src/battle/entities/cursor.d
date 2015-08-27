@@ -26,10 +26,11 @@ class Cursor {
   }
 
   @property {
-    ref auto coord() { return _map.coordAtPoint(_position); }
+    auto coord() { return _map.coordAtPoint(_position); }
     auto tile() { return _map.tileAt(coord); }
     auto topLeft() { return _map.tileOffset(coord).as!Vector2f; }
     auto center() { return _map.tileCenter(coord).as!Vector2f; }
+    void center(Vector2f pos) { _position = pos; }
   }
 
   void startMoving(Vector2f direction) {
