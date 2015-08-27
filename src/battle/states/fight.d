@@ -149,7 +149,7 @@ abstract class Fight : TimedPhase {
 
   void onProjectileExplode(Battle battle, Vector2f position, float radius) {
     auto coord = battle.map.coordAtPoint(position);
-    if (battle.map.tileAt(coord).hasWall) {
+    if (battle.map.contains(coord) && battle.map.tileAt(coord).hasWall) {
       destroyWall(battle, coord);
     }
   }
