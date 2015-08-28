@@ -21,6 +21,8 @@ private enum {
   targetSpriteSheet = "tileset", // target used to point out a location
   targetDepth = 5,
 
+  highlightDepth = 8,
+
   // where to center the tutorial text
   Vector2f textCenter = Vector2f(screenW / 2, screenH * 4/5),
 
@@ -29,7 +31,7 @@ private enum {
 
 /// Temporarily pause the game and overlay some (helpful?) text
 class Tutorial : BattleState {
-  protected StateStack!(Tutorial) _states;
+  protected StateStack!(Tutorial, Battle) _states;
 
   private {
     Font    _font;
@@ -59,7 +61,7 @@ class Tutorial : BattleState {
     }
 
     void run(Battle battle) {
-      if (!_states.empty) _states.run(this);
+      if (!_states.empty) _states.run(this, battle);
 
       _cursorPos.update(battle.game.deltaTime);
       _cursorScale.update(battle.game.deltaTime);
@@ -103,21 +105,40 @@ class Tutorial : BattleState {
     renderer.draw(batch);
   }
 
-  protected auto highlightCoords(R)(R tiles, Color tint, string message)
-  {
-    class HighlightCoords : State!Tutorial {
-      override void enter(Tutorial tut) {
-        tut._message = message;
-        foreach(tile ; tiles.save) tile.tint = tint;
-      }
-
-      override void exit(Tutorial tut) {
-        foreach(tile ; tiles.save) tile.tint = Color.white;
-      }
-
-      override void run(Tutorial tut) { }
+  protected class HighlightCoords : State!(Tutorial, Battle) {
+    private {
+      Array!RowCol _coords;
+      Color        _color;
+      string       _message;
     }
 
-    return new HighlightCoords;
+    this(R)(R coords, Color color, string message) {
+      _coords   = coords;
+      _color   = color;
+      _message = message;
+    }
+
+    override void enter(Tutorial tut, Battle battle) {
+      tut._message = _message;
+    }
+
+    override void exit(Tutorial tut, Battle battle) { }
+
+    override void run(Tutorial tut, Battle battle) {
+      auto batch = PrimitiveBatch(highlightDepth);
+
+      RectPrimitive prim;
+      prim.color       = _color;
+      prim.filled      = true;
+      prim.rect.width  = tileSize;
+      prim.rect.height = tileSize;
+
+      foreach(coord ; _coords) {
+        prim.rect.topLeft = battle.map.tileOffset(coord).as!Vector2i;
+        batch ~= prim;
+      }
+
+      battle.game.renderer.draw(batch);
+    }
   }
 }

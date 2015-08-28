@@ -15,8 +15,8 @@ private enum {
   crossHairSpriteSheet = "tileset",
   crossHairDepth = 5,
 
-  goodColor = Color(0, 1, 0, 0.5), // semi-transparent green
-  badColor  = Color(1, 0, 0, 0.5), // semi-transparent red
+  goodColor = Color(0, 1, 0, 0.2), // semi-transparent green
+  badColor  = Color(1, 0, 0, 0.2), // semi-transparent red
 }
 
 /// Show the player how turret placement works
@@ -25,33 +25,29 @@ class TutorialTurrets : Tutorial {
     super(battle);
   }
 
-  override {
-    void enter(Battle battle) {
-      super.enter(battle);
+  override void enter(Battle battle) {
+    super.enter(battle);
 
-      auto map = battle.map;
+    auto map = battle.map;
 
-      auto enclosed = map.allTiles.filter!(x => x.isEnclosed);
-      auto occupied = map.allTiles.filter!(x => x.construct !is null);
-      auto outside  = map.allTiles.filter!(x => x.canBuild && !x.isEnclosed);
-      auto abyss    = map.allTiles.filter!(x => !x.canBuild);
+    auto enclosed = map.allCoords.filter!(x => map.tileAt(x).isEnclosed);
+    auto occupied = map.allCoords.filter!(x => map.tileAt(x).construct !is null);
+    auto abyss    = map.allCoords.filter!(x => !map.tileAt(x).canBuild);
+    auto outside  = map.allCoords.filter!(x => map.tileAt(x).canBuild &&
+                                               !map.tileAt(x).isEnclosed &&
+                                               !map.tileAt(x).hasWall);
 
-      _states.push(
-          highlightCoords(enclosed, goodColor,
-            "You can place turrets inside your territory"),
+    _states.push(
+        new HighlightCoords(enclosed, goodColor,
+          "You can place turrets inside your territory"),
 
-          highlightCoords(occupied, badColor,
-            "But not on top of another construct ..."),
+        new HighlightCoords(occupied, badColor,
+          "But not on top of another construct ..."),
 
-          highlightCoords(outside, badColor,
-            "or outside your territory ..."),
+        new HighlightCoords(outside, badColor,
+          "or outside your territory ..."),
 
-          highlightCoords(abyss, badColor,
-            "or in the bottomless abyss over here."));
-    }
-
-    void run(Battle battle) {
-      super.run(battle);
-    }
+        new HighlightCoords(abyss, badColor,
+          "or in the bottomless abyss over here."));
   }
 }
