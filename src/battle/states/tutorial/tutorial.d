@@ -2,6 +2,7 @@
 module battle.states.tutorial.tutorial;
 
 import std.math;
+import std.range;
 import std.format : format;
 import std.container : Array;
 import dau;
@@ -20,22 +21,25 @@ private enum {
   targetSpriteSheet = "tileset", // target used to point out a location
   targetDepth = 5,
 
-  // offset of tutorial text from the center of the cursor
-  Vector2f textOffset = Vector2f(32, 32),
+  // where to center the tutorial text
+  Vector2f textCenter = Vector2f(screenW / 2, screenH * 4/5),
 
   transitionTime = 1f,
 }
 
 /// Temporarily pause the game and overlay some (helpful?) text
 class Tutorial : BattleState {
-  protected StateStack!(Tutorial, Game) _states;
+  protected StateStack!(Tutorial) _states;
 
   private {
-    Font     _font;
-    Bitmap   _cursor;
+    Font    _font;
+    Bitmap  _cursor;
+    TileMap _map;
 
     Transition!Vector2f _cursorPos;
     Transition!Vector2f _cursorScale;
+
+    string _message;
   }
 
   this(Battle battle) {
@@ -55,24 +59,29 @@ class Tutorial : BattleState {
     }
 
     void run(Battle battle) {
-      if (!_states.empty) _states.run(this, battle.game);
+      if (!_states.empty) _states.run(this);
 
       _cursorPos.update(battle.game.deltaTime);
       _cursorScale.update(battle.game.deltaTime);
+
+      drawText(battle.game.renderer, textCenter, _message);
     }
 
     // pressing confirm or cancel progresses the tutorial
     void onConfirm(Battle battle) {
+      _states.pop();
+
+      // the last step of this tutorial scene is done; back to the game!
       if (_states.empty) battle.states.pop();
-      else _states.pop();
     }
   }
 
-  protected void drawText(Renderer renderer, Vector2f topLeft, string message) {
+  protected void drawText(Renderer renderer, Vector2f center, string message) {
     Text text;
 
+    text.centered  = true;
     text.color     = Color.white;
-    text.transform = topLeft;
+    text.transform = center;
     text.text      = message;
 
     auto batch = TextBatch(_font, textDepth);
@@ -94,28 +103,21 @@ class Tutorial : BattleState {
     renderer.draw(batch);
   }
 
-  protected class ShowTip : State!(Tutorial, Game) {
-    Vector2f _pos, _scale;
-    string _message;
+  protected auto highlightCoords(R)(R tiles, Color tint, string message)
+  {
+    class HighlightCoords : State!Tutorial {
+      override void enter(Tutorial tut) {
+        tut._message = message;
+        foreach(tile ; tiles.save) tile.tint = tint;
+      }
 
-    this(Vector2f pos, Vector2f scale, string message) {
-      _pos     = pos;
-      _scale   = scale;
-      _message = message;
+      override void exit(Tutorial tut) {
+        foreach(tile ; tiles.save) tile.tint = Color.white;
+      }
+
+      override void run(Tutorial tut) { }
     }
 
-    override void enter(Tutorial tut, Game game) {
-      tut._cursorPos.go(_pos);
-      tut._cursorScale.go(_scale);
-    }
-
-    override void exit(Tutorial tut, Game game) { }
-
-    override void run(Tutorial tut, Game game) {
-      drawTarget(game.renderer, _cursorPos.value, _cursorScale.value);
-
-      auto textPos = _cursorPos.value + textOffset;
-      drawText(game.renderer, textPos, _message);
-    }
+    return new HighlightCoords;
   }
 }

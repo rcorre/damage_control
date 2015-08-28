@@ -14,6 +14,9 @@ private enum {
 
   crossHairSpriteSheet = "tileset",
   crossHairDepth = 5,
+
+  goodColor = Color(0, 1, 0, 0.5), // semi-transparent green
+  badColor  = Color(1, 0, 0, 0.5), // semi-transparent red
 }
 
 /// Show the player how turret placement works
@@ -28,63 +31,22 @@ class TutorialTurrets : Tutorial {
 
       auto map = battle.map;
 
-      auto validCoord = map.allCoords
-        .find!(coord =>
-          map.tileAt(coord).isEnclosed &&
-          map.canBuildAt(coord)        &&
-          map.canBuildAt(coord.south)  &&
-          map.canBuildAt(coord.east)   &&
-          map.canBuildAt(coord.south.east))
-        .front
-        .ifThrown(RowCol(0,0)); // just in case
-
-      auto validPos = map.tileOffset(validCoord.south.east).as!Vector2f;
-
-      auto wallCoord = map.allCoords
-        .find!(coord => map.tileAt(coord).hasWall)
-        .front
-        .ifThrown(RowCol(0,0)); // just in case
-
-      auto wallPos = map.tileOffset(wallCoord.south.east).as!Vector2f;
-
-      auto outsideCoord = map.allCoords
-        .filter!(coord => map.contains(coord.south) &&
-                          map.contains(coord.east) &&
-                          map.contains(coord.south.east))
-        .find!(coord => !map.tileAt(coord).isEnclosed            &&
-                        !map.tileAt(coord.south).isEnclosed      &&
-                        !map.tileAt(coord.east).isEnclosed       &&
-                        !map.tileAt(coord.south.east).isEnclosed &&
-                        map.tileAt(coord).canBuild               &&
-                        map.tileAt(coord.south).canBuild         &&
-                        map.tileAt(coord.east).canBuild          &&
-                        map.tileAt(coord.south.east).canBuild)
-        .front
-        .ifThrown(RowCol(0,0)); // just in case
-
-      auto outsidePos = map.tileOffset(outsideCoord.south.east).as!Vector2f;
-
-      auto abyssCoord = map.allCoords
-        .filter!(coord => map.contains(coord.south) &&
-                          map.contains(coord.east) &&
-                          map.contains(coord.south.east))
-        .find!(coord => !map.tileAt(coord).canBuild       &&
-                        !map.tileAt(coord.south).canBuild &&
-                        !map.tileAt(coord.east).canBuild  &&
-                        !map.tileAt(coord.south.east).canBuild)
-        .front
-        .ifThrown(RowCol(0,0)); // just in case
-
-      auto abyssPos = map.tileOffset(abyssCoord.south.east).as!Vector2f;
+      auto enclosed = map.allTiles.filter!(x => x.isEnclosed);
+      auto occupied = map.allTiles.filter!(x => x.construct !is null);
+      auto outside  = map.allTiles.filter!(x => x.canBuild && !x.isEnclosed);
+      auto abyss    = map.allTiles.filter!(x => !x.canBuild);
 
       _states.push(
-          new ShowTip(validPos, Vector2f(2,2),
+          highlightCoords(enclosed, goodColor,
             "You can place turrets inside your territory"),
-          new ShowTip(wallPos, Vector2f(2,2),
+
+          highlightCoords(occupied, badColor,
             "But not on top of another construct ..."),
-          new ShowTip(outsidePos, Vector2f(2,2),
+
+          highlightCoords(outside, badColor,
             "or outside your territory ..."),
-          new ShowTip(abyssPos, Vector2f(2,2),
+
+          highlightCoords(abyss, badColor,
             "or in the bottomless abyss over here."));
     }
 

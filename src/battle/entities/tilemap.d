@@ -20,8 +20,12 @@ private enum {
 }
 
 class Tile {
-  private bool _enclosed;
-  private Construct _construct;
+  Color tint = Color.white;
+
+  private {
+    bool      _enclosed;
+    Construct _construct;
+  }
 
   const {
     bool canBuild;
@@ -113,7 +117,7 @@ class TileMap {
 
       sprite.region    = tile.textureRect;
       sprite.transform = _map.tileCenter(coord).as!Vector2f;
-      sprite.color     = Color.white;
+      sprite.color     = tile.tint;
       sprite.centered  = true;
 
       tileBatch ~= sprite;
