@@ -25,14 +25,17 @@ private enum {
   tilesetSize   = Vector2i(128, 0), // size of the tileset image for one frame of animation
 }
 
+alias ShowTutorial = Flag!"ShowTutorial";
+
 /// Start a new match.
 class Battle : State!Game {
-  TileMap map;
-  BattleData data;
-  Game game;
-  StateStack!Battle states;
-  Player player;
-  MusicMixer music;
+  TileMap            map;
+  BattleData         data;
+  Game               game;
+  StateStack!Battle  states;
+  Player             player;
+  MusicMixer         music;
+  const ShowTutorial showTutorial;
 
   private {
     Bitmap _tileAtlas;
@@ -41,6 +44,10 @@ class Battle : State!Game {
     int    _animationCounter;
     Cursor _cursor;
     bool   _turboMode;
+  }
+
+  this(ShowTutorial showTutorial) {
+    this.showTutorial = showTutorial;
   }
 
   @property auto animationOffset() {

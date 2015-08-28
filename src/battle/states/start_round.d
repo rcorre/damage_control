@@ -9,6 +9,7 @@ import battle.states.place_turrets;
 import battle.states.fight_ai;
 import battle.states.stats_summary;
 import battle.states.introduction;
+import battle.states.tutorial;
 
 private enum {
   cannonsTitle = "Install Turrets",
@@ -31,6 +32,7 @@ class StartRound : State!Battle {
 
     // TODO: check if just finished last round
     battle.states.push(
+        new TutorialTurrets(battle),
         new BattleIntroduction(cannonsTitle, MusicLevel.moderate, battle.game),
         new PlaceTurrets(battle, numTurrets),
 
@@ -48,3 +50,10 @@ class StartRound : State!Battle {
   override void exit(Battle battle) { }
   override void run(Battle battle) { }
 }
+
+class EmptyBattleState : State!Battle {
+  override void enter(Battle b) { b.states.pop(); }
+  override void exit(Battle b) { }
+  override void run(Battle b) { }
+}
+

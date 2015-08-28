@@ -13,7 +13,7 @@ import title.states.navigate;
 import jsonizer;
 
 private enum {
-  underlineSize = Vector2i( 150,   6),
+  underlineSize = Vector2i(150, 6),
 
   fontName  = "Mecha",
   fontSize  = 36,
@@ -149,7 +149,7 @@ package:
   }
 
   auto playMenu(Game game) {
-    auto play(Game game) { game.states.push(new Battle); }
+    auto play(Game game) { game.states.push(new Battle(ShowTutorial.yes)); }
 
     return new TitleMenu(game,
         MenuEntry("Tutorial", &play),
