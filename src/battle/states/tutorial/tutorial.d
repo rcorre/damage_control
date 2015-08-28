@@ -23,10 +23,14 @@ private enum {
 
   highlightDepth = 8,
 
-  // where to center the tutorial text
-  Vector2f textCenter = Vector2f(screenW / 2, screenH * 4/5),
+  // tutorial text positions
+  Vector2f messageEnter  = Vector2f(-screenW / 3 , screenH * 4/5),
+  Vector2f messageCenter = Vector2f(screenW / 2  , screenH * 4/5),
+  Vector2f messageExit   = Vector2f(screenW * 4/3, screenH * 4/5),
 
-  transitionTime = 1f,
+  transitionTime = 0.5f,
+  enterTransitionFn = (float x) => x.pow(0.5),
+  exitTransitionFn = (float x) => x.pow(1.5),
 }
 
 /// Temporarily pause the game and overlay some (helpful?) text
@@ -38,10 +42,11 @@ class Tutorial : BattleState {
     Bitmap  _cursor;
     TileMap _map;
 
-    Transition!Vector2f _cursorPos;
-    Transition!Vector2f _cursorScale;
+    Transition!(Vector2f, exitTransitionFn)  _previousMessagePos;
+    Transition!(Vector2f, enterTransitionFn) _currentMessagePos;
 
-    string _message;
+    string _currentMessage;
+    string _previousMessage;
   }
 
   this(Battle battle) {
@@ -56,17 +61,18 @@ class Tutorial : BattleState {
       // just exit immediately if we are not in tutorial mode
       if (!battle.showTutorial) battle.states.pop();
 
-      _cursorPos.initialize(Vector2f.zero, transitionTime);
-      _cursorScale.initialize(Vector2f.zero, transitionTime);
+      _previousMessagePos.initialize(messageEnter, transitionTime);
+      _currentMessagePos.initialize(messageEnter, transitionTime);
     }
 
     void run(Battle battle) {
       if (!_states.empty) _states.run(this, battle);
 
-      _cursorPos.update(battle.game.deltaTime);
-      _cursorScale.update(battle.game.deltaTime);
+      _previousMessagePos.update(battle.game.deltaTime);
+      _currentMessagePos.update(battle.game.deltaTime);
 
-      drawText(battle.game.renderer, textCenter, _message);
+      drawText(battle.game.renderer, _previousMessagePos.value, _previousMessage);
+      drawText(battle.game.renderer, _currentMessagePos.value, _currentMessage);
     }
 
     // pressing confirm or cancel progresses the tutorial
@@ -76,6 +82,14 @@ class Tutorial : BattleState {
       // the last step of this tutorial scene is done; back to the game!
       if (_states.empty) battle.states.pop();
     }
+  }
+
+  protected void setMessage(string message) {
+    _previousMessage = _currentMessage;
+    _currentMessage  = message;
+
+    _previousMessagePos.go(messageCenter, messageExit);
+    _currentMessagePos.go(messageEnter, messageCenter);
   }
 
   protected void drawText(Renderer renderer, Vector2f center, string message) {
@@ -119,7 +133,7 @@ class Tutorial : BattleState {
     }
 
     override void enter(Tutorial tut, Battle battle) {
-      tut._message = _message;
+      tut.setMessage(_message);
     }
 
     override void exit(Tutorial tut, Battle battle) { }
