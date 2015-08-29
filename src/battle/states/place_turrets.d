@@ -51,8 +51,13 @@ class PlaceTurrets : TimedPhase {
     void run(Battle battle) {
       super.run(battle);
 
-      // draw the turret placement cursor
-      if (_turretsLeft > 0) drawCursor(battle);
+      if (_turretsLeft > 0) {
+        drawCursor(battle);
+      }
+      else if (!_soundOk.playing && !_soundBad.playing) {
+        // no turrets left. pop, but wait so we don't clip the sounds
+        battle.states.pop();
+      }
     }
 
     override void onConfirm(Battle battle) {
@@ -69,9 +74,6 @@ class PlaceTurrets : TimedPhase {
         --_turretsLeft;
         map.place(new Turret, coord);
         _soundOk.play();
-      }
-      else {
-        _soundBad.play();
       }
     }
   }
