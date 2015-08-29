@@ -29,7 +29,7 @@ enum SpriteRegion {
 }
 
 enum ScoreFactor {
-  territory = 10, // points per tile enclosed in player territory
+  territory = 5,  // points per tile enclosed in player territory
   enemy     = 20, // points per enemy destroyed
   reactor   = 80, // points per reactor enclosed
 }
