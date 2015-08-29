@@ -5,7 +5,7 @@ import std.math      : pow;
 import std.range     : enumerate;
 import std.container : Array;
 import battle.battle;
-import dau;
+import cid;
 import transition;
 
 private enum {

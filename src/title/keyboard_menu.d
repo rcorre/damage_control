@@ -5,7 +5,7 @@ import std.conv   : to;
 import std.array  : array;
 import std.string : toUpper;
 import title.menu;
-import dau;
+import cid;
 
 private enum neutralTint = Color(1f,1f,1f,0.5f);
 

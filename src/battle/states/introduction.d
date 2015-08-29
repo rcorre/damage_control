@@ -3,7 +3,7 @@ module battle.states.introduction;
 import std.math;
 import std.format : format;
 import std.container : Array;
-import dau;
+import cid;
 import dtiled;
 import battle.battle;
 import battle.entities.tilemap;

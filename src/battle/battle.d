@@ -4,7 +4,7 @@ import std.array     : array;
 import std.string    : startsWith;
 import std.container : Array;
 import std.algorithm : sort, uniq;
-import dau;
+import cid;
 import dtiled;
 import battle.entities.tilemap;
 import player;

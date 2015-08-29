@@ -4,7 +4,7 @@ import std.range;
 import std.random;
 import std.algorithm : filter, minPos;
 import std.container : Array;
-import dau;
+import cid;
 import dtiled;
 import jsonizer;
 import battle.battle;

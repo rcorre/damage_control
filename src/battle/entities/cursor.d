@@ -1,7 +1,7 @@
 module battle.entities.cursor;
 
 import std.algorithm : map, filter;
-import dau;
+import cid;
 import dtiled;
 import constants;
 import battle.entities.tilemap;

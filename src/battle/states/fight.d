@@ -4,7 +4,7 @@ import std.math      : PI_2;
 import std.array     : array;
 import std.range     : walkLength;
 import std.algorithm : map, sum, filter;
-import dau;
+import cid;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;

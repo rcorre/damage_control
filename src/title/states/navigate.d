@@ -1,7 +1,7 @@
 /// Move through menus in the title screen
 module title.states.navigate;
 
-import dau;
+import cid;
 import title.menu;
 import title.title;
 

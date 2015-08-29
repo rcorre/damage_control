@@ -2,7 +2,7 @@ module music;
 
 import std.string    : format;
 import std.algorithm : canFind;
-import dau;
+import cid;
 import transition;
 
 private enum {

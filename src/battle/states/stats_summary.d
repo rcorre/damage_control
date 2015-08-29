@@ -4,7 +4,7 @@ import std.math      : pow;
 import std.conv      : to;
 import std.format    : format;
 import std.container : Array;
-import dau;
+import cid;
 import battle.battle;
 import constants;
 import transition;

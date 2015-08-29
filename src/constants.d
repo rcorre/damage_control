@@ -1,6 +1,6 @@
 module constants;
 
-import dau.geometry;
+import cid.geometry;
 
 enum {
   screenW   = 800,

@@ -2,7 +2,7 @@ module battle.entities.enemy;
 
 import std.math;
 import std.random;
-import dau;
+import cid;
 import dtiled;
 import battle.entities.tilemap;
 import constants;

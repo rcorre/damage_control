@@ -1,12 +1,12 @@
 {
-  "name": "Dampart",
+  "name": "damage_control",
   "description": "A Rampart-like game written in D",
   "copyright": "Copyright © 2015, rcorre",
   "authors": ["rcorre"],
   "targetPath": "bin",
   "preBuildCommands": [ "rake" ],
   "dependencies": {
-    "dau" : { "path": "../dau" },
+    "cid" : { "path": "../cid" },
     "dtiled" : { "path": "../dtiled" }
   }
 }

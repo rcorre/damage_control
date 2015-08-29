@@ -5,7 +5,7 @@ import std.math      : pow;
 import std.process   : browse;
 import std.container : Array;
 import battle.battle;
-import dau;
+import cid;
 import title.menu;
 import title.keyboard_menu;
 import title.gamepad_menu;

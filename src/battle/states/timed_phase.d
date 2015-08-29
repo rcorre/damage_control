@@ -1,7 +1,7 @@
 module battle.states.timed_phase;
 
 import std.format : format;
-import dau;
+import cid;
 import dtiled;
 import battle.battle;
 
