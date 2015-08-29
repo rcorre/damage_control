@@ -24,9 +24,12 @@ private enum {
   highlightDepth = 8,
 
   // tutorial text positions
-  Vector2f messageEnter  = Vector2f(-screenW / 3 , screenH * 4/5),
-  Vector2f messageCenter = Vector2f(screenW / 2  , screenH * 4/5),
-  Vector2f messageExit   = Vector2f(screenW * 4/3, screenH * 4/5),
+  messageEnter  = Vector2f(-screenW / 3 , screenH * 3/5),
+  messageCenter = Vector2f(screenW / 2  , screenH * 3/5),
+  messageExit   = Vector2f(screenW * 4/3, screenH * 3/5),
+
+  helpMessagePos   = Vector2f(screenW / 2, screenH * 1/20),
+  helpMessageColor = Color.gray,
 
   transitionTime = 0.5f,
   enterTransitionFn = (float x) => x.pow(0.5),
@@ -73,6 +76,9 @@ class Tutorial : BattleState {
 
       drawText(battle.game.renderer, _previousMessagePos.value, _previousMessage);
       drawText(battle.game.renderer, _currentMessagePos.value, _currentMessage);
+
+      drawText(battle.game.renderer, helpMessagePos,
+          "Press <confirm> (J) to continue...", helpMessageColor);
     }
 
     // pressing confirm or cancel progresses the tutorial
@@ -92,11 +98,16 @@ class Tutorial : BattleState {
     _currentMessagePos.go(messageEnter, messageCenter);
   }
 
-  protected void drawText(Renderer renderer, Vector2f center, string message) {
+  protected void drawText(
+      Renderer renderer,
+      Vector2f center,
+      string message,
+      Color color = Color.white)
+  {
     Text text;
 
     text.centered  = true;
-    text.color     = Color.white;
+    text.color     = color;
     text.transform = center;
     text.text      = message;
 
@@ -119,16 +130,11 @@ class Tutorial : BattleState {
     renderer.draw(batch);
   }
 
-  protected class HighlightCoords : State!(Tutorial, Battle) {
-    private {
-      Array!RowCol _coords;
-      Color        _color;
-      string       _message;
-    }
+  /// Just show a tutorial message.
+  protected class ShowMessage : State!(Tutorial, Battle) {
+    private string _message;
 
-    this(R)(R coords, Color color, string message) {
-      _coords   = coords;
-      _color   = color;
+    this(string message) {
       _message = message;
     }
 
@@ -138,7 +144,24 @@ class Tutorial : BattleState {
 
     override void exit(Tutorial tut, Battle battle) { }
 
+    override void run(Tutorial tut, Battle battle) { }
+  }
+
+  /// Show a tutorial message and highlight a section of the map.
+  protected class HighlightCoords : ShowMessage {
+    private {
+      Array!RowCol _coords;
+      Color        _color;
+    }
+
+    this(R)(R coords, Color color, string message) {
+      super(message);
+      _coords   = coords;
+      _color   = color;
+    }
+
     override void run(Tutorial tut, Battle battle) {
+      super.run(tut, battle);
       auto batch = PrimitiveBatch(highlightDepth);
 
       RectPrimitive prim;

@@ -38,16 +38,25 @@ class TutorialTurrets : Tutorial {
                                                !map.tileAt(x).hasWall);
 
     _states.push(
+        new ShowMessage("You will now get to place 3 turrets."),
+
         new HighlightCoords(enclosed, goodColor,
           "You can place turrets inside your territory"),
 
         new HighlightCoords(occupied, badColor,
-          "But not on top of another construct ..."),
+          "But not on top of another construct..."),
 
         new HighlightCoords(outside, badColor,
-          "or outside your territory ..."),
+          "or outside your territory..."),
 
         new HighlightCoords(abyss, badColor,
-          "or in the bottomless abyss over here."));
+          "or in this bottomless abyss."),
+
+        new ShowMessage(
+          "Use the directional keys (WASD) to select a location..."),
+
+        new ShowMessage(
+          "and press the confirm button (J) to confirm placement")
+    );
   }
 }
