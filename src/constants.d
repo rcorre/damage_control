@@ -34,3 +34,10 @@ enum ScoreFactor {
   enemy     = 20, // points per enemy destroyed
   reactor   = 80, // points per reactor enclosed
 }
+
+enum PhaseTime {
+  chooseBase   = 10,
+  placeTurrets = 15,
+  fight        = 20,
+  placeWalls   = 20,
+}

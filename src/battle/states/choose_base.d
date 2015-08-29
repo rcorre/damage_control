@@ -8,12 +8,21 @@ import dau;
 import dtiled;
 import jsonizer;
 import battle.battle;
+import battle.states.timed_phase;
 import battle.entities;
+import constants;
 
 /// Player is holding a wall segment they can place with a mouse click
-class ChooseBase : BattleState {
-  private RowCol       _currentCoord;
-  private Array!RowCol _reactorCoords;
+class ChooseBase : TimedPhase {
+  private {
+    RowCol       _currentCoord;
+    Array!RowCol _reactorCoords;
+    bool _choiceConfirmed;
+  }
+
+  this(Battle battle) {
+    super(battle, PhaseTime.chooseBase);
+  }
 
   override {
     void enter(Battle battle) {
@@ -24,6 +33,13 @@ class ChooseBase : BattleState {
 
       _currentCoord = _reactorCoords.front;
       selectReactor(battle, _currentCoord);
+    }
+
+    void exit(Battle battle) {
+      super.exit(battle);
+
+      // if player hasn't picked something by now, pick for them
+      if (!_choiceConfirmed) confirmChoice(battle);
     }
 
     void onCursorMove(Battle battle, Vector2f direction) {
@@ -50,12 +66,7 @@ class ChooseBase : BattleState {
     }
 
     void onConfirm(Battle battle) {
-      // mark all tiles in area surrounding the selection as enclosed
-      foreach(tile ; battle.map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
-        tile.isEnclosed = true;
-      }
-
-      // base is chosen, end this state
+      confirmChoice(battle);
       battle.states.pop();
     }
   }
@@ -69,9 +80,18 @@ class ChooseBase : BattleState {
       battle.map.place(new Wall, coord);
     }
 
-    // The walls need to evaluate their sprites
+    // The walls need to evaluate their sprites _after_ they are all placed
     foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
       battle.map.regenerateWallSprite(coord);
+    }
+  }
+
+  private void confirmChoice(Battle battle) {
+    _choiceConfirmed = true;
+
+    // mark all tiles in area surrounding the selection as enclosed
+    foreach(tile ; battle.map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
+      tile.isEnclosed = true;
     }
   }
 }

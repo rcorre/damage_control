@@ -12,7 +12,6 @@ import battle.states.timed_phase;
 import constants;
 
 private enum {
-  phaseTime   = 5,
   cursorDepth = 5,
 
   // for drawing the remaining turret count
@@ -36,7 +35,7 @@ class PlaceTurrets : TimedPhase {
   }
 
   this(Battle battle, int numTurrets) {
-    super(battle, phaseTime);
+    super(battle, PhaseTime.placeTurrets);
     _soundOk  = battle.game.audio.getSoundBank("place_ok");
     _soundBad = battle.game.audio.getSoundBank("place_bad");
     _turretsLeft = numTurrets;

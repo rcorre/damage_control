@@ -14,8 +14,6 @@ import constants;
 import transition;
 
 private enum {
-  phaseTime      = 15,
-
   projectileDepth = 3,
   particleDepth   = 2,
 
@@ -55,7 +53,7 @@ abstract class Fight : TimedPhase {
   }
 
   this(Battle battle) {
-    super(battle, phaseTime);
+    super(battle, PhaseTime.fight);
     _projectiles = new ProjectileList;
     _explosions = new ExplosionList;
     _particles = new ParticleList;

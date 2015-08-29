@@ -16,7 +16,6 @@ private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 5,
   wallDepth  = 3,
-  phaseTime  = 15,
 }
 
 /// Player is holding a wall segment they can place with a mouse click
@@ -29,7 +28,7 @@ class PlaceWalls : TimedPhase {
   }
 
   this(Battle battle) {
-    super(battle, phaseTime);
+    super(battle, PhaseTime.placeWalls);
     _soundOk  = battle.game.audio.getSoundBank("place_ok");
     _soundBad = battle.game.audio.getSoundBank("place_bad");
   }

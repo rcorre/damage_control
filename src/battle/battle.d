@@ -68,7 +68,7 @@ class Battle : State!Game {
       player = new Player(Color(0, 0, 0.8));
 
       states.push(new BattleIntroduction("Choose Base", MusicLevel.basic, game),
-                  new ChooseBase,
+                  new ChooseBase(this),
                   new StartRound);
 
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
