@@ -1,5 +1,6 @@
 module battle.states.place_turrets;
 
+import std.conv      : to;
 import std.range     : walkLength;
 import std.format    : format;
 import std.algorithm : count, filter;
@@ -11,8 +12,14 @@ import battle.states.timed_phase;
 import constants;
 
 private enum {
-  phaseTime         = 5,
-  newTurretDepth    = 5,
+  phaseTime   = 5,
+  cursorDepth = 5,
+
+  // for drawing the remaining turret count
+  fontName   = "Mecha",
+  fontSize   = 16,
+  textDepth  = 6,
+  textOffset = Vector2i(16, 24),
 
   cannonCountFormat = "Cannons: %d",
 
@@ -23,9 +30,9 @@ private enum {
 class PlaceTurrets : TimedPhase {
   private {
     int       _turretsLeft;
-    Turret    _turret;
     SoundBank _soundOk;
     SoundBank _soundBad;
+    Font      _font;
   }
 
   this(Battle battle, int numTurrets) {
@@ -33,26 +40,20 @@ class PlaceTurrets : TimedPhase {
     _soundOk  = battle.game.audio.getSoundBank("place_ok");
     _soundBad = battle.game.audio.getSoundBank("place_bad");
     _turretsLeft = numTurrets;
+    _font = battle.game.fonts.get(fontName, fontSize);
   }
 
   override {
     void enter(Battle battle) {
       super.enter(battle);
-      if (_turretsLeft > 0) _turret = new Turret;
-
       battle.cursor.positionInPlayerTerritory();
     }
 
     void run(Battle battle) {
       super.run(battle);
 
-      // position the turret at the cursor and draw it to the screen
-      if (_turret !is null) {
-        _turret.topLeft = battle.cursor.topLeft;
-        auto batch = SpriteBatch(battle.tileAtlas, newTurretDepth);
-        _turret.draw(batch, battle.animationOffset);
-        battle.game.renderer.draw(batch);
-      }
+      // draw the turret placement cursor
+      if (_turretsLeft > 0) drawCursor(battle);
     }
 
     override void onConfirm(Battle battle) {
@@ -67,14 +68,32 @@ class PlaceTurrets : TimedPhase {
           map.canBuildAt(coord.south.east))
       {
         --_turretsLeft;
-        map.place(_turret, coord);
+        map.place(new Turret, coord);
         _soundOk.play();
-
-        _turret = (_turretsLeft > 0) ? new Turret : null;
       }
       else {
         _soundBad.play();
       }
     }
+  }
+
+  private void drawCursor(Battle battle) {
+    Sprite sprite;
+    sprite.transform = battle.cursor.topLeft;
+    sprite.region    = SpriteRegion.turretCursor;
+
+    auto spriteBatch = SpriteBatch(battle.tileAtlas, cursorDepth);
+    spriteBatch ~= sprite;
+    battle.game.renderer.draw(spriteBatch);
+
+    Text text;
+    text.transform = battle.cursor.topLeft + textOffset;
+    text.text      = _turretsLeft.to!string;
+    text.color     = Color.white;
+    text.centered  = true;
+
+    auto textBatch = TextBatch(_font, cursorDepth);
+    textBatch ~= text;
+    battle.game.renderer.draw(textBatch);
   }
 }
