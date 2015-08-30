@@ -8,6 +8,7 @@ import common.menu;
 import common.menu_stack;
 import common.keyboard_menu;
 import common.gamepad_menu;
+import common.options_menu;
 import title.states.navigate;
 
 private enum {
@@ -76,9 +77,7 @@ class Title : State!Game {
   auto optionsMenu(Game game) {
     auto dummy(Game game) {}
 
-    return new Menu(game,
-        MenuEntry("Sound", &dummy),
-        MenuEntry("Music", &dummy));
+    return new OptionsMenu(game);
   }
 
   auto controlsMenu(Game game) {

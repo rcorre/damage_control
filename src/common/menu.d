@@ -42,6 +42,8 @@ class Menu {
     _color.initialize(subduedTint, transitionDuration);
   }
 
+  @property auto selectedEntry() { return _entries[_selection]; }
+
   // y offsets are determined to space out the entries within the screen height
   auto entryY(int idx) {
     auto n = cast(int) _entries.length;
