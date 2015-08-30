@@ -5,7 +5,7 @@
       "buttons": [ 1 ]
     },
     "cancel": {
-      "keys": [ "k", "escape" ],
+      "keys": [ "k" ],
       "buttons": [ 0 ]
     },
     "turbo": {
@@ -19,6 +19,10 @@
     "rotateL": {
       "keys": [ "e" ],
       "buttons": [ 5 ]
+    },
+    "menu": {
+      "keys": [ "escape" ],
+      "buttons": [ 7 ]
     }
   },
   "axes": {

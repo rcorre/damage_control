@@ -31,7 +31,7 @@ class Title : State!Game {
       _states.push(new NavigateMenus);
     }
 
-    void exit(Game game) { 
+    void exit(Game game) {
       // this ensures handlers are de-registered
       _states.pop();
     }

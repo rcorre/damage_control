@@ -10,6 +10,7 @@ import battle.entities.tilemap;
 import player;
 import music;
 import battle.entities.cursor;
+import battle.states.pause_menu;
 import battle.states.choose_base;
 import battle.states.start_round;
 import battle.states.introduction;
@@ -115,6 +116,8 @@ abstract class BattleState : State!Battle {
             () => onRotate(battle, true)));
       _handlers.insert(events.onButtonDown("rotateL",
             () => onRotate(battle, false)));
+      _handlers.insert(events.onButtonDown("menu",
+            () => battle.states.push(new PauseMenu)));
       _handlers.insert(events.onAxisMoved("move",
             (pos) => onCursorMove(battle, pos)));
     }
