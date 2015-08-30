@@ -1,5 +1,5 @@
 /// Menu that allows configuration of controller controls
-module title.gamepad_menu;
+module common.gamepad_menu;
 
 import std.conv   : to;
 import std.array  : array;

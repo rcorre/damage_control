@@ -6,8 +6,8 @@ import battle.battle;
 import cid;
 import common.menu;
 import common.menu_stack;
-import title.keyboard_menu;
-import title.gamepad_menu;
+import common.keyboard_menu;
+import common.gamepad_menu;
 import title.states.navigate;
 
 private enum {

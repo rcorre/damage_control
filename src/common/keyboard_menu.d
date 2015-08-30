@@ -1,5 +1,5 @@
 /// Menu that allows configuration of keyboard controls
-module title.keyboard_menu;
+module common.keyboard_menu;
 
 import std.conv   : to;
 import std.array  : array;
