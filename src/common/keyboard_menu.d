@@ -76,16 +76,10 @@ class KeyboardMenu : Menu {
     _currentlyRemapping = null;
   }
 
-  override void moveSelectionDown() {
+  override void moveSelection(Vector2f direction) {
     // if remapping, a direction button should be captured by the remapping
     // handler rather than the menu motion handler
-    if (!isRemapping) super.moveSelectionDown();
-  }
-
-  override void moveSelectionUp() {
-    // if remapping, a direction button should be captured by the remapping
-    // handler rather than the menu motion handler
-    if (!isRemapping) super.moveSelectionUp();
+    if (!isRemapping) super.moveSelection(direction);
   }
 
   protected override void drawEntry(

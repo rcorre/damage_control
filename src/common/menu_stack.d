@@ -74,16 +74,10 @@ class MenuStack {
   }
 
   void moveSelection(Vector2f direction, Game game) {
-    if (direction.y > 0) {
-      _menus.back.moveSelectionDown();
-      _menuMoveSound.play();
-    }
-    else if (direction.y < 0) {
-      _menus.back.moveSelectionUp();
-      _menuMoveSound.play();
-    }
-    else if (direction.x < 0) popMenu();
-    else if (direction.x > 0) select(game);
+    _menus.back.moveSelection(direction);
+
+    // if we are moving up/down, play the movement noise
+    if (direction.y != 0) _menuMoveSound.play();
   }
 
   void pushMenu(Menu newMenu) {

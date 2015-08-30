@@ -65,12 +65,13 @@ class Menu {
     _selection = idx;
   }
 
-  void moveSelectionDown() {
-    setSelection((_selection + 1) % _entries.length);
-  }
-
-  void moveSelectionUp() {
-    setSelection((_selection + _entries.length - 1) % _entries.length);
+  void moveSelection(Vector2f direction) {
+    if (direction.y > 0) {
+      setSelection((_selection + 1) % _entries.length);
+    }
+    else if (direction.y < 0) {
+      setSelection((_selection + _entries.length - 1) % _entries.length);
+    }
   }
 
   void confirmSelection(Game game) {
