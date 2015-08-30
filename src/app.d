@@ -27,7 +27,7 @@ class InitializeGame : State!Game {
       game.audio.loadSamples("./content/sound", "*.wav");
 
       // start on title state
-      game.states.replace(new Title(game));
+      game.states.replace(new Title);
     }
 
     void exit(Game game) { }

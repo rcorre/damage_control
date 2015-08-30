@@ -4,13 +4,13 @@ module title.gamepad_menu;
 import std.conv   : to;
 import std.array  : array;
 import std.string : format, toUpper;
-import title.menu;
+import common.menu;
 import cid;
 
 private enum neutralTint = Color(1f,1f,1f,0.5f);
 
 /// Show the title screen.
-class GamepadMenu : TitleMenu {
+class GamepadMenu : Menu {
   private {
     ControlScheme _controls;
     EventHandler  _handler;

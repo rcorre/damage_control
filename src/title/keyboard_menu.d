@@ -4,13 +4,13 @@ module title.keyboard_menu;
 import std.conv   : to;
 import std.array  : array;
 import std.string : toUpper;
-import title.menu;
+import common.menu;
 import cid;
 
 private enum neutralTint = Color(1f,1f,1f,0.5f);
 
 /// Show the title screen.
-class KeyboardMenu : TitleMenu {
+class KeyboardMenu : Menu {
   private {
     ControlScheme _controls;
     EventHandler  _handler;

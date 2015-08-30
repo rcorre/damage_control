@@ -1,5 +1,5 @@
-/// Title menu
-module title.menu;
+/// A vertical list of menu entries.
+module common.menu;
 
 import std.math      : pow;
 import std.range     : enumerate;
@@ -24,8 +24,8 @@ private enum {
   transitionFn = (float x) => x.pow(0.35),
 }
 
-/// Show the title screen.
-class TitleMenu {
+/// A vertical list of menu entries.
+class Menu {
   private {
     Array!MenuEntry  _entries;
     size_t           _selection;
@@ -124,7 +124,6 @@ class TitleMenu {
   }
 }
 
-package:
 struct MenuEntry {
   alias Action = void delegate(Game);
 

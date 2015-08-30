@@ -1,16 +1,14 @@
 /// Title screen state.
 module title.title;
 
-import std.math      : pow;
 import std.process   : browse;
-import std.container : Array;
 import battle.battle;
 import cid;
-import title.menu;
+import common.menu;
+import common.menu_stack;
 import title.keyboard_menu;
 import title.gamepad_menu;
 import title.states.navigate;
-import jsonizer;
 
 private enum {
   underlineSize = Vector2i(150, 6),
@@ -23,135 +21,53 @@ private enum {
 /// Show the title screen.
 class Title : State!Game {
   private {
-    Array!TitleMenu          _menus;
-    TitleMenu                _poppedMenu;
     StateStack!(Title, Game) _states;
-    Bitmap                   _underlineBmp;
-    Font                     _font;
-    SoundBank                _menuMoveSound;
-    SoundBank                _menuSelectSound;
-    SoundBank                _menuPopSound;
-  }
-
-  this(Game game) {
-    // generate bitmap used for menu underline
-    _underlineBmp = Bitmap(al_create_bitmap(underlineSize.x, underlineSize.y));
-    al_set_target_bitmap(_underlineBmp);
-    al_clear_to_color(Color.white);
-    al_set_target_backbuffer(game.display.display);
-
-    // load font for menu text
-    _font = game.fonts.get(fontName, fontSize);
-
-    _menuMoveSound   = game.audio.getSoundBank("menu_move");
-    _menuSelectSound = game.audio.getSoundBank("menu_select");
-    _menuPopSound    = game.audio.getSoundBank("menu_pop");
-  }
-
-  ~this() {
-    al_destroy_bitmap(_underlineBmp);
+    MenuStack                _menus;
   }
 
   override {
     void enter(Game game) {
-      _menus ~= mainMenu(game);
-      _menus.back.moveTo(targetX(0));
-      _menus.back.activate();
+      _menus = new MenuStack(game, mainMenu(game));
       _states.push(new NavigateMenus);
     }
 
-    void exit(Game game) {
+    void exit(Game game) { 
+      // this ensures handlers are de-registered
       _states.pop();
-      _menus.clear();
-      _poppedMenu = null;
     }
 
     void run(Game game) {
-      auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);
-      auto textBatch   = TextBatch(_font, textDepth);
-
-      foreach(menu ; _menus) {
-        menu.update(game.deltaTime);
-        menu.draw(spriteBatch, textBatch);
-      }
-      if (_poppedMenu) {
-        _poppedMenu.update(game.deltaTime);
-        _poppedMenu.draw(spriteBatch, textBatch);
-      }
-
-      game.renderer.draw(spriteBatch);
-      game.renderer.draw(textBatch);
-
+      _menus.updateAndDraw(game);
       _states.run(this, game);
     }
   }
 
-package:
   void select(Game game) {
-    _menuSelectSound.play();
-    _menus.back.confirmSelection(game);
-  }
-
-  void moveSelection(Vector2f direction, Game game) {
-    if (direction.y > 0) {
-      _menus.back.moveSelectionDown();
-      _menuMoveSound.play();
-    }
-    else if (direction.y < 0) {
-      _menus.back.moveSelectionUp();
-      _menuMoveSound.play();
-    }
-    else if (direction.x < 0) popMenu();
-    else if (direction.x > 0) select(game);
-  }
-
-  void pushMenu(TitleMenu newMenu) {
-    _menus.back.deactivate();
-    _menus ~= newMenu;
-
-    foreach(i, menu ; _menus[].enumerate!int) {
-      menu.moveTo(targetX(i));
-    }
-
-    newMenu.activate();
+    _menus.select(game);
   }
 
   void popMenu() {
-    if (_menus.length == 1) return;
+    _menus.popMenu();
+  }
 
-    _menuPopSound.play();
-
-    _poppedMenu = _menus.back;
-    _menus.removeBack();
-
-    foreach(i, menu ; _menus[].enumerate!int) {
-      menu.moveTo(targetX(i));
-    }
-
-    _poppedMenu.moveTo(900);
-    _poppedMenu.deactivate();
-    _menus.back.activate();
+  void moveSelection(Vector2f pos, Game game) {
+    _menus.moveSelection(pos, game);
   }
 
   private:
-  auto targetX(int menuIdx) {
-    int n = cast(int) _menus.length;
-    return 500 - 140 * n + 220 * menuIdx;
-  }
-
   auto mainMenu(Game game) {
-    return new TitleMenu(game,
-        MenuEntry("Play"    , g => pushMenu(playMenu(g))),
-        MenuEntry("Options" , g => pushMenu(optionsMenu(g))),
-        MenuEntry("Controls", g => pushMenu(controlsMenu(g))),
-        MenuEntry("Credits" , g => pushMenu(creditsMenu(g))),
+    return new Menu(game,
+        MenuEntry("Play"    , g => _menus.pushMenu(playMenu(g))),
+        MenuEntry("Options" , g => _menus.pushMenu(optionsMenu(g))),
+        MenuEntry("Controls", g => _menus.pushMenu(controlsMenu(g))),
+        MenuEntry("Credits" , g => _menus.pushMenu(creditsMenu(g))),
         MenuEntry("Quit"    , g => g.stop()));
   }
 
   auto playMenu(Game game) {
     auto play(Game game) { game.states.push(new Battle(ShowTutorial.yes)); }
 
-    return new TitleMenu(game,
+    return new Menu(game,
         MenuEntry("Tutorial", &play),
         MenuEntry("1 Player", &play),
         MenuEntry("2 Player", &play));
@@ -160,15 +76,15 @@ package:
   auto optionsMenu(Game game) {
     auto dummy(Game game) {}
 
-    return new TitleMenu(game,
+    return new Menu(game,
         MenuEntry("Sound", &dummy),
         MenuEntry("Music", &dummy));
   }
 
   auto controlsMenu(Game game) {
-    return new TitleMenu(game,
-        MenuEntry("Keyboard", g => pushMenu(keyboardMenu(g))),
-        MenuEntry("Gamepad" , g => pushMenu(gamepadMenu(g))));
+    return new Menu(game,
+        MenuEntry("Keyboard", g => _menus.pushMenu(keyboardMenu(g))),
+        MenuEntry("Gamepad" , g => _menus.pushMenu(gamepadMenu(g))));
   }
 
   auto keyboardMenu(Game game) {
@@ -180,7 +96,7 @@ package:
   }
 
   auto creditsMenu(Game game) {
-    return new TitleMenu(game,
+    return new Menu(game,
         MenuEntry("D"       , g => browse("http://dlang.org")),
         MenuEntry("Allegro" , g => browse("https://allegro.cc/")),
         MenuEntry("Aseprite", g => browse("http://aseprite.org")),

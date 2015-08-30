@@ -2,7 +2,7 @@
 module title.states.navigate;
 
 import cid;
-import title.menu;
+import common.menu;
 import title.title;
 
 /// Show the title screen.
