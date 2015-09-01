@@ -2,7 +2,7 @@
 module common.menu;
 
 import std.math      : pow;
-import std.range     : enumerate;
+import std.range     : only, enumerate, isInputRange, ElementType;
 import std.container : Array;
 import battle.battle;
 import cid;
@@ -34,7 +34,13 @@ class Menu {
     Transition!(Color, transitionFn) _color;
   }
 
-  this(Game game, MenuEntry[] entries ...) {
+  this(T...)(Game game, T entries) {
+    this(game, only(entries));
+  }
+
+  this(R)(Game game, R entries)
+    if (isInputRange!R && is(ElementType!R : MenuEntry))
+  {
     _entries.insert(entries);
 
     // start off-screen to the right and subdued in color
