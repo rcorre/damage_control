@@ -10,10 +10,6 @@ import battle.states.tutorial.tutorial;
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
-  textDepth = 6,
-
-  crossHairSpriteSheet = "tileset",
-  crossHairDepth = 5,
 
   goodColor = Color(0, 1, 0, 0.2), // semi-transparent green
   badColor  = Color(1, 0, 0, 0.2), // semi-transparent red

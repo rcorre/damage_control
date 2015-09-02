@@ -3,12 +3,12 @@ module battle.states.timed_phase;
 import std.format : format;
 import cid;
 import dtiled;
+import constants;
 import battle.battle;
 
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
-  textDepth = 1,
   timerPos = Vector2i(10, 10),
   timerFormat = "Time: %2.1f",
 }
@@ -43,7 +43,7 @@ class TimedPhase : BattleState {
   }
 
   private void drawTimer(Renderer renderer) {
-    auto batch = TextBatch(_font, textDepth);
+    auto batch = TextBatch(_font, DrawDepth.overlayText);
 
     Text text;
 

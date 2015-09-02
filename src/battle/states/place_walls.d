@@ -15,7 +15,6 @@ import battle.states.timed_phase;
 private enum {
   dataFile   = "data/pieces.json",
   dataSize   = 5,
-  wallDepth  = 3,
 }
 
 /// Player is holding a wall segment they can place with a mouse click
@@ -109,7 +108,7 @@ struct Piece {
   }
 
   void draw(Vector2f center, Bitmap bmp, Renderer renderer) {
-    auto batch = SpriteBatch(bmp, wallDepth);
+    auto batch = SpriteBatch(bmp, DrawDepth.newWall);
 
     foreach(coord ; RowCol(0,0).span(dataSize, dataSize)) {
       // no wall at this slot

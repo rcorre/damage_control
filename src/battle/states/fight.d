@@ -14,15 +14,11 @@ import constants;
 import transition;
 
 private enum {
-  projectileDepth = 3,
-  particleDepth   = 2,
 
   explosionTime  = 0.30f,
   explosionSize  = 40,
   explosionTint  = Color(1, 1, 1, 1.0),
-  explosionDepth = 3,
 
-  targetDepth       = 6,
   targetSpriteSheet = "tileset",
 
   aimingSpeed = 200, // how far the crosshairs slide (per second)
@@ -167,7 +163,7 @@ abstract class Fight : TimedPhase {
 
   private:
   void processProjectiles(Battle battle) {
-    auto batch = SpriteBatch(battle.tileAtlas, projectileDepth);
+    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.projectile);
 
     foreach(ref proj ; _projectiles) {
       proj.update(battle.game.deltaTime, &spawnParticle);
@@ -187,7 +183,7 @@ abstract class Fight : TimedPhase {
   }
 
   void processExplosions(Game game) {
-    auto batch = SpriteBatch(_explosionBmp, explosionDepth);
+    auto batch = SpriteBatch(_explosionBmp, DrawDepth.explosion);
 
     foreach(ref expl ; _explosions) {
       expl.duration -= game.deltaTime;
@@ -212,7 +208,7 @@ abstract class Fight : TimedPhase {
   }
 
   void processParticles(Battle battle) {
-    auto batch = SpriteBatch(battle.tileAtlas, particleDepth);
+    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.particle);
 
     foreach(ref particle ; _particles) {
       particle.update(battle.game.deltaTime);
@@ -261,7 +257,7 @@ abstract class Fight : TimedPhase {
       sprite.color.a = 0.5;
     }
 
-    auto batch = SpriteBatch(_targetBmp, targetDepth);
+    auto batch = SpriteBatch(_targetBmp, DrawDepth.crosshair);
     batch ~= sprite;
     renderer.draw(batch);
   }

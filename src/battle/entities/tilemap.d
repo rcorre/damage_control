@@ -13,9 +13,6 @@ import battle.battle;
 import battle.entities.construct;
 
 private enum {
-  tileDepth = 0,
-  circuitDepth = 1,
-  featureDepth = 2,
   circuitColOffset = 5, // offset of circuit animation
 }
 
@@ -109,8 +106,8 @@ class TileMap {
   }
 
   void draw(Bitmap tileAtlas, Renderer renderer, Vector2i animationOffset) {
-    auto tileBatch    = SpriteBatch(tileAtlas, tileDepth);
-    auto constructBatch = SpriteBatch(tileAtlas, featureDepth);
+    auto tileBatch    = SpriteBatch(tileAtlas, DrawDepth.tile);
+    auto constructBatch = SpriteBatch(tileAtlas, DrawDepth.feature);
 
     foreach(coord, tile; _map) {
       Sprite sprite;

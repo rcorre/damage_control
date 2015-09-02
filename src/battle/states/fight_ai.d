@@ -3,13 +3,10 @@ module battle.states.fight_ai;
 import std.array  : array;
 import cid;
 import dtiled;
+import constants;
 import battle.entities.enemy;
 import battle.battle;
 import battle.states.fight;
-
-private enum {
-  enemyDepth  = 3,
-}
 
 class FightAI : Fight {
   private {
@@ -80,7 +77,7 @@ class FightAI : Fight {
   }
 
   void drawEnemies(Battle battle) {
-    auto batch = SpriteBatch(battle.tileAtlas, enemyDepth);
+    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.enemy);
 
     foreach(enemy ; _enemies) enemy.draw(batch, battle.animationOffset);
 

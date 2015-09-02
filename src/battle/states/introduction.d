@@ -7,13 +7,13 @@ import cid;
 import dtiled;
 import battle.battle;
 import battle.entities.tilemap;
+import constants;
 import music;
 import transition;
 
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
-  textDepth = 5,
 
   titleEnterPos = Vector2i(-210, 300),
   titleExitPos  = Vector2i( 900, 300),
@@ -95,7 +95,7 @@ class BattleIntroduction : BattleState {
   }
 
   private void drawText(Renderer renderer) {
-    auto batch = TextBatch(_font, textDepth);
+    auto batch = TextBatch(_font, DrawDepth.overlayText);
     Text text;
 
     // title
@@ -109,7 +109,7 @@ class BattleIntroduction : BattleState {
   }
 
   private void drawUnderline(Renderer renderer) {
-    auto batch = SpriteBatch(_underline, textDepth);
+    auto batch = SpriteBatch(_underline, DrawDepth.overlayText);
     Sprite sprite;
 
     sprite.centered  = true;

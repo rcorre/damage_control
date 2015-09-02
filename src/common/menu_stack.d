@@ -6,6 +6,7 @@ import std.process   : browse;
 import std.container : Array;
 import battle.battle;
 import cid;
+import constants;
 import common.menu;
 
 private enum {
@@ -13,7 +14,6 @@ private enum {
 
   fontName  = "Mecha",
   fontSize  = 36,
-  textDepth = 1,
 }
 
 /// Manages a horizontal stack of menus.
@@ -52,8 +52,8 @@ class MenuStack {
   }
 
   void updateAndDraw(Game game) {
-    auto spriteBatch = SpriteBatch(_underlineBmp, textDepth);
-    auto textBatch   = TextBatch(_font, textDepth);
+    auto spriteBatch = SpriteBatch(_underlineBmp, DrawDepth.menuText);
+    auto textBatch   = TextBatch(_font, DrawDepth.menuText);
 
     foreach(menu ; _menus) {
       menu.update(game.deltaTime);

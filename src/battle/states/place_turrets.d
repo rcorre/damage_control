@@ -12,12 +12,9 @@ import battle.states.timed_phase;
 import constants;
 
 private enum {
-  cursorDepth = 5,
-
   // for drawing the remaining turret count
   fontName   = "Mecha",
   fontSize   = 16,
-  textDepth  = 6,
   textOffset = Vector2i(16, 24),
 
   cannonCountFormat = "Cannons: %d",
@@ -83,7 +80,7 @@ class PlaceTurrets : TimedPhase {
     sprite.transform = battle.cursor.topLeft;
     sprite.region    = SpriteRegion.turretCursor;
 
-    auto spriteBatch = SpriteBatch(battle.tileAtlas, cursorDepth);
+    auto spriteBatch = SpriteBatch(battle.tileAtlas, DrawDepth.newTurret);
     spriteBatch ~= sprite;
     battle.game.renderer.draw(spriteBatch);
 
@@ -93,7 +90,7 @@ class PlaceTurrets : TimedPhase {
     text.color     = Color.white;
     text.centered  = true;
 
-    auto textBatch = TextBatch(_font, cursorDepth);
+    auto textBatch = TextBatch(_font, DrawDepth.newTurret);
     textBatch ~= text;
     battle.game.renderer.draw(textBatch);
   }

@@ -16,7 +16,6 @@ private enum {
 
   fontName  = "Mecha",
   fontSize  = 36,
-  textDepth = 1,
 }
 
 /// Show the title screen.

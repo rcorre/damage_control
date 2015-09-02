@@ -12,7 +12,6 @@ import transition;
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
-  textDepth = 5,
 
   titleStartPos = Vector2i(320, -100),
   titleEndPos   = Vector2i(320, 100),
@@ -36,7 +35,6 @@ private enum {
 
   // max opacity with which to dim the background
   backgroundOpacity = 0.5f,
-  backgroundDepth = 4
 }
 
 /// Play a short animation before entering the next phase
@@ -120,7 +118,7 @@ class StatsSummary : BattleState {
       dimBackground(battle.game.renderer);
 
       // update and draw the ticker text entries
-      auto batch = TextBatch(_font, textDepth);
+      auto batch = TextBatch(_font, DrawDepth.overlayText);
 
       drawTitleText(batch);
 
@@ -163,7 +161,7 @@ class StatsSummary : BattleState {
     sprite.region = Rect2i(0, 0, screenW, screenH);
     sprite.color  = Color(0, 0, 0, _backgroundOpacity.value);
 
-    auto batch = SpriteBatch(_background, backgroundDepth);
+    auto batch = SpriteBatch(_background, DrawDepth.overlayBackground);
     batch ~= sprite;
     renderer.draw(batch);
   }

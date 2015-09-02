@@ -29,6 +29,37 @@ enum SpriteRegion {
   turretCursor = Rect2i(6 * 16, 6 * 16, 32, 32), // turret placement cursor
 }
 
+enum SpriteSheet {
+  tileset = "tileset"
+}
+
+/// The layer at which to draw various entities. Higher is drawn above lower.
+enum DrawDepth {
+  // construction
+  newWall   = 3,  /// a wall that is about to be placed
+  newTurret = 4, /// a turret that is about to be placed
+
+  // conflict
+  particle   = 2, /// the trail left by a rocket
+  projectile = 3, /// a rocket or other projectile in motion
+  enemy      = 3, /// a hovering enemy
+  explosion  = 3, /// a rocket/enemy explosion
+  crosshair  = 4, /// UI element for aiming
+
+  // construction
+  tile    = 0, /// a tile in the map
+  circuit = 1, /// the effect drawn over enclosed terrain
+  feature = 2, /// objects on top of tiles
+
+  // overlay
+  overlayBackground = 5, /// drawn behind overlay text but above everything else
+  overlayText       = 6, /// text shown over everything else in the game
+  overlayHighlight  = 7, /// highlight areas of the map
+
+  // menus
+  menuText = 6,
+}
+
 enum ScoreFactor {
   territory = 5,  // points per tile enclosed in player territory
   enemy     = 20, // points per enemy destroyed

@@ -16,12 +16,6 @@ import transition;
 private enum {
   fontName  = "Mecha",
   fontSize  = 24,
-  textDepth = 6,
-
-  targetSpriteSheet = "tileset", // target used to point out a location
-  targetDepth = 5,
-
-  highlightDepth = 8,
 
   // tutorial text positions
   messageEnter  = Vector2f(-screenW / 3 , screenH * 3/5),
@@ -54,7 +48,7 @@ class Tutorial : BattleState {
 
   this(Battle battle) {
     _font   = battle.game.fonts.get(fontName, fontSize);
-    _cursor = battle.game.bitmaps.get(targetSpriteSheet);
+    _cursor = battle.game.bitmaps.get(SpriteSheet.tileset);
   }
 
   override {
@@ -111,7 +105,7 @@ class Tutorial : BattleState {
     text.transform = center;
     text.text      = message;
 
-    auto batch = TextBatch(_font, textDepth);
+    auto batch = TextBatch(_font, DrawDepth.overlayText);
     batch ~= text;
     renderer.draw(batch);
   }
@@ -125,7 +119,7 @@ class Tutorial : BattleState {
     sprite.transform.scale = scale;
     sprite.region          = SpriteRegion.crossHairs;
 
-    auto batch = SpriteBatch(_cursor, targetDepth);
+    auto batch = SpriteBatch(_cursor, DrawDepth.overlayText);
     batch ~= sprite;
     renderer.draw(batch);
   }
@@ -162,7 +156,7 @@ class Tutorial : BattleState {
 
     override void run(Tutorial tut, Battle battle) {
       super.run(tut, battle);
-      auto batch = PrimitiveBatch(highlightDepth);
+      auto batch = PrimitiveBatch(DrawDepth.overlayHighlight);
 
       RectPrimitive prim;
       prim.color       = _color;
