@@ -108,6 +108,7 @@ abstract class BattleState : State!Battle {
 
       _handlers.insert(events.onButtonDown("confirm", () => onConfirm(battle)));
       _handlers.insert(events.onButtonDown("cancel" , () => onCancel(battle)));
+      _handlers.insert(events.onButtonDown("menu"   , () => onMenu(battle)));
       _handlers.insert(events.onButtonDown("turbo",
             { battle._turboMode = true; }));
       _handlers.insert(events.onButtonUp("turbo",
@@ -116,8 +117,6 @@ abstract class BattleState : State!Battle {
             () => onRotate(battle, true)));
       _handlers.insert(events.onButtonDown("rotateL",
             () => onRotate(battle, false)));
-      _handlers.insert(events.onButtonDown("menu",
-            () => battle.states.push(new PauseMenu)));
       _handlers.insert(events.onAxisMoved("move",
             (pos) => onCursorMove(battle, pos)));
     }
@@ -146,6 +145,11 @@ abstract class BattleState : State!Battle {
 
   // action to take when a "rotate" button is pressed
   void onRotate(Battle battle, bool clockwise) { }
+
+  // action to take when the "menu" button is pressed
+  void onMenu(Battle battle) {
+    battle.states.push(new PauseMenu);
+  }
 }
 
 private:

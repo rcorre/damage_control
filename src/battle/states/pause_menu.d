@@ -12,7 +12,8 @@ import common.gamepad_menu;
 /// Base battle state for fight vs ai or fight vs player.
 class PauseMenu : BattleState {
   private {
-    MenuStack _menus;
+    MenuStack    _menus;
+    EventHandler _handler;
   }
 
   override void enter(Battle battle) {
@@ -38,6 +39,10 @@ class PauseMenu : BattleState {
 
   override void onCursorMove(Battle battle, Vector2f direction) {
     _menus.moveSelection(direction, battle.game);
+  }
+
+  override void onMenu(Battle battle) {
+    battle.states.pop(); // exit the pause menu when the pause button is pressed
   }
 
   private:
