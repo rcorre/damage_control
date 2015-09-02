@@ -30,7 +30,10 @@ class PauseMenu : BattleState {
   }
 
   override void onCancel(Battle battle) {
-    _menus.popMenu();
+    if (_menus.length == 1)
+      battle.states.pop();
+    else
+      _menus.popMenu();
   }
 
   override void onCursorMove(Battle battle, Vector2f direction) {

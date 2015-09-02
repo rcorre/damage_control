@@ -51,6 +51,8 @@ class MenuStack {
     al_destroy_bitmap(_underlineBmp);
   }
 
+  @property length() { return _menus.length; }
+
   void updateAndDraw(Game game) {
     auto spriteBatch = SpriteBatch(_underlineBmp, DrawDepth.menuText);
     auto textBatch   = TextBatch(_font, DrawDepth.menuText);

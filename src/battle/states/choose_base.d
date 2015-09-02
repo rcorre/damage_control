@@ -22,22 +22,24 @@ class ChooseBase : TimedPhase {
 
   this(Battle battle) {
     super(battle, PhaseTime.chooseBase);
+    _reactorCoords = Array!RowCol(battle.map
+        .allCoords
+        .filter!(x => battle.map.tileAt(x).hasReactor));
+
+    selectReactor(battle, _reactorCoords.front);
   }
 
   override {
     void enter(Battle battle) {
       super.enter(battle);
-      _reactorCoords = Array!RowCol(battle.map
-        .allCoords
-        .filter!(x => battle.map.tileAt(x).hasReactor));
-
-      _currentCoord = _reactorCoords.front;
-      selectReactor(battle, _currentCoord);
+    selectReactor(battle, _currentCoord);
     }
 
     void exit(Battle battle) {
       super.exit(battle);
+    }
 
+    void onTimeout(Battle battle) {
       // if player hasn't picked something by now, pick for them
       if (!_choiceConfirmed) confirmChoice(battle);
     }
@@ -71,7 +73,11 @@ class ChooseBase : TimedPhase {
     }
   }
 
-  private void selectReactor(Battle battle, RowCol reactorCoord) {
+  private:
+  void selectReactor(Battle battle, RowCol reactorCoord) {
+    // if we re-enter the state from pause, don't re-select the same reactor
+    if (reactorCoord == _currentCoord) return;
+
     // set walls for new selection
     _currentCoord = reactorCoord;
 
@@ -86,7 +92,7 @@ class ChooseBase : TimedPhase {
     }
   }
 
-  private void confirmChoice(Battle battle) {
+  void confirmChoice(Battle battle) {
     _choiceConfirmed = true;
 
     // mark all tiles in area surrounding the selection as enclosed

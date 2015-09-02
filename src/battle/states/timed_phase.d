@@ -36,11 +36,17 @@ class TimedPhase : BattleState {
 
       // tick down the timer; if it hits 0 this phase is over
       _timer -= game.deltaTime;
-      if (_timer < 0) battle.states.pop();
+      if (_timer < 0) {
+        onTimeout(battle);
+        battle.states.pop();
+      }
 
       drawTimer(game.renderer);
     }
   }
+
+  /// Called when the state's time is up, before exit().
+  protected void onTimeout(Battle battle) { }
 
   private void drawTimer(Renderer renderer) {
     auto batch = TextBatch(_font, DrawDepth.overlayText);
