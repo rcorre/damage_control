@@ -23,6 +23,7 @@ class PauseMenu : BattleState {
 
   override void run(Battle battle) {
     super.run(battle);
+    dimBackground(battle.game.renderer);
     _menus.updateAndDraw(battle.game);
   }
 
@@ -80,5 +81,17 @@ class PauseMenu : BattleState {
     return new Menu(
         MenuEntry("To Title",    () => game.states.pop()),
         MenuEntry("To Desktop" , () => game.stop));
+  }
+
+  void dimBackground(Renderer renderer) {
+    RectPrimitive prim;
+
+    prim.color  = Tint.dimBackground;
+    prim.filled = true;
+    prim.rect   = [ 0, 0, screenW, screenH ];
+
+    auto batch = PrimitiveBatch(DrawDepth.overlayBackground);
+    batch ~= prim;
+    renderer.draw(batch);
   }
 }

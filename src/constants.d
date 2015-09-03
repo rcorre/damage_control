@@ -79,4 +79,6 @@ enum Tint {
   subdued   = Color(1f,1f,1f,0.25f), // for dimmed elements
   neutral   = Color(1f,1f,1f,0.5f),  // for active but not highlighted elements
   highlight = Color(1f,1f,1f,1f),    // for emphasized elements
+
+  dimBackground = Color(0.5f,0.5f,0.5f,0.5f), // obscure the background
 }
