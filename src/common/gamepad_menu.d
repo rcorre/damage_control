@@ -4,10 +4,9 @@ module common.gamepad_menu;
 import std.conv   : to;
 import std.array  : array;
 import std.string : format, toUpper;
-import common.menu;
 import cid;
-
-private enum neutralTint = Color(1f,1f,1f,0.5f);
+import constants;
+import common.menu;
 
 /// Show the title screen.
 class GamepadMenu : Menu {
@@ -133,7 +132,7 @@ class GamepadMenu : Menu {
       Text text;
 
       text.centered  = true;
-      text.color     = neutralTint;
+      text.color     = Tint.neutral;
       text.transform = center + Vector2i(120, 0);
 
       text.text = controlName(entry.text);

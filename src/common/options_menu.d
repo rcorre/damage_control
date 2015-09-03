@@ -2,10 +2,9 @@
 module common.options_menu;
 
 import std.format : format;
-import common.menu;
 import cid;
-
-private enum neutralTint = Color(1f,1f,1f,0.5f);
+import constants;
+import common.menu;
 
 /// Menu with left/right sliders to adjust numeric values.
 class OptionsMenu : Menu {
@@ -48,7 +47,7 @@ class OptionsMenu : Menu {
       Text text;
 
       text.centered  = true;
-      text.color     = neutralTint;
+      text.color     = Tint.neutral;
       text.transform = center + Vector2i(120, 0);
 
       text.text = valueText(entry.text);

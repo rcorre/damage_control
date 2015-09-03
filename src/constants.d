@@ -1,6 +1,7 @@
 module constants;
 
 import cid.geometry;
+import cid.graphics.color;
 
 enum {
   screenW   = 800,
@@ -71,4 +72,11 @@ enum PhaseTime {
   placeTurrets = 15,
   fight        = 20,
   placeWalls   = 20,
+}
+
+/// common colors used throughout the game
+enum Tint {
+  subdued   = Color(1f,1f,1f,0.25f), // for dimmed elements
+  neutral   = Color(1f,1f,1f,0.5f),  // for active but not highlighted elements
+  highlight = Color(1f,1f,1f,1f),    // for emphasized elements
 }

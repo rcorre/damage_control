@@ -6,16 +6,12 @@ import std.range     : only, enumerate, isInputRange, ElementType;
 import std.container : Array;
 import battle.battle;
 import cid;
+import constants;
 import transition;
 
 private enum {
   // x position of underline when not shown (entry not selected)
   underlineHideX = -100,
-
-  // colors used for text and underlines
-  subduedTint   = Color(1f,1f,1f,0.25f),
-  neutralTint   = Color(1f,1f,1f,0.5f),
-  highlightTint = Color(1f,1f,1f,1f),
 
   // seconds it takes for menus or underlines to move between locations
   transitionDuration = 0.5f,
@@ -45,7 +41,7 @@ class Menu {
 
     // start off-screen to the right and subdued in color
     _positionX.initialize(900, transitionDuration);
-    _color.initialize(subduedTint, transitionDuration);
+    _color.initialize(Tint.subdued, transitionDuration);
   }
 
   @property auto selectedEntry() { return _entries[_selection]; }
@@ -58,12 +54,12 @@ class Menu {
 
   void activate() {
     setSelection(0);
-    _color.go(subduedTint, neutralTint);
+    _color.go(Tint.subdued, Tint.neutral);
   }
 
   void deactivate() {
     _entries[_selection].deselect();
-    _color.go(neutralTint, subduedTint);
+    _color.go(Tint.neutral, Tint.subdued);
   }
 
   void setSelection(size_t idx) {
@@ -149,20 +145,20 @@ struct MenuEntry {
     this.text    = text;
     this.action  = action;
 
-    _textColor.initialize(neutralTint, transitionDuration);
-    _underlineColor.initialize(subduedTint, transitionDuration);
+    _textColor.initialize(Tint.neutral, transitionDuration);
+    _underlineColor.initialize(Tint.subdued, transitionDuration);
     _underlineX.initialize(underlineHideX, transitionDuration);
   }
 
   void select(int xPos) {
-    _textColor.go(neutralTint, highlightTint);
-    _underlineColor.go(subduedTint, highlightTint);
+    _textColor.go(Tint.neutral, Tint.highlight);
+    _underlineColor.go(Tint.subdued, Tint.highlight);
     _underlineX.go(underlineHideX, xPos);
   }
 
   void deselect() {
-    _textColor.go(neutralTint);
-    _underlineColor.go(subduedTint);
+    _textColor.go(Tint.neutral);
+    _underlineColor.go(Tint.subdued);
     _underlineX.go(underlineHideX);
   }
 
