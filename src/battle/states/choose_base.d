@@ -49,7 +49,8 @@ class ChooseBase : TimedPhase {
 
       // try to pick the closest reactor in the direction the cursor was moved
       auto res = _reactorCoords[]
-        .filter!(x => x != _currentCoord)
+        .filter!(x => battle.map.tileAt(x).reactor !is
+                      battle.map.tileAt(_currentCoord).reactor)
         .filter!(coord =>
           (direction.y < 0 && (coord.row - _currentCoord.row) < 0) ||
           (direction.y > 0 && (coord.row - _currentCoord.row) > 0) ||
