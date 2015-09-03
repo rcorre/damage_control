@@ -21,9 +21,9 @@ class OptionsMenu : Menu {
   }
 
   this(Game game) {
-    super(game,
-      MenuEntry(Label.music, (g) {}),
-      MenuEntry(Label.sound, (g) {}));
+    super(
+      MenuEntry(Label.music, () {}),
+      MenuEntry(Label.sound, () {}));
 
     _values[Label.music] = 100;
     _values[Label.sound] = 100;

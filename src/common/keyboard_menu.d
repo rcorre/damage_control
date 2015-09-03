@@ -18,15 +18,15 @@ class KeyboardMenu : Menu {
   }
 
   this(Game game, ControlScheme controls) {
-    super(game,
-      MenuEntry("up"     , g => startMappingKey(g, "up"     )),
-      MenuEntry("down"   , g => startMappingKey(g, "down"   )),
-      MenuEntry("left"   , g => startMappingKey(g, "left"   )),
-      MenuEntry("right"  , g => startMappingKey(g, "right"  )),
-      MenuEntry("confirm", g => startMappingKey(g, "confirm")),
-      MenuEntry("cancel" , g => startMappingKey(g, "cancel" )),
-      MenuEntry("rotateL", g => startMappingKey(g, "rotateL")),
-      MenuEntry("rotateR", g => startMappingKey(g, "rotateR")));
+    super(
+      MenuEntry("up"     , () => startMappingKey(game, "up"     )),
+      MenuEntry("down"   , () => startMappingKey(game, "down"   )),
+      MenuEntry("left"   , () => startMappingKey(game, "left"   )),
+      MenuEntry("right"  , () => startMappingKey(game, "right"  )),
+      MenuEntry("confirm", () => startMappingKey(game, "confirm")),
+      MenuEntry("cancel" , () => startMappingKey(game, "cancel" )),
+      MenuEntry("rotateL", () => startMappingKey(game, "rotateL")),
+      MenuEntry("rotateR", () => startMappingKey(game, "rotateR")));
 
     _controls = controls;
   }

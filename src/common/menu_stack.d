@@ -70,12 +70,12 @@ class MenuStack {
     game.renderer.draw(textBatch);
   }
 
-  void select(Game game) {
+  void select() {
     _menuSelectSound.play();
-    _menus.back.confirmSelection(game);
+    _menus.back.confirmSelection();
   }
 
-  void moveSelection(Vector2f direction, Game game) {
+  void moveSelection(Vector2f direction) {
     _menus.back.moveSelection(direction);
 
     // if we are moving up/down, play the movement noise

@@ -34,11 +34,11 @@ class Menu {
     Transition!(Color, transitionFn) _color;
   }
 
-  this(T...)(Game game, T entries) {
-    this(game, only(entries));
+  this(T...)(T entries) {
+    this(only(entries));
   }
 
-  this(R)(Game game, R entries)
+  this(R)(R entries)
     if (isInputRange!R && is(ElementType!R : MenuEntry))
   {
     _entries.insert(entries);
@@ -82,9 +82,9 @@ class Menu {
     }
   }
 
-  void confirmSelection(Game game) {
+  void confirmSelection() {
     assert(_selection >= 0 && _selection < _entries.length);
-    _entries[_selection].action(game);
+    _entries[_selection].action();
   }
 
   void moveTo(int xPos) {
@@ -134,7 +134,7 @@ class Menu {
 }
 
 struct MenuEntry {
-  alias Action = void delegate(Game);
+  alias Action = void delegate();
 
   string text;
   Action action;

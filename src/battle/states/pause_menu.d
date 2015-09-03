@@ -27,7 +27,7 @@ class PauseMenu : BattleState {
   }
 
   override void onConfirm(Battle battle) {
-    _menus.select(battle.game);
+    _menus.select();
   }
 
   override void onCancel(Battle battle) {
@@ -38,7 +38,7 @@ class PauseMenu : BattleState {
   }
 
   override void onCursorMove(Battle battle, Vector2f direction) {
-    _menus.moveSelection(direction, battle.game);
+    _menus.moveSelection(direction);
   }
 
   override void onMenu(Battle battle) {
@@ -47,25 +47,25 @@ class PauseMenu : BattleState {
 
   private:
   auto mainMenu(Battle battle) {
-    return new Menu(battle.game,
-        MenuEntry("Return"  , g => battle.states.pop()),
-        MenuEntry("Options" , g => _menus.pushMenu(optionsMenu(battle.game))),
-        MenuEntry("Controls", g => _menus.pushMenu(controlsMenu(battle.game))),
-        MenuEntry("Quit"    , g => _menus.pushMenu(quitMenu(battle))));
+    return new Menu(
+        MenuEntry("Return"  , () => battle.states.pop()),
+        MenuEntry("Options" , () => _menus.pushMenu(optionsMenu(battle.game))),
+        MenuEntry("Controls", () => _menus.pushMenu(controlsMenu(battle.game))),
+        MenuEntry("Quit"    , () => _menus.pushMenu(quitMenu(battle.game))));
   }
 
   auto optionsMenu(Game game) {
-    auto dummy(Game game) {}
+    auto dummy() {}
 
-    return new Menu(game,
+    return new Menu(
         MenuEntry("Sound", &dummy),
         MenuEntry("Music", &dummy));
   }
 
   auto controlsMenu(Game game) {
-    return new Menu(game,
-        MenuEntry("Keyboard", g => _menus.pushMenu(keyboardMenu(g))),
-        MenuEntry("Gamepad" , g => _menus.pushMenu(gamepadMenu(g))));
+    return new Menu(
+        MenuEntry("Keyboard", () => _menus.pushMenu(keyboardMenu(game))),
+        MenuEntry("Gamepad" , () => _menus.pushMenu(gamepadMenu(game))));
   }
 
   auto keyboardMenu(Game game) {
@@ -76,9 +76,9 @@ class PauseMenu : BattleState {
     return new GamepadMenu(game, game.events.controlScheme);
   }
 
-  auto quitMenu(Battle battle) {
-    return new Menu(battle.game,
-        MenuEntry("To Title", g => battle.game.states.pop()),
-        MenuEntry("To Desktop" , g => battle.game.stop));
+  auto quitMenu(Game game) {
+    return new Menu(
+        MenuEntry("To Title",    () => game.states.pop()),
+        MenuEntry("To Desktop" , () => game.stop));
   }
 }

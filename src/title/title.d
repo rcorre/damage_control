@@ -43,7 +43,7 @@ class Title : State!Game {
   }
 
   void select(Game game) {
-    _menus.select(game);
+    _menus.select();
   }
 
   void popMenu() {
@@ -51,23 +51,23 @@ class Title : State!Game {
   }
 
   void moveSelection(Vector2f pos, Game game) {
-    _menus.moveSelection(pos, game);
+    _menus.moveSelection(pos);
   }
 
   private:
   auto mainMenu(Game game) {
-    return new Menu(game,
-        MenuEntry("Play"    , g => _menus.pushMenu(playMenu(g))),
-        MenuEntry("Options" , g => _menus.pushMenu(optionsMenu(g))),
-        MenuEntry("Controls", g => _menus.pushMenu(controlsMenu(g))),
-        MenuEntry("Credits" , g => _menus.pushMenu(creditsMenu(g))),
-        MenuEntry("Quit"    , g => g.stop()));
+    return new Menu(
+        MenuEntry("Play"    , () => _menus.pushMenu(playMenu(game))),
+        MenuEntry("Options" , () => _menus.pushMenu(optionsMenu(game))),
+        MenuEntry("Controls", () => _menus.pushMenu(controlsMenu(game))),
+        MenuEntry("Credits" , () => _menus.pushMenu(creditsMenu(game))),
+        MenuEntry("Quit"    , () => game.stop()));
   }
 
   auto playMenu(Game game) {
-    auto play(Game game) { game.states.push(new Battle(ShowTutorial.yes)); }
+    auto play() { game.states.push(new Battle(ShowTutorial.yes)); }
 
-    return new Menu(game,
+    return new Menu(
         MenuEntry("Tutorial", &play),
         MenuEntry("1 Player", &play),
         MenuEntry("2 Player", &play));
@@ -80,9 +80,9 @@ class Title : State!Game {
   }
 
   auto controlsMenu(Game game) {
-    return new Menu(game,
-        MenuEntry("Keyboard", g => _menus.pushMenu(keyboardMenu(g))),
-        MenuEntry("Gamepad" , g => _menus.pushMenu(gamepadMenu(g))));
+    return new Menu(
+        MenuEntry("Keyboard", () => _menus.pushMenu(keyboardMenu(game))),
+        MenuEntry("Gamepad" , () => _menus.pushMenu(gamepadMenu(game))));
   }
 
   auto keyboardMenu(Game game) {
@@ -94,11 +94,11 @@ class Title : State!Game {
   }
 
   auto creditsMenu(Game game) {
-    return new Menu(game,
-        MenuEntry("D"       , g => browse("http://dlang.org")),
-        MenuEntry("Allegro" , g => browse("https://allegro.cc/")),
-        MenuEntry("Aseprite", g => browse("http://aseprite.org")),
-        MenuEntry("LMMS"    , g => browse("https://lmms.io")),
-        MenuEntry("Tiled"   , g => browse("http://mapeditor.org")));
+    return new Menu(
+        MenuEntry("D"       , () => browse("http://dlang.org")),
+        MenuEntry("Allegro" , () => browse("https://allegro.cc/")),
+        MenuEntry("Aseprite", () => browse("http://aseprite.org")),
+        MenuEntry("LMMS"    , () => browse("https://lmms.io")),
+        MenuEntry("Tiled"   , () => browse("http://mapeditor.org")));
   }
 }
