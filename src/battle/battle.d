@@ -51,6 +51,11 @@ class Battle : State!Game {
     this.showTutorial = showTutorial;
   }
 
+  /// Construct from another battle -- used to restart a battle
+  this(Battle other) {
+    this.showTutorial = other.showTutorial;
+  }
+
   @property auto animationOffset() {
     return tilesetSize * _animationCounter;
   }

@@ -10,6 +10,7 @@ import battle.states.fight_ai;
 import battle.states.stats_summary;
 import battle.states.introduction;
 import battle.states.tutorial;
+import battle.states.check_defeat;
 
 private enum {
   cannonsTitle = "Install Turrets",
@@ -41,6 +42,8 @@ class StartRound : State!Battle {
 
         new BattleIntroduction(rebuildTitle, MusicLevel.basic, battle.game),
         new PlaceWalls(battle),
+
+        new CheckDefeat,
 
         new StatsSummary(battle, _currentRound));
 

@@ -9,13 +9,15 @@ import transition;
 import common.keyboard_menu;
 import common.gamepad_menu;
 
-/// Base battle state for fight vs ai or fight vs player.
-class PauseMenu : BattleState {
-  private MenuStack _menus;
+/// Pause the battle and overaly a menu over the battle
+abstract class BattleMenu : BattleState {
+  protected MenuStack _menus;
+
+  protected Menu getMenu(Battle battle);
 
   override void enter(Battle battle) {
     super.enter(battle);
-    _menus = new MenuStack(battle.game, mainMenu(battle));
+    _menus = new MenuStack(battle.game, getMenu(battle));
   }
 
   override void run(Battle battle) {
@@ -43,8 +45,21 @@ class PauseMenu : BattleState {
     battle.states.pop(); // exit the pause menu when the pause button is pressed
   }
 
-  private:
-  auto mainMenu(Battle battle) {
+  private void dimBackground(Renderer renderer) {
+    RectPrimitive prim;
+
+    prim.color  = Tint.dimBackground;
+    prim.filled = true;
+    prim.rect   = [ 0, 0, screenW, screenH ];
+
+    auto batch = PrimitiveBatch(DrawDepth.overlayBackground);
+    batch ~= prim;
+    renderer.draw(batch);
+  }
+}
+
+class PauseMenu : BattleMenu {
+  protected override Menu getMenu(Battle battle) {
     return new Menu(
         MenuEntry("Return"  , () => battle.states.pop()),
         MenuEntry("Options" , () => _menus.pushMenu(optionsMenu(battle.game))),
@@ -52,6 +67,7 @@ class PauseMenu : BattleState {
         MenuEntry("Quit"    , () => _menus.pushMenu(quitMenu(battle.game))));
   }
 
+  private:
   auto optionsMenu(Game game) {
     auto dummy() {}
 
@@ -79,16 +95,14 @@ class PauseMenu : BattleState {
         MenuEntry("To Title",    () => game.states.pop()),
         MenuEntry("To Desktop" , () => game.stop));
   }
+}
 
-  void dimBackground(Renderer renderer) {
-    RectPrimitive prim;
+class FailMenu : BattleMenu {
+  protected override Menu getMenu(Battle battle) {
+    auto game = battle.game;
 
-    prim.color  = Tint.dimBackground;
-    prim.filled = true;
-    prim.rect   = [ 0, 0, screenW, screenH ];
-
-    auto batch = PrimitiveBatch(DrawDepth.overlayBackground);
-    batch ~= prim;
-    renderer.draw(batch);
+    return new Menu(
+        MenuEntry("Retry", () => game.states.replace(new Battle(battle))),
+        MenuEntry("Quit" , () => game.states.pop()));
   }
 }
