@@ -1,7 +1,6 @@
 module battle.states.start_round;
 
 import cid;
-import music;
 import constants;
 import battle.battle;
 import battle.states.place_walls;
@@ -34,13 +33,13 @@ class StartRound : State!Battle {
     // TODO: check if just finished last round
     battle.states.push(
         new TutorialTurrets(battle),
-        new BattleIntroduction(cannonsTitle, MusicLevel.moderate, battle.game),
+        new BattleIntroduction(cannonsTitle, battle.game),
         new PlaceTurrets(battle, numTurrets),
 
-        new BattleIntroduction(fightTitle, MusicLevel.intense, battle.game),
+        new BattleIntroduction(fightTitle, battle.game),
         new FightAI(battle, _currentRound),
 
-        new BattleIntroduction(rebuildTitle, MusicLevel.basic, battle.game),
+        new BattleIntroduction(rebuildTitle, battle.game),
         new PlaceWalls(battle),
 
         new CheckDefeat,

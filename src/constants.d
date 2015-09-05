@@ -82,3 +82,8 @@ enum Tint {
 
   dimBackground = Color(0.5f,0.5f,0.5f,0.5f), // obscure the background
 }
+
+/// paths from which to stream music tracks
+enum MusicPath {
+  battle = "./content/music/track2.ogg",
+}

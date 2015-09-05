@@ -8,7 +8,6 @@ import dtiled;
 import battle.battle;
 import battle.entities.tilemap;
 import constants;
-import music;
 import transition;
 
 private enum {
@@ -40,15 +39,10 @@ class BattleIntroduction : BattleState {
     string          _title;
     Font            _font;
     SoundEffect     _sound;
-
-    // How many music streams to enable.
-    // More intense parts of the battle enable more streams.
-    MusicLevel _musicLevel;
   }
 
-  this(string title, MusicLevel musicLevel, Game game) {
+  this(string title, Game game) {
     _title      = title;
-    _musicLevel = musicLevel;
     _sound      = game.audio.getSound("battle_intro");
     _font       = game.fonts.get(fontName, fontSize);
 
@@ -74,7 +68,6 @@ class BattleIntroduction : BattleState {
       _underlineTransition.initialize(underlineEnterPos, transitionDuration);
       _underlineTransition.go(underlineExitPos);
 
-      battle.music.enableTracksUpTo(_musicLevel);
       _sound.play();
     }
 

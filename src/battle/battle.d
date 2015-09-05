@@ -6,14 +6,14 @@ import std.container : Array;
 import std.algorithm : sort, uniq;
 import cid;
 import dtiled;
-import battle.entities.tilemap;
 import player;
-import music;
-import battle.entities.cursor;
+import constants;
 import battle.states.pause_menu;
 import battle.states.choose_base;
 import battle.states.start_round;
 import battle.states.introduction;
+import battle.entities.cursor;
+import battle.entities.tilemap;
 
 private enum {
   cannonBaseRow   = 6,
@@ -35,7 +35,7 @@ class Battle : State!Game {
   Game               game;
   StateStack!Battle  states;
   Player             player;
-  MusicMixer         music;
+  AudioStream        music;
   const ShowTutorial showTutorial;
 
   private {
@@ -73,14 +73,15 @@ class Battle : State!Game {
       _tileAtlas = game.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
 
-      states.push(new BattleIntroduction("Choose Base", MusicLevel.basic, game),
+      states.push(new BattleIntroduction("Choose Base", game),
                   new ChooseBase(this),
                   new StartRound);
 
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
       _cursor = new Cursor(this);
-      music = new MusicMixer(game.audio, 1);
+      music = game.audio.loadStream(MusicPath.battle);
+      music.playmode = AudioPlayMode.loop;
     }
 
     void exit(Game game) {
@@ -100,7 +101,6 @@ class Battle : State!Game {
       }
 
       _cursor.update(game.deltaTime, _turboMode);
-      music.update(game.deltaTime);
     }
   }
 }
