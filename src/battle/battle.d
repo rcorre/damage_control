@@ -79,6 +79,8 @@ class Battle : State!Game {
     }
 
     void exit(Game game) {
+      // exit all current states to clean up
+      while(!states.empty) states.pop();
     }
 
     void run(Game game) {
