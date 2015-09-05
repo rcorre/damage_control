@@ -11,10 +11,7 @@ import common.gamepad_menu;
 
 /// Base battle state for fight vs ai or fight vs player.
 class PauseMenu : BattleState {
-  private {
-    MenuStack    _menus;
-    EventHandler _handler;
-  }
+  private MenuStack _menus;
 
   override void enter(Battle battle) {
     super.enter(battle);
