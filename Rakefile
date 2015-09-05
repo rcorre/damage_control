@@ -5,7 +5,7 @@
 SOURCEDIR = 'resource'
 TARGETDIR = 'content'
 
-task :default => %w{images maps fonts sounds}
+task :default => %w{images maps fonts sounds music}
 task :default => "#{TARGETDIR}"
 
 directory TARGETDIR
@@ -13,6 +13,7 @@ directory "#{TARGETDIR}/image"
 directory "#{TARGETDIR}/map"
 directory "#{TARGETDIR}/sound"
 directory "#{TARGETDIR}/font"
+directory "#{TARGETDIR}/music"
 
 task :maps => "#{TARGETDIR}/map"
 FileList.new("#{SOURCEDIR}/map/*.tmx").each do |src|
@@ -60,4 +61,16 @@ FileList.new("#{SOURCEDIR}/sound/*").each do |src|
   end
 
   task :sounds => target
+end
+
+task :music => "#{TARGETDIR}/music"
+FileList.new("#{SOURCEDIR}/music/*").each do |src|
+  fname = File.basename(src, '.mmpz')
+  target = File.join(TARGETDIR, 'music', fname + '.ogg')
+
+  file target => src do
+    sh "lmms --render #{src} -f ogg -o #{target}"
+  end
+
+  task :music => target
 end
