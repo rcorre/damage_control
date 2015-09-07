@@ -9,14 +9,13 @@ import battle.entities.construct;
 import battle.battle;
 
 class Cursor {
-  enum Direction : uint { north, south, east, west }
-
   private {
-    enum speed = 80;
+    enum moveDelay = 0.15;
 
     TileMap  _map;
-    Vector2f _velocity = Vector2f.zero;
-    Vector2f _position = Vector2f.zero;
+    RowCol   _coord;
+    Vector2i _velocity;
+    float    _tillNextMove;
   }
 
   this(Battle battle) {
@@ -24,35 +23,29 @@ class Cursor {
   }
 
   @property {
-    auto coord() { return _map.coordAtPoint(_position); }
+    auto coord() { return _coord; }
     auto tile() { return _map.tileAt(coord); }
     auto topLeft() { return _map.tileOffset(coord).as!Vector2f; }
     auto center() { return _map.tileCenter(coord).as!Vector2f; }
   }
 
-  void startMoving(Vector2f direction) {
-    // check if we are changing directions
-    if (direction.y > 0 && _velocity.y <= 0) {
-      _position = _map.tileCenter(coord.south).as!Vector2f;
-    }
-    else if (direction.y < 0 && _velocity.y >= 0) {
-      _position = _map.tileCenter(coord.north).as!Vector2f;
-    }
-    else if (direction.x > 0 && _velocity.x <= 0) {
-      _position = _map.tileCenter(coord.east).as!Vector2f;
-    }
-    else if (direction.x < 0 && _velocity.x >= 0) {
-      _position = _map.tileCenter(coord.west).as!Vector2f;
+  void startMoving(Vector2i direction) {
+    if (_velocity == Vector2i.zero) {
+      // just started moving, jump in the given direction
+      _coord += RowCol(direction.y, direction.x);
+      _tillNextMove = moveDelay;
     }
 
-    _velocity = direction * speed;
+    _velocity = direction;
   }
 
   void update(float timeElapsed, bool turboMode) {
-    _position += _velocity * timeElapsed * (turboMode ? turboSpeedFactor : 1);
+    _tillNextMove -= timeElapsed * (turboMode ? turboSpeedFactor : 1);
 
-    _position.x = _position.x.clamp(0, _map.tileWidth * _map.numCols);
-    _position.y = _position.y.clamp(0, _map.tileHeight * _map.numRows);
+    if (_tillNextMove < 0) {
+      _tillNextMove = moveDelay;
+      _coord += RowCol(_velocity.y, _velocity.x);
+    }
   }
 
   /// Try to place the cursor in a place the player owns.
@@ -64,7 +57,7 @@ class Cursor {
 
     auto ownedReactors = allReactors.filter!(x => x.enclosed);
 
-    _position = ownedReactors.empty ?
-      allReactors.front.center : ownedReactors.front.center;
+    _coord = _map.coordAtPoint(ownedReactors.empty ?
+        allReactors.front.center : ownedReactors.front.center);
   }
 }

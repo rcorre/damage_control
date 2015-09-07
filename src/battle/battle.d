@@ -138,7 +138,7 @@ abstract class BattleState : State!Battle {
 
   // action to take when cursor is moved in the given direction
   void onCursorMove(Battle battle, Vector2f direction) {
-    battle.cursor.startMoving(direction);
+    battle.cursor.startMoving(cast(Vector2i) direction);
   }
 
   // action to take when the "confirm" button is pressed
