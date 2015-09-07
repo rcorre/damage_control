@@ -14,7 +14,6 @@ import constants;
 import transition;
 
 private enum {
-
   explosionTime  = 0.30f,
   explosionSize  = 40,
   explosionTint  = Color(1, 1, 1, 1.0),
@@ -171,6 +170,7 @@ abstract class Fight : TimedPhase {
       if (proj.destroyed) {
         // turn this projectile into an explosion
         createExplosion(proj.position);
+        battle.shakeScreen();
         onProjectileExplode(battle, proj.position, explosionSize);
       }
       else {

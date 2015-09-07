@@ -16,14 +16,11 @@ import battle.entities.cursor;
 import battle.entities.tilemap;
 
 private enum {
-  cannonBaseRow   = 6,
-  cannonBaseCol   = 0,
-  cannonBarrelRow = 8,
-  cannonBarrelCol = 0,
-  cannonSize      = 32, // width and height of cannon sprite in pixels
-
-  animationTime = 0.06,            // seconds per frame of tilesheet animation
+  animationTime = 0.06,             // seconds per frame of tilesheet animation
   tilesetSize   = Vector2i(128, 0), // size of the tileset image for one frame of animation
+
+  screenShakeIntensity = 2f,
+  screenShakeDuration = 0.2f,
 }
 
 alias ShowTutorial = Flag!"ShowTutorial";
@@ -45,6 +42,7 @@ class Battle : State!Game {
     int    _animationCounter;
     Cursor _cursor;
     bool   _turboMode;
+    bool   _screenShake;
   }
 
   this(ShowTutorial showTutorial) {
@@ -101,7 +99,22 @@ class Battle : State!Game {
       }
 
       _cursor.update(game.deltaTime, _turboMode);
+
+      if (_screenShake) {
+        Transform!float trans = Vector2f(uniform(-1f, 1f), uniform(-1f, 1f))
+          * screenShakeIntensity;
+
+        al_use_transform(trans.transform);
+      }
     }
+  }
+
+  void shakeScreen() {
+    _screenShake = true;
+    game.events.after(screenShakeDuration, {
+      _screenShake = false;
+      al_use_transform(Transform!float().transform);
+    });
   }
 }
 
