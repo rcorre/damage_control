@@ -129,6 +129,10 @@ class StatsSummary : BattleState {
         battle.game.renderer.draw(batch);
       }
     }
+
+    // for now dealing with pausing/resuming timers is difficult.
+    // just disallow pause in this state
+    void onMenu(Battle battle) { }
   }
 
   private void startTickingScores() {
