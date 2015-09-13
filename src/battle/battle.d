@@ -178,7 +178,9 @@ struct BattleData {
     RowCol start, end;
 
     this(ObjectData obj, int tileWidth, int tileHeight) {
-      this.start = RowCol(obj.y / tileHeight, obj.x / tileWidth);
+      // the -1 is required because the rect drawn in tiled ends up just on the 
+      // inner edge of tiles it should encompass on the top-left side
+      this.start = RowCol(obj.y / tileHeight - 1, obj.x / tileWidth - 1);
       this.end = RowCol((obj.y + obj.height) / tileHeight, (obj.x + obj.width) / tileWidth);
     }
   }
