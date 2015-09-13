@@ -15,13 +15,15 @@ directory "#{TARGETDIR}/sound"
 directory "#{TARGETDIR}/font"
 directory "#{TARGETDIR}/music"
 
+# maps are just copied now
+# Tiled can directly work with json, no need for tmx->json conversion
 task :maps => "#{TARGETDIR}/map"
-FileList.new("#{SOURCEDIR}/map/*.tmx").each do |src|
-  fname = File.basename(src, '.tmx')
-  target = File.join(TARGETDIR, 'map', fname + '.json')
+FileList.new("#{SOURCEDIR}/map/*.json").each do |src|
+  fname = File.basename(src)
+  target = File.join(TARGETDIR, 'map', fname)
 
   file target => src do
-    sh "tiled #{src} --export-map #{target}"
+    sh "cp #{src} #{target}"
   end
 
   task :maps => target
