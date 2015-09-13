@@ -78,9 +78,12 @@ class PlaceWalls : TimedPhase {
         // placing a wall may adjust the area around it
         foreach(neighbor ; coord.adjacent(Diagonals.yes)) {
           // it may have formed a new enclosed area...
-          foreach(tile ; map.enclosedTiles!(x => x.hasWall)(neighbor, Diagonals.yes)) {
-            tile.isEnclosed = true;
-          }
+          auto encloseMe = map
+            .enclosedTiles!(x => x.hasWall)(neighbor, Diagonals.yes)
+            .filter!(x => x.canBuild);
+
+          foreach(tile ; encloseMe) tile.isEnclosed = true;
+
           // and it may change the sprites of nearby walls for tiling effects
           map.regenerateWallSprite(neighbor);
         }
