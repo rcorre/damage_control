@@ -164,14 +164,12 @@ class Hover : EnemyState {
 
 class FireAtTarget : EnemyState {
   override void enter(Enemy self, EnemyContext context) {
-    auto target = self.target;
+    auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
     if (uniform(0f, 1f) > self.accuracy) {
-      // simulate a 'miss' by targeting an adjacent tile
-      target = target.adjacent(Diagonals.yes).randomSample(1).front;
+      // simulate a 'miss' by targeting an area within 2 tiles of the target
+      targetPos += Vector2f(uniform(-2, 2), uniform(-2, 2)) * tileSize;
     }
-
-    auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
     context.spawnProjectile(self.pos, targetPos);
 
