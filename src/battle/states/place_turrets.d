@@ -71,6 +71,7 @@ class PlaceTurrets : TimedPhase {
         --_turretsLeft;
         map.place(new Turret, coord);
         _soundOk.play();
+        battle.shakeScreen(ScreenShakeIntensity.placeTurret);
       }
     }
   }

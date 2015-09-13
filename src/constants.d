@@ -87,3 +87,9 @@ enum Tint {
 enum MusicPath {
   battle = "./content/music/track2.ogg",
 }
+
+enum ScreenShakeIntensity {
+  placeWall   = 1f,
+  placeTurret = 2f,
+  explosion   = 2f
+}

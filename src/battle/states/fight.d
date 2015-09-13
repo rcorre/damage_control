@@ -170,7 +170,7 @@ abstract class Fight : TimedPhase {
       if (proj.destroyed) {
         // turn this projectile into an explosion
         createExplosion(proj.position);
-        battle.shakeScreen();
+        battle.shakeScreen(ScreenShakeIntensity.explosion);
         onProjectileExplode(battle, proj.position, explosionSize);
       }
       else {

@@ -19,7 +19,6 @@ private enum {
   animationTime = 0.06,             // seconds per frame of tilesheet animation
   tilesetSize   = Vector2i(128, 0), // size of the tileset image for one frame of animation
 
-  screenShakeIntensity = 2f,
   screenShakeDuration = 0.2f,
 }
 
@@ -42,7 +41,7 @@ class Battle : State!Game {
     int    _animationCounter;
     Cursor _cursor;
     bool   _turboMode;
-    bool   _screenShake;
+    float  _screenShakeIntensity = 0f;
   }
 
   this(ShowTutorial showTutorial) {
@@ -100,21 +99,16 @@ class Battle : State!Game {
 
       _cursor.update(game.deltaTime, _turboMode);
 
-      if (_screenShake) {
         Transform!float trans = Vector2f(uniform(-1f, 1f), uniform(-1f, 1f))
-          * screenShakeIntensity;
+          * _screenShakeIntensity;
 
         al_use_transform(trans.transform);
       }
     }
-  }
 
-  void shakeScreen() {
-    _screenShake = true;
-    game.events.after(screenShakeDuration, {
-      _screenShake = false;
-      al_use_transform(Transform!float().transform);
-    });
+  void shakeScreen(float intensity) {
+    _screenShakeIntensity = intensity;
+    game.events.after(screenShakeDuration, { _screenShakeIntensity = 0; });
   }
 }
 
@@ -178,7 +172,7 @@ struct BattleData {
     RowCol start, end;
 
     this(ObjectData obj, int tileWidth, int tileHeight) {
-      // the -1 is required because the rect drawn in tiled ends up just on the 
+      // the -1 is required because the rect drawn in tiled ends up just on the
       // inner edge of tiles it should encompass on the top-left side
       this.start = RowCol(obj.y / tileHeight - 1, obj.x / tileWidth - 1);
       this.end = RowCol((obj.y + obj.height) / tileHeight, (obj.x + obj.width) / tileWidth);

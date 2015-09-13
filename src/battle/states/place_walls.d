@@ -71,6 +71,7 @@ class PlaceWalls : TimedPhase {
       }
 
       _soundOk.play();
+      battle.shakeScreen(ScreenShakeIntensity.placeWall);
 
       foreach(coord ; wallCoords) {
         map.place(new Wall, coord);
