@@ -1,7 +1,9 @@
 module battle.entities.enemy;
 
 import std.math;
+import std.range;
 import std.random;
+import std.algorithm;
 import cid;
 import dtiled;
 import battle.entities.tilemap;
@@ -43,6 +45,7 @@ class Enemy {
   float           fireCooldown;
   RowCol          target;
   bool            destroyed;
+  bool            crashing;
   Rect2i          spriteRect;
 
   protected StateStack!(Enemy, EnemyContext) states;
@@ -94,6 +97,10 @@ class Enemy {
     else {
       states.push(new Mayday(this, trajectory));
     }
+  }
+
+  void leave() {
+    if (!crashing) states.push(new LeaveBattle);
   }
 }
 
@@ -238,6 +245,10 @@ class Mayday : EnemyState {
     _deltaScale = uniform(0.3f, 0.7f) / _timer;
   }
 
+  override void enter(Enemy self, EnemyContext context) {
+    self.crashing = true;
+  }
+
   override void run(Enemy self, EnemyContext context) {
     _timer -= context.timeElapsed;
     if (_timer < 0) {
@@ -248,5 +259,42 @@ class Mayday : EnemyState {
     self.pos += _velocity * context.timeElapsed;
     self.transform.angle += _angularVelocity * context.timeElapsed;
     self.transform.scale -= Vector2f(1,1) * _deltaScale * context.timeElapsed;
+  }
+}
+
+/// Try to leave the battlefield
+class LeaveBattle : EnemyState {
+  Vector2f _velocity;
+
+  override void enter(Enemy self, EnemyContext context) {
+    // if already out of bounds, stay
+    if (self.pos.x < 0 || self.pos.x > screenW ||
+        self.pos.y < 0 || self.pos.y > screenH)
+    {
+      self.states.push(new Hover);
+    }
+
+    // otherwise try to find the nearest exit
+    _velocity = only(
+        Vector2f(0         , self.pos.y), // consider exiting left
+        Vector2f(screenW   , self.pos.y), // consider exiting right
+        Vector2f(self.pos.x,          0), // consider exiting top
+        Vector2f(self.pos.x,    screenH)) // consider exiting bottom
+      .map!(x => x - self.pos)            // compute path to each exit
+      .minPos!((a,b) => a.len < b.len)    // find the shortest
+      .front                              // take it!
+      .normalized * self.speed;           // set velocity towards it
+  }
+
+  override void run(Enemy self, EnemyContext context) {
+    // rotate towards the direction of movement
+    auto angleDiff = self.transform.angle - _velocity.angle;
+    if (!angleDiff.approxEqual(0, 0.1)) {
+      self.transform.angle -=
+        angleDiff.sgn * self.rotationSpeed * context.timeElapsed;
+    }
+
+    // move towards an exit
+    self.pos += _velocity * context.timeElapsed;
   }
 }
