@@ -84,6 +84,9 @@ class Battle : State!Game {
     void exit(Game game) {
       // exit all current states to clean up
       while(!states.empty) states.pop();
+
+      // ensure that the battle music stops and the stream is freed
+      music.destroy();
     }
 
     void run(Game game) {
