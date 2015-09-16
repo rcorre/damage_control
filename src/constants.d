@@ -76,11 +76,11 @@ enum PhaseTime {
 
 /// common colors used throughout the game
 enum Tint {
-  subdued   = Color(1f,1f,1f,0.25f), // for dimmed elements
-  neutral   = Color(1f,1f,1f,0.5f),  // for active but not highlighted elements
-  highlight = Color(1f,1f,1f,1f),    // for emphasized elements
+  subdued   = Color(0.25, 0.25, 0.25, 1f), // for dimmed elements
+  neutral   = Color(0.5 , 0.5 , 0.5 , 1f), // for selectable elements
+  highlight = Color(1f  , 1f  , 1f  , 1f), // for emphasized elements
 
-  dimBackground = Color(0.5f,0.5f,0.5f,0.5f), // obscure the background
+  dimBackground = Color(0.0f,0.0f,0.0f,0.5f), // obscure the background
 }
 
 /// paths from which to stream music tracks
