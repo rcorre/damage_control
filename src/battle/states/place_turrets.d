@@ -36,7 +36,7 @@ class PlaceTurrets : TimedPhase {
     _soundOk  = battle.game.audio.getSoundBank("place_ok");
     _soundBad = battle.game.audio.getSoundBank("place_bad");
     _turretsLeft = numTurrets;
-    _font = battle.game.fonts.get(fontName, fontSize);
+    _font = battle.game.graphics.fonts.get(fontName, fontSize);
   }
 
   override {
@@ -83,7 +83,7 @@ class PlaceTurrets : TimedPhase {
 
     auto spriteBatch = SpriteBatch(battle.tileAtlas, DrawDepth.newTurret);
     spriteBatch ~= sprite;
-    battle.game.renderer.draw(spriteBatch);
+    battle.game.graphics.draw(spriteBatch);
 
     Text text;
     text.transform = battle.cursor.topLeft + textOffset;
@@ -93,6 +93,6 @@ class PlaceTurrets : TimedPhase {
 
     auto textBatch = TextBatch(_font, DrawDepth.newTurret);
     textBatch ~= text;
-    battle.game.renderer.draw(textBatch);
+    battle.game.graphics.draw(textBatch);
   }
 }

@@ -44,14 +44,14 @@ class BattleIntroduction : BattleState {
   this(string title, Game game) {
     _title      = title;
     _sound      = game.audio.getSound("battle_intro");
-    _font       = game.fonts.get(fontName, fontSize);
+    _font       = game.graphics.fonts.get(fontName, fontSize);
 
     // create underline bitmap
     _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
 
     al_set_target_bitmap(_underline);
     al_clear_to_color(Color.white);
-    al_set_target_backbuffer(game.display.display);
+    al_set_target_backbuffer(game.graphics.display);
   }
 
   static ~this() {
@@ -78,8 +78,8 @@ class BattleIntroduction : BattleState {
       _textTransition.update(game.deltaTime);
       _underlineTransition.update(game.deltaTime);
 
-      drawText(game.renderer);
-      drawUnderline(game.renderer);
+      drawText(game.graphics);
+      drawUnderline(game.graphics);
 
       if (_textTransition.done && _underlineTransition.done) {
         battle.states.pop();

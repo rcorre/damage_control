@@ -22,7 +22,7 @@ abstract class BattleMenu : BattleState {
 
   override void run(Battle battle) {
     super.run(battle);
-    dimBackground(battle.game.renderer);
+    dimBackground(battle.game.graphics);
     _menus.updateAndDraw(battle.game);
   }
 

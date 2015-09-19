@@ -53,7 +53,7 @@ abstract class Fight : TimedPhase {
     _explosions = new ExplosionList;
     _particles = new ParticleList;
 
-    _targetBmp = battle.game.bitmaps.get(targetSpriteSheet);
+    _targetBmp = battle.game.graphics.bitmaps.get(targetSpriteSheet);
     _launcherSound = battle.game.audio.getSoundBank("cannon");
     _explosionSound = battle.game.audio.getSoundBank("explosion");
     _noAmmoSound = battle.game.audio.getSound("place_bad");
@@ -73,7 +73,7 @@ abstract class Fight : TimedPhase {
         explosionTint);                       // color
 
     // re-target the display after creating the bitmap
-    al_set_target_backbuffer(battle.game.display.display);
+    al_set_target_backbuffer(battle.game.graphics.display);
 
     _reloadCountdown = 0;
   }
@@ -123,7 +123,7 @@ abstract class Fight : TimedPhase {
       _targetPos += _targetVelocity * battle.game.deltaTime *
         (battle.turboMode ? turboSpeedFactor : 1);
 
-      drawTarget(battle.game.renderer, _targetPos, battle.animationOffset);
+      drawTarget(battle.game.graphics, _targetPos, battle.animationOffset);
     }
 
     void onConfirm(Battle battle) {
@@ -179,7 +179,7 @@ abstract class Fight : TimedPhase {
     }
 
 
-    battle.game.renderer.draw(batch);
+    battle.game.graphics.draw(batch);
   }
 
   void processExplosions(Game game) {
@@ -204,7 +204,7 @@ abstract class Fight : TimedPhase {
       batch ~= sprite;
     }
 
-    game.renderer.draw(batch);
+    game.graphics.draw(batch);
   }
 
   void processParticles(Battle battle) {
@@ -215,7 +215,7 @@ abstract class Fight : TimedPhase {
       batch ~= particle.sprite;
     }
 
-    battle.game.renderer.draw(batch);
+    battle.game.graphics.draw(batch);
   }
 
   void destroyWall(Battle battle, RowCol wallCoord) {

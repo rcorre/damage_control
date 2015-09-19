@@ -27,7 +27,7 @@ class TimedPhase : BattleState {
   override {
     void enter(Battle battle) {
       super.enter(battle);
-      _font = battle.game.fonts.get(fontName, fontSize);
+      _font = battle.game.graphics.fonts.get(fontName, fontSize);
     }
 
     void run(Battle battle) {
@@ -41,7 +41,7 @@ class TimedPhase : BattleState {
         battle.states.pop();
       }
 
-      drawTimer(game.renderer);
+      drawTimer(game.graphics);
     }
   }
 

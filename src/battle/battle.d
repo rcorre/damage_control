@@ -67,7 +67,7 @@ class Battle : State!Game {
       auto mapData = MapData.load("./content/map/map1.json");
       this.map = new TileMap(mapData);
       this.data = BattleData(mapData);
-      _tileAtlas = game.bitmaps.get("tileset");
+      _tileAtlas = game.graphics.bitmaps.get("tileset");
       player = new Player(Color(0, 0, 0.8));
 
       states.push(new BattleIntroduction("Choose Base", game),
@@ -91,7 +91,7 @@ class Battle : State!Game {
 
     void run(Game game) {
       states.run(this);
-      map.draw(_tileAtlas, game.renderer, animationOffset);
+      map.draw(_tileAtlas, game.graphics, animationOffset);
 
       // animation
       _animationTimer -= game.deltaTime;

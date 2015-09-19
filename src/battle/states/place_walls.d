@@ -36,7 +36,7 @@ class PlaceWalls : TimedPhase {
     void enter(Battle battle) {
       super.enter(battle);
       _piece = Piece.random;
-      _tileAtlas = battle.game.bitmaps.get("tileset");
+      _tileAtlas = battle.game.graphics.bitmaps.get("tileset");
 
       battle.cursor.positionInPlayerTerritory();
     }
@@ -44,7 +44,7 @@ class PlaceWalls : TimedPhase {
     void run(Battle battle) {
       super.run(battle);
 
-      _piece.draw(battle.cursor.topLeft, _tileAtlas, battle.game.renderer);
+      _piece.draw(battle.cursor.topLeft, _tileAtlas, battle.game.graphics);
     }
 
     void exit(Battle battle) {

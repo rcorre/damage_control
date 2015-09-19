@@ -51,7 +51,7 @@ class StatsSummary : BattleState {
   }
 
   this(Battle battle, int currentRound) {
-    _font = battle.game.fonts.get(fontName, fontSize);
+    _font = battle.game.graphics.fonts.get(fontName, fontSize);
     _tickSound = battle.game.audio.getSound("score_ticker");
     _titlePos.initialize(titleStartPos, slideDuration);
 
@@ -60,7 +60,7 @@ class StatsSummary : BattleState {
     _background = Bitmap(al_create_bitmap(screenW, screenH));
     al_set_target_bitmap(_background);
     al_clear_to_color(Color.black);
-    al_set_target_backbuffer(battle.game.display.display);
+    al_set_target_backbuffer(battle.game.graphics.display);
 
     _backgroundOpacity.initialize(0, slideDuration);
   }
@@ -115,7 +115,7 @@ class StatsSummary : BattleState {
       _titlePos.update(game.deltaTime);
       _backgroundOpacity.update(game.deltaTime);
 
-      dimBackground(battle.game.renderer);
+      dimBackground(battle.game.graphics);
 
       // update and draw the ticker text entries
       auto batch = TextBatch(_font, DrawDepth.overlayText);
@@ -126,7 +126,7 @@ class StatsSummary : BattleState {
         ticker.update(game.deltaTime);
         ticker.draw(batch);
 
-        battle.game.renderer.draw(batch);
+        battle.game.graphics.draw(batch);
       }
     }
 

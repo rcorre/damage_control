@@ -46,8 +46,8 @@ class Tutorial : BattleState {
   }
 
   this(Battle battle) {
-    _font   = battle.game.fonts.get(fontName, fontSize);
-    _cursor = battle.game.bitmaps.get(SpriteSheet.tileset);
+    _font   = battle.game.graphics.fonts.get(fontName, fontSize);
+    _cursor = battle.game.graphics.bitmaps.get(SpriteSheet.tileset);
   }
 
   override {
@@ -67,10 +67,10 @@ class Tutorial : BattleState {
       _previousMessagePos.update(battle.game.deltaTime);
       _currentMessagePos.update(battle.game.deltaTime);
 
-      drawText(battle.game.renderer, _previousMessagePos.value, _previousMessage);
-      drawText(battle.game.renderer, _currentMessagePos.value, _currentMessage);
+      drawText(battle.game.graphics, _previousMessagePos.value, _previousMessage);
+      drawText(battle.game.graphics, _currentMessagePos.value, _currentMessage);
 
-      drawText(battle.game.renderer, helpMessagePos,
+      drawText(battle.game.graphics, helpMessagePos,
           "Press <confirm> (J) to continue...", helpMessageColor);
     }
 
@@ -168,7 +168,7 @@ class Tutorial : BattleState {
         batch ~= prim;
       }
 
-      battle.game.renderer.draw(batch);
+      battle.game.graphics.draw(batch);
     }
   }
 }

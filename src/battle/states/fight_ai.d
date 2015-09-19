@@ -92,7 +92,7 @@ class FightAI : Fight {
 
     foreach(enemy ; _enemies) enemy.draw(batch, battle.animationOffset);
 
-    battle.game.renderer.draw(batch);
+    battle.game.graphics.draw(batch);
   }
 
   void spawnFragment(Enemy enemy) {

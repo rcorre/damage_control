@@ -7,7 +7,7 @@ private enum {
 }
 
 void drawKeyIcon(string keyname, Vector2i center, Game game) {
-  auto font = game.fonts.get("Mecha", 16);
+  auto font = game.graphics.fonts.get("Mecha", 16);
 
   Text text;
 
@@ -31,6 +31,6 @@ void drawKeyIcon(string keyname, Vector2i center, Game game) {
   pb ~= prim;
   tb ~= text;
 
-  game.renderer.draw(pb);
-  game.renderer.draw(tb);
+  game.graphics.draw(pb);
+  game.graphics.draw(tb);
 }

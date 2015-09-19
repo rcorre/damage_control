@@ -33,10 +33,10 @@ class MenuStack {
     _underlineBmp = Bitmap(al_create_bitmap(underlineSize.x, underlineSize.y));
     al_set_target_bitmap(_underlineBmp);
     al_clear_to_color(Color.white);
-    al_set_target_backbuffer(game.display.display);
+    al_set_target_backbuffer(game.graphics.display);
 
     // load font for menu text
-    _font = game.fonts.get(fontName, fontSize);
+    _font = game.graphics.fonts.get(fontName, fontSize);
 
     _menuMoveSound   = game.audio.getSoundBank("menu_move");
     _menuSelectSound = game.audio.getSoundBank("menu_select");
@@ -66,8 +66,8 @@ class MenuStack {
       _poppedMenu.draw(spriteBatch, textBatch);
     }
 
-    game.renderer.draw(spriteBatch);
-    game.renderer.draw(textBatch);
+    game.graphics.draw(spriteBatch);
+    game.graphics.draw(textBatch);
   }
 
   void select() {
