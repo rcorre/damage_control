@@ -18,7 +18,7 @@ void drawKeyIcon(string keyname, Vector2i center, Game game) {
 
   RectPrimitive prim;
 
-  prim.rect = Rect2i.centeredAt(
+  prim.rect = Rect2f.centeredAt(
       center,
       font.widthOf(keyname)  + pixelBuffer,
       font.heightOf(keyname) + pixelBuffer);
