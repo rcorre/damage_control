@@ -2,8 +2,7 @@ module battle.states.fight;
 
 import std.math      : PI_2;
 import std.array     : array;
-import std.range     : walkLength;
-import std.algorithm : map, sum, filter;
+import std.algorithm : map, filter;
 import cid;
 import dtiled;
 import battle.battle;
@@ -88,16 +87,6 @@ abstract class Fight : TimedPhase {
 
       // only turrets enclosed in the player territory are useable
       _turrets = battle.map.turrets.filter!(x => x.enclosed).array;
-
-      // sum the ammo bonuses from all enclosed constructs
-      int ammoLeft = battle.map.constructs
-        .filter!(x => x.enclosed)
-        .map!(x => x.ammoBonus)
-        .sum;
-
-      foreach(turret ; _turrets) {
-        ammoLeft = turret.refillAmmo(ammoLeft);
-      }
 
       // the crosshairs should start at one of the turrets
       _targetPos = _turrets.empty ? Vector2f.zero : _turrets.front.center;

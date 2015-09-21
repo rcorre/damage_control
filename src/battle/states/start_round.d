@@ -10,6 +10,7 @@ import battle.states.stats_summary;
 import battle.states.introduction;
 import battle.states.tutorial;
 import battle.states.check_defeat;
+import battle.states.refill_ammo;
 
 private enum {
   cannonsTitle = "Install Turrets",
@@ -35,6 +36,7 @@ class StartRound : State!Battle {
         new TutorialTurrets(battle),
         new BattleIntroduction(cannonsTitle, battle.game),
         new PlaceTurrets(battle, numTurrets),
+        new RefillAmmo,
 
         new BattleIntroduction(fightTitle, battle.game),
         new FightAI(battle, _currentRound),
