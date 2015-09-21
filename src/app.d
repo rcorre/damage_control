@@ -28,6 +28,9 @@ class InitializeGame : State!Game {
 
       // start on title state
       game.states.replace(new Title);
+
+      // make sure user can close the window
+      game.graphics.onClose = { game.stop(); };
     }
 
     void exit(Game game) { }
