@@ -34,6 +34,10 @@ enum SpriteSheet {
   tileset = "tileset"
 }
 
+enum Sounds {
+  reload = "click",
+}
+
 /// The layer at which to draw various entities. Higher is drawn above lower.
 enum DrawDepth {
   // construction
@@ -56,6 +60,9 @@ enum DrawDepth {
   overlayBackground = 5, /// drawn behind overlay text but above everything else
   overlayText       = 6, /// text shown over everything else in the game
   overlayHighlight  = 7, /// highlight areas of the map
+
+  // icons
+  ammoIcon = 5,
 
   // menus
   menuText = 6,

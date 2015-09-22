@@ -105,6 +105,10 @@ class TileMap {
     return _constructs.map!(x => cast(Turret) x).filter!(x => x !is null);
   }
 
+  @property auto reactors() {
+    return _constructs.map!(x => cast(Reactor) x).filter!(x => x !is null);
+  }
+
   void draw(Bitmap tileAtlas, Renderer renderer, Vector2i animationOffset) {
     auto tileBatch    = SpriteBatch(tileAtlas, DrawDepth.tile);
     auto constructBatch = SpriteBatch(tileAtlas, DrawDepth.feature);

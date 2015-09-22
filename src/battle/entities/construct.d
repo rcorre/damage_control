@@ -18,9 +18,6 @@ abstract class Construct {
   @property auto topLeft() { return center - size / 2; }
   @property void topLeft(Vector2f val) { center = val + size / 2; }
 
-  /// Ammo refill granted by having this in your territory
-  @property int ammoBonus() { return 0; }
-
 abstract:
   /// Region covered, in number of tiles (the region is always square).
   @property int gridSize();
@@ -71,6 +68,7 @@ class Turret : Construct {
   int ammo;
 
   override @property int gridSize() { return 2; }
+  @property int ammoNeeded() { return max(maxAmmo - ammo, 0) ; }
 
   override void draw(ref SpriteBatch batch, Vector2i animationOffset) {
     Sprite sprite;
@@ -111,7 +109,6 @@ class Turret : Construct {
 
 class Reactor : Construct {
   override @property int gridSize() { return 2; }
-  override @property int ammoBonus() { return ammoPerReactor; }
 
   override void draw(ref SpriteBatch batch, Vector2i animationOffset) {
     Sprite sprite;
