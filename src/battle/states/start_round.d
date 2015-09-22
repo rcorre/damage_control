@@ -33,7 +33,6 @@ class StartRound : State!Battle {
 
     // TODO: check if just finished last round
     battle.states.push(
-        new TutorialTurrets(battle),
         new BattleIntroduction(cannonsTitle, battle.game),
         new PlaceTurrets(battle, numTurrets),
         new RefillAmmo,
