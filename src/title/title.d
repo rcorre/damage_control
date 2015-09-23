@@ -13,10 +13,6 @@ import common.options_menu;
 import common.key_icon;
 import title.states.navigate;
 
-private enum {
-  hintPos = Vector2f(screenW * 0.05, screenH * 0.8),
-}
-
 /// Show the title screen.
 class Title : State!Game {
   private {
@@ -39,7 +35,11 @@ class Title : State!Game {
       _menus.updateAndDraw(game);
       _states.run(this, game);
 
-      drawInputHints(game, "WASD", "Move");
+      drawInputHints(game,
+          "W", "Up" ,
+          "S", "Down",
+          "J", "Confirm",
+          "K", "Cancel");
     }
   }
 
