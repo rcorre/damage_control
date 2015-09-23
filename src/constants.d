@@ -35,7 +35,7 @@ enum SpriteSheet {
 }
 
 enum Sounds {
-  reload = "click",
+  reload = "menu_move",
 }
 
 /// The layer at which to draw various entities. Higher is drawn above lower.

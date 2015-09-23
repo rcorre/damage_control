@@ -4,18 +4,17 @@ module title.title;
 import std.process   : browse;
 import battle.battle;
 import cid;
+import constants;
 import common.menu;
 import common.menu_stack;
 import common.keyboard_menu;
 import common.gamepad_menu;
 import common.options_menu;
+import common.key_icon;
 import title.states.navigate;
 
 private enum {
-  underlineSize = Vector2i(150, 6),
-
-  fontName  = "Mecha",
-  fontSize  = 36,
+  hintPos = Vector2f(screenW * 0.05, screenH * 0.8),
 }
 
 /// Show the title screen.
@@ -39,6 +38,8 @@ class Title : State!Game {
     void run(Game game) {
       _menus.updateAndDraw(game);
       _states.run(this, game);
+
+      drawInputHints(game, "WASD", "Move");
     }
   }
 
