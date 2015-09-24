@@ -20,6 +20,8 @@ class Title : State!Game {
     MenuStack                _menus;
   }
 
+  float prog = 0f;
+
   override {
     void enter(Game game) {
       _menus = new MenuStack(game, mainMenu(game));
@@ -35,7 +37,9 @@ class Title : State!Game {
       _menus.updateAndDraw(game);
       _states.run(this, game);
 
-      drawInputHints(game,
+      prog += 1.0f * game.deltaTime;
+
+      drawInputHints(game, prog,
           "W", "Up" ,
           "S", "Down",
           "J", "Confirm",

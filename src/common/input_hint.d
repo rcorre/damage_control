@@ -6,16 +6,20 @@ import cid;
 import constants;
 
 private enum {
-  hintY = screenH * 0.95, // y position where hints are shown
+  startY = screenH * 1.00, // y position where hints enter the screen
+  endY   = screenH * 0.95, // y position where hints are shown
 
   iconBuffer = Vector2f(5, 5), // space between key icon and action
   hintBuffer = 16,             // horizontal space between subsequent hints
 }
 
-void drawInputHints(Game game, string[] pairs...) {
+void drawInputHints(Game game, float progress, string[] pairs...) {
+  auto xPos(size_t i) { return (i + 1) * screenW / (pairs.length / 2 + 1); }
+  auto yPos = lerp(startY, endY, progress);
+
   // space the hint positions evenly along the bottom of the screen
   auto positions = iota(0, pairs.length / 2)
-    .map!(i => Vector2f((i + 1) * screenW / (pairs.length / 2 + 1), hintY));
+    .map!(i => Vector2f(xPos(i), yPos));
 
   auto font = game.graphics.fonts.get("Mecha", 16);
 
@@ -28,20 +32,23 @@ void drawInputHints(Game game, string[] pairs...) {
 
     auto keySize = font.sizeOf(key) + iconBuffer;
 
+    // draw the key name
     Text text;
 
     text.text      = key;
-    text.color     = Color.white;
+    text.color     = lerp(Color.black, Color.white, progress);
     text.transform = topLeft;
 
     textBatch ~= text;
 
+    // draw the name of the action bound to that key
     text.text      = action;
-    text.color     = Color.gray;
+    text.color     = lerp(Color.black, Color.gray, progress);
     text.transform = topLeft + Vector2f(keySize.x + iconBuffer.x, 0);
 
     textBatch ~= text;
 
+    // draw a box around the key name
     RectPrimitive box;
 
     box.rect  = Rect2f(topLeft - iconBuffer / 2, keySize.x, keySize.y);
