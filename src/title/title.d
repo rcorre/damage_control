@@ -18,9 +18,8 @@ class Title : State!Game {
   private {
     StateStack!(Title, Game) _states;
     MenuStack                _menus;
+    InputHint                _hint;
   }
-
-  float prog = 0f;
 
   override {
     void enter(Game game) {
@@ -37,9 +36,9 @@ class Title : State!Game {
       _menus.updateAndDraw(game);
       _states.run(this, game);
 
-      prog += 1.0f * game.deltaTime;
+      _hint.update(game.deltaTime);
 
-      drawInputHints(game, prog,
+      _hint.draw(game,
           "W", "Up" ,
           "S", "Down",
           "J", "Confirm",
