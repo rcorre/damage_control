@@ -1,0 +1,12 @@
+name        "damage_control"
+description "A Rampart-like game written in D"
+copyright   "Copyright © 2015, rcorre"
+authors     "rcorre"
+homepage    "https://github.com/rcorre/damage_control"
+license     "MIT"
+
+targetPath       "bin"
+preBuildCommands "rake"
+
+dependency "cid"    path="../cid"
+dependency "dtiled" path="../dtiled"
