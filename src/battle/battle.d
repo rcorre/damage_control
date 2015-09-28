@@ -102,12 +102,12 @@ class Battle : State!Game {
 
       _cursor.update(game.deltaTime, _turboMode);
 
-        Transform!float trans = Vector2f(uniform(-1f, 1f), uniform(-1f, 1f))
-          * _screenShakeIntensity;
+      Transform!float trans = Vector2f(uniform(-1f, 1f), uniform(-1f, 1f))
+        * _screenShakeIntensity;
 
-        al_use_transform(trans.transform);
-      }
+      al_use_transform(trans.transform);
     }
+  }
 
   void shakeScreen(float intensity) {
     _screenShakeIntensity = intensity;
