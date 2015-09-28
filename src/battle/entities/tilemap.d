@@ -178,7 +178,7 @@ class TileMap {
   void clear(RowCol coord) {
     auto removeMe = tileAt(coord).construct;
     if (removeMe !is null) {
-      _constructs.remove!(x => x == removeMe);
+      _constructs = _constructs.remove!(x => x == removeMe);
     }
 
     tileAt(coord).construct = null;
