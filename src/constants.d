@@ -87,7 +87,7 @@ enum Tint {
   neutral   = Color(0.5 , 0.5 , 0.5 , 1f), // for selectable elements
   highlight = Color(1f  , 1f  , 1f  , 1f), // for emphasized elements
 
-  dimBackground = Color(0.0f,0.0f,0.0f,0.5f), // obscure the background
+  dimBackground = Color(0.0f,0.0f,0.0f,0.7f), // obscure the background
 }
 
 /// paths from which to stream music tracks
