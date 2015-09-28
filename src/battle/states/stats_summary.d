@@ -43,7 +43,6 @@ class StatsSummary : BattleState {
     ScoreTicker[] _tickers;
     Font          _font;
     SoundEffect   _tickSound;
-    Bitmap        _background;
 
     const string                        _titleText;
     Transition!(Vector2i, transitionFn) _titlePos;
@@ -57,16 +56,7 @@ class StatsSummary : BattleState {
 
     _titleText = "Round %d Summary:".format(currentRound);
 
-    _background = Bitmap(al_create_bitmap(screenW, screenH));
-    al_set_target_bitmap(_background);
-    al_clear_to_color(Color.black);
-    al_set_target_backbuffer(battle.game.graphics.display);
-
     _backgroundOpacity.initialize(0, slideDuration);
-  }
-
-  ~this() {
-    al_destroy_bitmap(_background);
   }
 
   override {
@@ -161,12 +151,14 @@ class StatsSummary : BattleState {
   }
 
   private void dimBackground(Renderer renderer) {
-    Sprite sprite;
-    sprite.region = Rect2i(0, 0, screenW, screenH);
-    sprite.color  = Color(0, 0, 0, _backgroundOpacity.value);
+    RectPrimitive prim;
 
-    auto batch = SpriteBatch(_background, DrawDepth.overlayBackground);
-    batch ~= sprite;
+    prim.color  = Tint.dimBackground;
+    prim.filled = true;
+    prim.rect   = [ 0, 0, screenW, screenH ];
+
+    auto batch = PrimitiveBatch(DrawDepth.overlayBackground);
+    batch ~= prim;
     renderer.draw(batch);
   }
 }
