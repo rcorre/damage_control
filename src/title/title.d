@@ -1,7 +1,9 @@
 /// Title screen state.
 module title.title;
 
-import std.process   : browse;
+import std.conv    : to;
+import std.string  : toUpper;
+import std.process : browse;
 import battle.battle;
 import cid;
 import constants;
@@ -44,11 +46,10 @@ class Title : State!Game {
 
       _hint.update(game.deltaTime);
 
-      _hint.draw(game,
-          "W", "Up" ,
-          "S", "Down",
-          "J", "Confirm",
-          "K", "Cancel");
+      auto controls = game.events.controlScheme;
+
+      // draw hints for menu navigation keys
+      _hint.draw(game, Button.up, Button.down, Button.confirm, Button.back);
     }
   }
 

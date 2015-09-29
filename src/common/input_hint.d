@@ -1,6 +1,9 @@
 module common.key_icon;
 
-import std.range     : iota, chunks, lockstep;
+import std.conv      : to;
+import std.range     : only, iota, chunks, lockstep;
+import std.string    : toUpper;
+import std.typecons  : staticIota;
 import std.algorithm : map;
 import cid;
 import constants;
@@ -17,6 +20,23 @@ private enum {
   textColor = Color(1,1,1,0.5),
 }
 
+enum Button {
+  up      = "up",
+  down    = "down",
+  left    = "left",
+  right   = "right",
+
+  build   = "confirm",
+  shoot   = "confirm",
+  confirm = "confirm",
+
+  back    = "cancel",
+  cancel  = "cancel",
+
+  rotateL = "rotateL",
+  rotateR = "rotateR",
+}
+
 struct InputHint {
   private {
     string[] _prevHints;
@@ -29,24 +49,23 @@ struct InputHint {
     _progress = clamp(_progress + time / hintTime, 0, 1);
   }
 
-  void draw(Game game, string[] pairs...) {
-    auto xPos(size_t i) { return (i + 1) * screenW / (pairs.length / 2 + 1); }
-    auto yPos = lerp(startY, endY, _progress);
-
-    // space the hint positions evenly along the bottom of the screen
-    auto positions = iota(0, pairs.length / 2)
-      .map!(i => Vector2f(xPos(i), yPos));
-
+  void draw(Game game, Button[] actions ...) {
     auto font = game.graphics.fonts.get("Mecha", 16);
 
     auto textBatch = TextBatch(font, 6);
     auto primBatch = PrimitiveBatch(5);
 
-    // draw each (key, action, position) tuple
-    foreach(pair, topLeft ; pairs.chunks(2).lockstep(positions)) {
-      immutable key    = pair[0];
-      immutable action = pair[1];
+    foreach(i, action ; actions) {
+      // get the name of the key currently mapped to this action
+      immutable key = game.events.controlScheme.keyName(action);
 
+      // entries are spaced evenly across the bottom
+      // the y position rises over time (or falls when transitioning out)
+      auto topLeft = Vector2f(
+          (i + 1) * screenW / (actions.length + 1), // even horizontal spacing
+          lerp(startY, endY, _progress));           // y pos rises up over time
+
+      // this is the size of the box around the keyboard key icon
       auto keySize = font.sizeOf(key) + iconMargin;
 
       // draw the key name
@@ -77,4 +96,33 @@ struct InputHint {
     game.graphics.draw(textBatch);
     game.graphics.draw(primBatch);
   }
+}
+
+private:
+// get the name of the keyboard currently mapped to this button
+auto keyName(ControlScheme controls, Button b) {
+  KeyCode key;
+
+  final switch (b) with (Button) {
+    case up:
+      key = controls.axes["move"].upKey;
+      break;
+    case down:
+      key = controls.axes["move"].downKey;
+      break;
+    case left:
+      key = controls.axes["move"].leftKey;
+      break;
+    case right:
+      key = controls.axes["move"].rightKey;
+      break;
+    case confirm:
+    case cancel:
+    case rotateL:
+    case rotateR:
+      key = controls.buttons[b].keys[0];
+      break;
+  }
+
+  return key.to!string.toUpper;
 }
