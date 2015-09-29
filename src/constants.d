@@ -77,7 +77,7 @@ enum ScoreFactor {
 enum PhaseTime {
   chooseBase   = 10,
   placeTurrets = 15,
-  fight        = 20,
+  fight        = 15,
   placeWalls   = 20,
 }
 

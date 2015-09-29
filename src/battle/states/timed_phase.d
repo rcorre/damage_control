@@ -24,6 +24,8 @@ class TimedPhase : BattleState {
     _timer = duration;
   }
 
+  @property float phaseTimeLeft() { return _timer; }
+
   override {
     void enter(Battle battle) {
       super.enter(battle);

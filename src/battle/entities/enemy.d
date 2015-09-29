@@ -10,8 +10,9 @@ import battle.entities.tilemap;
 import constants;
 
 struct EnemyContext {
-  float    timeElapsed;
-  RowCol[] targets;
+  float    timeElapsed; // time elapsed this frame
+  float    timeTillEnd; // time until battle ends
+  RowCol[] targets;     // tiles that have walls
   TileMap  tileMap;
 
   void delegate(Vector2f origin, Vector2f target) spawnProjectile;
@@ -60,6 +61,22 @@ class Enemy {
 
   void update(EnemyContext context) {
     states.run(this, context);
+
+    // otherwise try to find the nearest exit
+    auto exitPath =
+      only(
+        Vector2f(0      ,   pos.y),    // consider exiting left
+        Vector2f(screenW,   pos.y),    // consider exiting right
+        Vector2f(pos.x  ,       0),    // consider exiting top
+        Vector2f(pos.x  , screenH))    // consider exiting bottom
+      .map!(x => x - pos)              // compute path to each exit
+      .minPos!((a,b) => a.len < b.len) // find the shortest
+      .front;                          // take it!
+
+    if (!crashing && exitPath.len / speed > context.timeTillEnd) {
+      auto velocity = exitPath.normalized * speed;
+      states.push(new LeaveBattle(velocity));
+    }
   }
 
   void draw(ref SpriteBatch batch, in Vector2i animationOffset) {
@@ -97,10 +114,6 @@ class Enemy {
     else {
       states.push(new Mayday(this, trajectory));
     }
-  }
-
-  void leave() {
-    if (!crashing) states.push(new LeaveBattle);
   }
 }
 
@@ -266,6 +279,10 @@ class Mayday : EnemyState {
 class LeaveBattle : EnemyState {
   Vector2f _velocity;
 
+  this(Vector2f velocity) {
+    _velocity = velocity; // set velocity towards exit
+  }
+
   override void enter(Enemy self, EnemyContext context) {
     // if already out of bounds, stay
     if (self.pos.x < 0 || self.pos.x > screenW ||
@@ -273,17 +290,6 @@ class LeaveBattle : EnemyState {
     {
       self.states.push(new Hover);
     }
-
-    // otherwise try to find the nearest exit
-    _velocity = only(
-        Vector2f(0         , self.pos.y), // consider exiting left
-        Vector2f(screenW   , self.pos.y), // consider exiting right
-        Vector2f(self.pos.x,          0), // consider exiting top
-        Vector2f(self.pos.x,    screenH)) // consider exiting bottom
-      .map!(x => x - self.pos)            // compute path to each exit
-      .minPos!((a,b) => a.len < b.len)    // find the shortest
-      .front                              // take it!
-      .normalized * self.speed;           // set velocity towards it
   }
 
   override void run(Enemy self, EnemyContext context) {

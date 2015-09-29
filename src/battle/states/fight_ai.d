@@ -39,11 +39,6 @@ class FightAI : Fight {
             .map!(x => new Enemy(x))); // create an enemy at each location
 
         _initialized = true;
-
-        // have all enemies try to leave the battle before it ends
-        battle.game.events.after(PhaseTime.fight - 5, {
-            foreach (enemy ; _enemies) enemy.leave();
-        });
       }
     }
 
@@ -77,6 +72,7 @@ class FightAI : Fight {
 
     EnemyContext context;
     context.timeElapsed     = game.deltaTime;
+    context.timeTillEnd     = phaseTimeLeft;
     context.targets         = _targets;
     context.tileMap         = battle.map;
     context.spawnProjectile = &super.spawnProjectile;
