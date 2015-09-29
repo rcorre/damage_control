@@ -19,17 +19,23 @@ class Title : State!Game {
     StateStack!(Title, Game) _states;
     MenuStack                _menus;
     InputHint                _hint;
+    AudioStream              _music;
   }
 
   override {
     void enter(Game game) {
       _menus = new MenuStack(game, mainMenu(game));
       _states.push(new NavigateMenus);
+      _music = game.audio.loadStream(MusicPath.title);
+      _music.playmode = AudioPlayMode.loop;
     }
 
     void exit(Game game) {
       // this ensures handlers are de-registered
       _states.pop();
+
+      // ensure that the music stops and the stream is freed
+      _music.destroy();
     }
 
     void run(Game game) {
