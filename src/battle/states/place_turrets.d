@@ -4,12 +4,15 @@ import std.conv      : to;
 import std.range     : walkLength;
 import std.format    : format;
 import std.algorithm : count, filter;
+
 import cid;
 import dtiled;
+
 import battle.battle;
 import battle.entities;
 import battle.states.timed_phase;
 import constants;
+import common.input_hint;
 
 private enum {
   // for drawing the remaining turret count
@@ -29,6 +32,7 @@ class PlaceTurrets : TimedPhase {
     SoundBank _soundOk;
     SoundBank _soundBad;
     Font      _font;
+    InputHint _hint;
   }
 
   this(Battle battle, int numTurrets) {
@@ -55,6 +59,10 @@ class PlaceTurrets : TimedPhase {
         // no turrets left. pop, but wait so we don't clip the sounds
         battle.states.pop();
       }
+
+      _hint.update(battle.game.deltaTime);
+      _hint.draw(battle.game, Button.up, Button.down, Button.left, Button.right,
+          Button.build, Button.rotateL, Button.rotateR);
     }
 
     override void onConfirm(Battle battle) {

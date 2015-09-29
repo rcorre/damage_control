@@ -12,7 +12,7 @@ import common.menu_stack;
 import common.keyboard_menu;
 import common.gamepad_menu;
 import common.options_menu;
-import common.key_icon;
+import common.input_hint;
 import title.states.navigate;
 
 /// Show the title screen.

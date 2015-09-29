@@ -11,6 +11,7 @@ import battle.entities;
 import battle.entities.tilemap;
 import constants;
 import transition;
+import common.input_hint;
 
 private enum {
   explosionTime  = 0.30f,
@@ -44,6 +45,7 @@ abstract class Fight : TimedPhase {
     Vector2f       _targetPos;
     Vector2f       _targetVelocity;
     float          _reloadCountdown;
+    InputHint      _hint;
   }
 
   this(Battle battle) {
@@ -113,6 +115,10 @@ abstract class Fight : TimedPhase {
         (battle.turboMode ? turboSpeedFactor : 1);
 
       drawTarget(battle.game.graphics, _targetPos, battle.animationOffset);
+
+      _hint.update(game.deltaTime);
+      _hint.draw(game, Button.up, Button.down, Button.left, Button.right,
+          Button.shoot);
     }
 
     void onConfirm(Battle battle) {

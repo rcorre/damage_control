@@ -1,4 +1,4 @@
-module common.key_icon;
+module common.input_hint;
 
 import std.conv      : to;
 import std.range     : only, iota, chunks, lockstep;
@@ -78,7 +78,7 @@ struct InputHint {
       textBatch ~= text;
 
       // draw the name of the action bound to that key
-      text.text      = action;
+      text.text      = action.to!string;
       text.color     = lerp(Color.black, textColor, _progress);
       text.transform = topLeft + Vector2f(keySize.x + iconMargin.x, 0);
 

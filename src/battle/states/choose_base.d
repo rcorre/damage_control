@@ -4,20 +4,23 @@ import std.range;
 import std.random;
 import std.algorithm : filter, minPos;
 import std.container : Array;
+
 import cid;
 import dtiled;
-import jsonizer;
+
 import battle.battle;
 import battle.states.timed_phase;
 import battle.entities;
 import constants;
+import common.input_hint;
 
 /// Player is holding a wall segment they can place with a mouse click
 class ChooseBase : TimedPhase {
   private {
     RowCol       _currentCoord;
     Array!RowCol _reactorCoords;
-    bool _choiceConfirmed;
+    bool         _choiceConfirmed;
+    InputHint    _hint;
   }
 
   this(Battle battle) {
@@ -32,11 +35,19 @@ class ChooseBase : TimedPhase {
   override {
     void enter(Battle battle) {
       super.enter(battle);
-    selectReactor(battle, _currentCoord);
+      selectReactor(battle, _currentCoord);
     }
 
     void exit(Battle battle) {
       super.exit(battle);
+    }
+
+    void run(Battle battle) {
+      super.run(battle);
+
+      _hint.update(battle.game.deltaTime);
+      _hint.draw(battle.game, Button.up, Button.down, Button.left, Button.right,
+          Button.confirm);
     }
 
     void onTimeout(Battle battle) {

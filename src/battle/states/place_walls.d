@@ -8,6 +8,7 @@ import cid;
 import dtiled;
 import jsonizer;
 import constants;
+import common.input_hint;
 import battle.battle;
 import battle.entities;
 import battle.states.timed_phase;
@@ -20,10 +21,11 @@ private enum {
 /// Player is holding a wall segment they can place with a mouse click
 class PlaceWalls : TimedPhase {
   private {
-    Piece       _piece;
-    Bitmap      _tileAtlas;
+    Piece     _piece;
+    Bitmap    _tileAtlas;
     SoundBank _soundOk;
     SoundBank _soundBad;
+    InputHint _hint;
   }
 
   this(Battle battle) {
@@ -45,6 +47,10 @@ class PlaceWalls : TimedPhase {
       super.run(battle);
 
       _piece.draw(battle.cursor.topLeft, _tileAtlas, battle.game.graphics);
+
+      _hint.update(battle.game.deltaTime);
+      _hint.draw(battle.game, Button.up, Button.down, Button.left, Button.right,
+          Button.build, Button.rotateL, Button.rotateR);
     }
 
     void exit(Battle battle) {
