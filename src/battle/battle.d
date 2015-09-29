@@ -31,17 +31,17 @@ class Battle : State!Game {
   Game               game;
   StateStack!Battle  states;
   Player             player;
-  AudioStream        music;
   const ShowTutorial showTutorial;
 
   private {
-    Bitmap _tileAtlas;
-    float  _animationTimer;
-    int    _numAnimationFrames;
-    int    _animationCounter;
-    Cursor _cursor;
-    bool   _turboMode;
-    float  _screenShakeIntensity = 0f;
+    Bitmap      _tileAtlas;
+    float       _animationTimer;
+    int         _numAnimationFrames;
+    int         _animationCounter;
+    Cursor      _cursor;
+    bool        _turboMode;
+    float       _screenShakeIntensity = 0f;
+    AudioStream _music;
   }
 
   this(ShowTutorial showTutorial) {
@@ -77,16 +77,16 @@ class Battle : State!Game {
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
       _cursor = new Cursor(this);
-      music = game.audio.loadStream(MusicPath.battle);
-      music.playmode = AudioPlayMode.loop;
+      _music = game.audio.loadStream(MusicPath.battle);
+      _music.playmode = AudioPlayMode.loop;
     }
 
     void exit(Game game) {
       // exit all current states to clean up
       while(!states.empty) states.pop();
 
-      // ensure that the battle music stops and the stream is freed
-      music.destroy();
+      // ensure that the battle _music stops and the stream is freed
+      _music.destroy();
     }
 
     void run(Game game) {
