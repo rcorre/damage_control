@@ -25,7 +25,13 @@ private enum {
   transitionDuration = 2,
 
   // this represents position relative to the transition progress (0 to 1)
-  transitionFn = (float x) => (((2 * x) - 1).pow(5) + 1) / 2 + x / 8,
+  // this function is chosen to have the title speed towards the center, slow
+  // down briefly, and then speed back out the other side
+  positionFn = (float x) => (((2 * x) - 1).pow(5) + 1) / 2 + x / 8,
+
+  // this function represents the color value at a given point in time
+  // it causes the color to dim, then fade back in
+  colorFn = (float x) => (2 * x - 1).pow(2),
 }
 
 /// Play a short animation before entering the next phase
@@ -33,18 +39,19 @@ class BattleIntroduction : BattleState {
   private {
     static Bitmap _underline;
 
-    Transition!(Vector2i, transitionFn) _textTransition;
-    Transition!(Vector2i, transitionFn) _underlineTransition;
+    Transition!(Color   , colorFn   ) _backgroundTint;
+    Transition!(Vector2i, positionFn) _textTransition;
+    Transition!(Vector2i, positionFn) _underlineTransition;
 
-    string          _title;
-    Font            _font;
-    SoundEffect     _sound;
+    string      _title;
+    Font        _font;
+    SoundEffect _sound;
   }
 
   this(string title, Game game) {
-    _title      = title;
-    _sound      = game.audio.getSound("battle_intro");
-    _font       = game.graphics.fonts.get(fontName, fontSize);
+    _title = title;
+    _sound = game.audio.getSound("battle_intro");
+    _font  = game.graphics.fonts.get(fontName, fontSize);
 
     // create underline bitmap
     _underline = al_create_bitmap(underlineSize.x, underlineSize.y);
@@ -62,6 +69,9 @@ class BattleIntroduction : BattleState {
     void enter(Battle battle) {
       super.enter(battle);
 
+      _backgroundTint.initialize(Tint.dimBackground, transitionDuration);
+      _backgroundTint.go(Color.clear);
+
       _textTransition.initialize(titleEnterPos, transitionDuration);
       _textTransition.go(titleExitPos);
 
@@ -75,9 +85,11 @@ class BattleIntroduction : BattleState {
       super.run(battle);
       auto game = battle.game;
 
+      _backgroundTint.update(game.deltaTime);
       _textTransition.update(game.deltaTime);
       _underlineTransition.update(game.deltaTime);
 
+      dimBackground(game.graphics);
       drawText(game.graphics);
       drawUnderline(game.graphics);
 
@@ -111,6 +123,18 @@ class BattleIntroduction : BattleState {
     sprite.region    = Rect2i(Vector2i.zero, underlineSize);
     batch ~= sprite;
 
+    renderer.draw(batch);
+  }
+
+  private void dimBackground(Renderer renderer) {
+    RectPrimitive prim;
+
+    prim.color  = _backgroundTint.value;
+    prim.filled = true;
+    prim.rect   = [ 0, 0, screenW, screenH ];
+
+    auto batch = PrimitiveBatch(DrawDepth.overlayBackground);
+    batch ~= prim;
     renderer.draw(batch);
   }
 }
