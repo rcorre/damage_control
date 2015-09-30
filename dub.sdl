@@ -5,8 +5,7 @@ authors     "rcorre"
 homepage    "https://github.com/rcorre/damage_control"
 license     "MIT"
 
-targetPath       "bin"
-preBuildCommands "rake"
+targetPath "bin"
 
 dependency "cid"    path="../cid"
 dependency "dtiled" version="~>0.3.0"
