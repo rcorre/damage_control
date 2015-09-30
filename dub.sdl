@@ -9,4 +9,4 @@ targetPath       "bin"
 preBuildCommands "rake"
 
 dependency "cid"    path="../cid"
-dependency "dtiled" path="../dtiled"
+dependency "dtiled" version="~>0.3.0"
