@@ -8,7 +8,6 @@ import battle.states.place_turrets;
 import battle.states.fight_ai;
 import battle.states.stats_summary;
 import battle.states.introduction;
-import battle.states.tutorial;
 import battle.states.check_defeat;
 import battle.states.refill_ammo;
 
@@ -53,10 +52,3 @@ class StartRound : State!Battle {
   override void exit(Battle battle) { }
   override void run(Battle battle) { }
 }
-
-class EmptyBattleState : State!Battle {
-  override void enter(Battle b) { b.states.pop(); }
-  override void exit(Battle b) { }
-  override void run(Battle b) { }
-}
-

@@ -22,8 +22,6 @@ private enum {
   screenShakeDuration = 0.2f,
 }
 
-alias ShowTutorial = Flag!"ShowTutorial";
-
 /// Start a new match.
 class Battle : State!Game {
   TileMap            map;
@@ -31,7 +29,6 @@ class Battle : State!Game {
   Game               game;
   StateStack!Battle  states;
   Player             player;
-  const ShowTutorial showTutorial;
 
   private {
     Bitmap      _tileAtlas;
@@ -42,15 +39,6 @@ class Battle : State!Game {
     bool        _turboMode;
     float       _screenShakeIntensity = 0f;
     AudioStream _music;
-  }
-
-  this(ShowTutorial showTutorial) {
-    this.showTutorial = showTutorial;
-  }
-
-  /// Construct from another battle -- used to restart a battle
-  this(Battle other) {
-    this.showTutorial = other.showTutorial;
   }
 
   @property auto animationOffset() {

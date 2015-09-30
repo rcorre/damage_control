@@ -76,7 +76,7 @@ class Title : State!Game {
   }
 
   auto playMenu(Game game) {
-    auto play() { game.states.push(new Battle(ShowTutorial.yes)); }
+    auto play() { game.states.push(new Battle); }
 
     return new Menu(
         MenuEntry("Tutorial", &play),
