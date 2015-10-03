@@ -203,11 +203,11 @@ abstract class Fight : TimedPhase {
   }
 
   void processParticles(Battle battle) {
-    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.particle);
+    auto batch = PrimitiveBatch(DrawDepth.particle);
 
     foreach(ref particle ; _particles) {
       particle.update(battle.game.deltaTime);
-      batch ~= particle.sprite;
+      batch ~= particle.primitive;
     }
 
     battle.game.graphics.draw(batch);
@@ -265,8 +265,8 @@ abstract class Fight : TimedPhase {
     _explosionSound.play();
   }
 
-  void spawnParticle(Vector2f pos) {
-    _particles.insert(Particle(pos));
+  void spawnParticle(Vector2f pos, float angle) {
+    _particles.insert(Particle(pos, angle));
   }
 }
 

@@ -47,14 +47,14 @@ struct Rocket {
   @property bool destroyed() { return _duration < 0; }
   @property auto position() { return _transform.pos; }
 
-  void update(float timeElapsed, void delegate(Vector2f) spawnParticle) {
+  void update(float timeElapsed, void delegate(Vector2f, float) spawnParticle) {
     _duration -= timeElapsed;
     _transform.pos += _velocity * timeElapsed;
 
     _particleTimer -= timeElapsed;
     if (_particleTimer < 0) {
       _particleTimer = particleInterval;
-      spawnParticle(_transform.pos);
+      spawnParticle(_transform.pos, _transform.angle);
     }
   }
 

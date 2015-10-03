@@ -13,28 +13,31 @@ struct Particle {
   }
 
   Vector2f pos;
+  float    angle;
   float    timeExisted = 0f;
 
-  this(Vector2f pos) { this.pos = pos; }
+  this(Vector2f pos, float angle) {
+    this.pos = pos;
+    this.angle = angle;
+  }
 
   @property bool destroyed() { return timeExisted > duration; }
 
   void update(float timeElapsed) { this.timeExisted += timeElapsed; }
 
-  auto sprite() {
+  auto primitive() {
     float lerpFactor = timeExisted / duration;
 
-    Sprite sprite;
+    RectPrimitive prim;
 
-    sprite.color    = startColor.lerp(endColor, lerpFactor);
-    sprite.centered = true;
+    prim.color    = startColor.lerp(endColor, lerpFactor);
+    prim.filled   = true;
+    prim.centered = true;
 
-    sprite.transform.pos   = pos;
-    sprite.transform.angle = 0;
-    sprite.transform.scale = Vector2f(1,1) * lerpFactor;
+    prim.rect = [ pos.x, pos.y, 8, 3 ];
+    prim.angle = angle;
+    //prim.transform.scale = Vector2f(1,1) * lerpFactor;
 
-    sprite.region = SpriteRegion.particle;
-
-    return sprite;
+    return prim;
   }
 }
