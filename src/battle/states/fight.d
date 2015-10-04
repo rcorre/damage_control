@@ -22,7 +22,10 @@ private enum {
   aimingSpeed = 200, // how far the crosshairs slide (per second)
 
   // time between successive shots
-  reloadTime = 0.2f
+  reloadTime = 0.2f,
+
+  // keep the targeting cursor inside this area
+  levelBounds = Rect2f(-50, -50, screenW + 100, screenH + 100),
 }
 
 /// Base battle state for fight vs ai or fight vs player.
@@ -110,6 +113,8 @@ abstract class Fight : TimedPhase {
 
       _targetPos += _targetVelocity * battle.game.deltaTime *
         (battle.turboMode ? turboSpeedFactor : 1);
+
+      _targetPos.keepInside(levelBounds);
 
       battle.camera.focus(_targetPos);
 
