@@ -1,9 +1,13 @@
 module constants;
 
+import std.typecons : tuple;
+
 import cid.geometry;
 import cid.graphics.color;
 
 enum {
+  gameTitle = "Damage Control",
+
   screenW   = 800,
   screenH   = 600,
   frameRate = 60,
@@ -35,6 +39,10 @@ enum SpriteSheet {
 
 enum Sounds {
   reload = "menu_move",
+}
+
+abstract class FontSpec {
+  enum title = tuple("Mecha", 36).expand;
 }
 
 /// The layer at which to draw various entities. Higher is drawn above lower.
@@ -84,7 +92,8 @@ enum PhaseTime {
 enum Tint {
   subdued   = Color(0.25, 0.25, 0.25, 1f), // for dimmed elements
   neutral   = Color(0.5 , 0.5 , 0.5 , 1f), // for selectable elements
-  highlight = Color(1f  , 1f  , 1f  , 1f), // for emphasized elements
+  emphasize = Color(0.75, 0.75, 0.75, 1f), // for important elements
+  highlight = Color(1f  , 1f  , 1f  , 1f), // for active/focused elements
 
   dimBackground = Color(0.0f,0.0f,0.0f,0.7f), // obscure the background
 }

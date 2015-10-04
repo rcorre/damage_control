@@ -49,7 +49,7 @@ class Menu {
   // y offsets are determined to space out the entries within the screen height
   auto entryY(int idx) {
     auto n = cast(int) _entries.length;
-    return (idx + 1) * 600 / (n + 1);
+    return (idx + 1) * screenH / (n + 1);
   }
 
   void activate() {

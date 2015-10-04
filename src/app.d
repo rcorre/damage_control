@@ -27,7 +27,7 @@ class InitializeGame : State!Game {
       game.audio.loadSamples("./content/sound", "*.wav");
 
       // start on title state
-      game.states.replace(new Title);
+      game.states.replace(new Title(game));
 
       // make sure user can close the window
       game.graphics.onClose = { game.stop(); };

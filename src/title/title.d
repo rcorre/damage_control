@@ -15,6 +15,8 @@ import common.options_menu;
 import common.input_hint;
 import title.states.navigate;
 
+enum titlePos = Vector2f(screenW / 7, 30);
+
 /// Show the title screen.
 class Title : State!Game {
   private {
@@ -22,6 +24,11 @@ class Title : State!Game {
     MenuStack                _menus;
     InputHint                _hint;
     AudioStream              _music;
+    Font                     _titleFont;
+  }
+
+  this(Game game) {
+    _titleFont = game.graphics.fonts.get(FontSpec.title);
   }
 
   override {
@@ -50,6 +57,10 @@ class Title : State!Game {
 
       // draw hints for menu navigation keys
       _hint.draw(game, Button.up, Button.down, Button.confirm, Button.back);
+
+      auto titleBatch = TextBatch(_titleFont, DrawDepth.menuText);
+      drawTitle(titleBatch);
+      game.graphics.draw(titleBatch);
     }
   }
 
@@ -66,6 +77,17 @@ class Title : State!Game {
   }
 
   private:
+  void drawTitle(ref TextBatch batch) {
+    Text text;
+
+    text.centered  = true;
+    text.color     = Tint.emphasize;
+    text.transform = titlePos,
+    text.text      = gameTitle;
+
+    batch ~= text;
+  }
+
   auto mainMenu(Game game) {
     return new Menu(
         MenuEntry("Play"    , () => _menus.pushMenu(playMenu(game))),
