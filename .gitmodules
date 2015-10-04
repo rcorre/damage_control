@@ -1,0 +1,3 @@
+[submodule "ext/cid"]
+	path = ext/cid
+	url = git@github.com:rcorre/cid

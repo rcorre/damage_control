@@ -7,5 +7,5 @@ license     "MIT"
 
 targetPath "bin"
 
-dependency "cid"    path="../cid"
+dependency "cid"    path="ext/cid"
 dependency "dtiled" version="~>0.3.0"
