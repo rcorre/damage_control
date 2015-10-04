@@ -7,7 +7,6 @@ import cid;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;
-import battle.states.recenter_camera;
 import battle.entities;
 import constants;
 import transition;
@@ -93,11 +92,6 @@ abstract class Fight : TimedPhase {
       // the crosshairs should start at one of the turrets
       _targetPos = _turrets.empty ? Vector2f.zero : _turrets.front.center;
       _targetVelocity = Vector2f.zero;
-    }
-
-    void exit(Battle battle) {
-      super.exit(battle);
-      battle.states.push(new RecenterCamera);
     }
 
     void run(Battle battle) {

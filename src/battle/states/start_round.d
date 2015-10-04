@@ -10,6 +10,7 @@ import battle.states.stats_summary;
 import battle.states.introduction;
 import battle.states.check_defeat;
 import battle.states.refill_ammo;
+import battle.states.recenter_camera;
 
 private enum {
   cannonsTitle = "Install Turrets",
@@ -38,6 +39,7 @@ class StartRound : State!Battle {
 
         new BattleIntroduction(fightTitle, battle.game),
         new FightAI(battle, _currentRound),
+        new RecenterCamera,
 
         new BattleIntroduction(rebuildTitle, battle.game),
         new PlaceWalls(battle),

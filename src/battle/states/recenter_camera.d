@@ -5,7 +5,7 @@ import battle.battle;
 import battle.entities.camera;
 
 private enum {
-  recenterSpeed = 200,
+  recenterSpeed = 400,
 }
 
 /// Move the camra gradually back to a centered position.
