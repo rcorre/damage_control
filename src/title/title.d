@@ -15,7 +15,10 @@ import common.options_menu;
 import common.input_hint;
 import title.states.navigate;
 
-enum titlePos = Vector2f(screenW / 7, 30);
+private enum {
+  titlePos   = Vector2f(screenW / 7, 30),
+  versionPos = Vector2f(screenW / 7, 60),
+}
 
 /// Show the title screen.
 class Title : State!Game {
@@ -25,10 +28,12 @@ class Title : State!Game {
     InputHint                _hint;
     AudioStream              _music;
     Font                     _titleFont;
+    Font                     _versionFont;
   }
 
   this(Game game) {
-    _titleFont = game.graphics.fonts.get(FontSpec.title);
+    _titleFont   = game.graphics.fonts.get(FontSpec.title);
+    _versionFont = game.graphics.fonts.get(FontSpec.versionTag);
   }
 
   override {
@@ -58,9 +63,12 @@ class Title : State!Game {
       // draw hints for menu navigation keys
       _hint.draw(game, Button.up, Button.down, Button.confirm, Button.back);
 
-      auto titleBatch = TextBatch(_titleFont, DrawDepth.menuText);
+      auto titleBatch   = TextBatch(_titleFont, DrawDepth.menuText);
+      auto versionBatch = TextBatch(_versionFont, DrawDepth.menuText);
       drawTitle(titleBatch);
+      drawVersion(versionBatch);
       game.graphics.draw(titleBatch);
+      game.graphics.draw(versionBatch);
     }
   }
 
@@ -84,6 +92,17 @@ class Title : State!Game {
     text.color     = Tint.emphasize;
     text.transform = titlePos,
     text.text      = gameTitle;
+
+    batch ~= text;
+  }
+
+  void drawVersion(ref TextBatch batch) {
+    Text text;
+
+    text.centered  = true;
+    text.color     = Tint.subdued;
+    text.transform = versionPos,
+    text.text      = gameVersion;
 
     batch ~= text;
   }

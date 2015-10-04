@@ -6,7 +6,8 @@ import cid.geometry;
 import cid.graphics.color;
 
 enum {
-  gameTitle = "Damage Control",
+  gameTitle   = "Damage Control",
+  gameVersion = "v0.0 pre-alpha",
 
   screenW   = 800,
   screenH   = 600,
@@ -42,7 +43,8 @@ enum Sounds {
 }
 
 abstract class FontSpec {
-  enum title = tuple("Mecha", 36).expand;
+  enum title      = tuple("Mecha", 36).expand;
+  enum versionTag = tuple("Mecha", 24).expand;
 }
 
 /// The layer at which to draw various entities. Higher is drawn above lower.
