@@ -7,8 +7,8 @@ import cid;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;
+import battle.states.recenter_camera;
 import battle.entities;
-import battle.entities.tilemap;
 import constants;
 import transition;
 import common.input_hint;
@@ -95,7 +95,10 @@ abstract class Fight : TimedPhase {
       _targetVelocity = Vector2f.zero;
     }
 
-    void exit(Battle battle) { super.exit(battle); }
+    void exit(Battle battle) {
+      super.exit(battle);
+      battle.states.push(new RecenterCamera);
+    }
 
     void run(Battle battle) {
       super.run(battle);
@@ -113,6 +116,8 @@ abstract class Fight : TimedPhase {
 
       _targetPos += _targetVelocity * battle.game.deltaTime *
         (battle.turboMode ? turboSpeedFactor : 1);
+
+      battle.camera.focus(_targetPos);
 
       drawTarget(battle.game.graphics, _targetPos, battle.animationOffset);
 

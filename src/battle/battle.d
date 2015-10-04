@@ -12,6 +12,7 @@ import battle.states.pause_menu;
 import battle.states.choose_base;
 import battle.states.start_round;
 import battle.states.introduction;
+import battle.entities.camera;
 import battle.entities.cursor;
 import battle.entities.tilemap;
 
@@ -29,6 +30,7 @@ class Battle : State!Game {
   Game               game;
   StateStack!Battle  states;
   Player             player;
+  Camera             camera;
 
   private {
     Bitmap      _tileAtlas;
@@ -90,8 +92,9 @@ class Battle : State!Game {
 
       _cursor.update(game.deltaTime, _turboMode);
 
-      Transform!float trans = Vector2f(uniform(-1f, 1f), uniform(-1f, 1f))
-        * _screenShakeIntensity;
+      Transform!float trans =
+        Vector2f(uniform(-1f, 1f), uniform(-1f, 1f)) * _screenShakeIntensity -
+        camera.topLeft;
 
       al_use_transform(trans.transform);
     }
