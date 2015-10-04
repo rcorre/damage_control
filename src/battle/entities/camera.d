@@ -6,27 +6,27 @@ import constants;
 
 struct Camera {
   private enum {
-    scrolloff    = Rect2f(100, 100, screenW - 200, screenH - 200),
+    // the cursor must move out of this region to begin scrolling
+    scrolloff = Rect2f(100, 100, screenW - 200, screenH - 200),
+
     screencenter = Vector2f(screenW, screenH) / 2,
   }
 
   Vector2f topLeft = Vector2f.zero;
 
   void focus(Vector2f pos) {
-    if (pos.x < scrolloff.x) {
-      topLeft.x = pos.x - scrolloff.x;
-    }
-    else if (pos.x > scrolloff.right) {
-      topLeft.x = pos.x - scrolloff.right;
+    float offset;
+
+    if ((offset = pos.x - scrolloff.left ) < 0 || // scroll left
+        (offset = pos.x - scrolloff.right) > 0)   // scroll right
+    {
+      topLeft.x = offset;
     }
 
-    if (pos.y < scrolloff.y) {
-      topLeft.y = pos.y - scrolloff.y;
-    }
-    else if (pos.y > scrolloff.bottom) {
-      topLeft.y = pos.y - scrolloff.bottom;
+    if ((offset = pos.y - scrolloff.top   ) < 0 || // scroll up
+        (offset = pos.y - scrolloff.bottom) > 0)   // scroll down
+    {
+      topLeft.y = offset;
     }
   }
-
-  void recenter() { topLeft = Vector2f.zero; }
 }
