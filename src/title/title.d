@@ -117,17 +117,20 @@ class Title : State!Game {
   }
 
   auto playMenu(Game game) {
-    auto play() { game.states.push(new Battle); }
-
     return new Menu(
-        MenuEntry("Tutorial", &play),
-        MenuEntry("1 Player", &play),
-        MenuEntry("2 Player", &play));
+        MenuEntry("World 1", () => _menus.pushMenu(worldMenu(game, 1))),
+        MenuEntry("World 2", {}),
+        MenuEntry("World 3", {}));
+  }
+
+  auto worldMenu(Game game, int worldNum) {
+    return new Menu(
+        MenuEntry("Stage 1", () => game.states.push(new Battle(worldNum, 1))),
+        MenuEntry("Stage 2", () => game.states.push(new Battle(worldNum, 2))),
+        MenuEntry("Stage 3", () => game.states.push(new Battle(worldNum, 3))));
   }
 
   auto optionsMenu(Game game) {
-    auto dummy(Game game) {}
-
     return new OptionsMenu(game);
   }
 

@@ -102,8 +102,8 @@ enum Tint {
 
 /// paths from which to stream music tracks
 enum MusicPath {
-  title  = "./content/music/title.ogg",
-  battle = "./content/music/track2.ogg",
+  title = "./content/music/title.ogg",
+  battle = "./content/music/stage%d-%d.ogg", // e.g. stage2-3.ogg
 }
 
 enum ScreenShakeIntensity {

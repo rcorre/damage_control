@@ -1,7 +1,7 @@
 module battle.battle;
 
 import std.array     : array;
-import std.string    : startsWith;
+import std.string    : format, startsWith;
 import std.container : Array;
 import std.algorithm : sort, uniq;
 import cid;
@@ -21,6 +21,8 @@ private enum {
   tilesetSize   = Vector2i(128, 0), // size of the tileset image for one frame of animation
 
   screenShakeDuration = 0.2f,
+
+  mapPathFormat = "./content/map/stage%d-%d.json"
 }
 
 /// Start a new match.
@@ -41,6 +43,17 @@ class Battle : State!Game {
     bool        _turboMode;
     float       _screenShakeIntensity = 0f;
     AudioStream _music;
+    int         _worldNum;
+    int         _stageNum;
+  }
+
+  this(int worldNum, int stageNum) {
+    _worldNum = worldNum;
+    _stageNum = stageNum;
+  }
+
+  this(Battle other) {
+    this(other._worldNum, other._stageNum);
   }
 
   @property auto animationOffset() {
@@ -54,7 +67,7 @@ class Battle : State!Game {
   override {
     void enter(Game game) {
       this.game = game;
-      auto mapData = MapData.load("./content/map/map1.json");
+      auto mapData = MapData.load(mapPathFormat.format(_worldNum, _stageNum));
       this.map = new TileMap(mapData);
       this.data = BattleData(mapData);
       _tileAtlas = game.graphics.bitmaps.get("tileset");
@@ -67,7 +80,7 @@ class Battle : State!Game {
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
       _cursor = new Cursor(this);
-      _music = game.audio.loadStream(MusicPath.battle);
+      _music = game.audio.loadStream(MusicPath.battle.format(_worldNum, _stageNum));
       _music.playmode = AudioPlayMode.loop;
     }
 

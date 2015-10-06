@@ -102,7 +102,7 @@ class FailMenu : BattleMenu {
     auto game = battle.game;
 
     return new Menu(
-        MenuEntry("Retry", () => game.states.replace(new Battle)),
+        MenuEntry("Retry", () => game.states.replace(new Battle(battle))),
         MenuEntry("Quit" , () => game.states.pop()));
   }
 }
