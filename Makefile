@@ -38,13 +38,13 @@ verify:
 	@echo $(MUSIC_FILES)
 
 debug: content
-	@dub build --build=debug --quiet
+	@dub build --build=debug
 
 release: content
-	@dub build --build=release --quiet
+	@dub build --build=release
 
 run: content
-	@dub run --quiet
+	@dub run
 
 clean:
 	$(RM) $(ALL_CONTENT)
