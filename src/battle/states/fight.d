@@ -1,7 +1,8 @@
 module battle.states.fight;
 
-import std.math      : PI_2;
+import std.math      : PI_2, PI;
 import std.array     : array;
+import std.random    : uniform;
 import std.algorithm : map, filter;
 import cid;
 import dtiled;
@@ -13,11 +14,8 @@ import transition;
 import common.input_hint;
 
 private enum {
-  explosionTime  = 0.30f,
+  explosionTime  = 0.40f,
   explosionSize  = 40,
-  explosionTint  = Color(1, 1, 1, 1.0),
-
-  targetSpriteSheet = "tileset",
 
   aimingSpeed = 200, // how far the crosshairs slide (per second)
 
@@ -32,15 +30,14 @@ private enum {
 abstract class Fight : TimedPhase {
   private {
     alias ProjectileList = DropList!(Rocket, x => x.destroyed);
-    alias ExplosionList = DropList!(Explosion, x => x.duration < 0);
+    alias ExplosionList = DropList!(Explosion, x => x.done);
     alias ParticleList = DropList!(Particle, x => x.destroyed);
 
     ProjectileList _projectiles;
     ExplosionList  _explosions;
     ParticleList   _particles;
     Turret[]       _turrets;
-    Bitmap         _explosionBmp;
-    Bitmap         _targetBmp;
+    Bitmap         _spriteSheet;
     SoundBank      _launcherSound;
     SoundBank      _explosionSound;
     SoundEffect    _noAmmoSound;
@@ -53,36 +50,20 @@ abstract class Fight : TimedPhase {
   this(Battle battle) {
     super(battle, PhaseTime.fight);
     _projectiles = new ProjectileList;
-    _explosions = new ExplosionList;
-    _particles = new ParticleList;
+    _explosions  = new ExplosionList;
+    _particles   = new ParticleList;
 
-    _targetBmp = battle.game.graphics.bitmaps.get(targetSpriteSheet);
-    _launcherSound = battle.game.audio.getSoundBank("cannon");
+    _spriteSheet    = battle.game.graphics.bitmaps.get(SpriteSheet.tileset);
+    _launcherSound  = battle.game.audio.getSoundBank("cannon");
     _explosionSound = battle.game.audio.getSoundBank("explosion");
-    _noAmmoSound = battle.game.audio.getSound("place_bad");
+    _noAmmoSound    = battle.game.audio.getSound("place_bad");
 
     // apply some variance to the sounds
     _explosionSound.gainFactor  = [0.6, 1];
     _explosionSound.panFactor   = [-0.5, 0.5];
     _explosionSound.speedFactor = [0.8, 1.2];
 
-    // create the explosion bitmap
-    _explosionBmp = Bitmap(al_create_bitmap(explosionSize, explosionSize));
-    al_set_target_bitmap(_explosionBmp);
-    al_clear_to_color(Color(0,0,0,0));
-    al_draw_filled_ellipse(
-        explosionSize / 2, explosionSize / 2, // center x,y
-        explosionSize / 2, explosionSize / 2, // radius x,y
-        explosionTint);                       // color
-
-    // re-target the display after creating the bitmap
-    al_set_target_backbuffer(battle.game.graphics.display);
-
     _reloadCountdown = 0;
-  }
-
-  ~this() {
-    al_destroy_bitmap(_explosionBmp);
   }
 
   override {
@@ -182,25 +163,11 @@ abstract class Fight : TimedPhase {
   }
 
   void processExplosions(Game game) {
-    auto batch = SpriteBatch(_explosionBmp, DrawDepth.explosion);
+    auto batch = SpriteBatch(_spriteSheet, DrawDepth.explosion);
 
     foreach(ref expl ; _explosions) {
-      expl.duration -= game.deltaTime;
-
-      // scale about the center
-      Sprite sprite;
-
-      sprite.centered = true;
-      sprite.region = Rect2i(0, 0, explosionSize, explosionSize);
-      sprite.transform.pos = expl.position;
-      sprite.transform.scale = (expl.duration > explosionTime / 2) ?
-        Vector2f(2,2) * (1 - expl.duration / explosionTime) :
-        Vector2f(1,1);
-
-      // fade as time passes
-      sprite.color = Color.clear.lerp(Color.white, expl.duration / explosionTime);
-
-      batch ~= sprite;
+      expl.update(game.deltaTime);
+      expl.draw(batch);
     }
 
     game.graphics.draw(batch);
@@ -256,7 +223,7 @@ abstract class Fight : TimedPhase {
       sprite.color.a = 0.5;
     }
 
-    auto batch = SpriteBatch(_targetBmp, DrawDepth.crosshair);
+    auto batch = SpriteBatch(_spriteSheet, DrawDepth.crosshair);
     batch ~= sprite;
     renderer.draw(batch);
   }
@@ -276,12 +243,48 @@ abstract class Fight : TimedPhase {
 
 private:
 struct Explosion {
+  enum {
+    animTime   = 0.04,
+    numFrames  = 8,
+    animOffset = 128, // how much to offset x for each animation step
+  }
+
   Vector2f position;
-  float duration;
+  float angle;
+  float tillNextFrame = animTime;
+  int animFrame       = 0;
 
   this(Vector2f position) {
     // center the rectangle on the given point
     this.position = position;
-    this.duration = explosionTime;
+
+    // the explosion image is not symmetric; rotate for some variety
+    this.angle = uniform(0, 2 * PI);
+  }
+
+  void draw(ref SpriteBatch batch) {
+    if (done) return;
+
+    Sprite sprite;
+
+    sprite.centered        = true;
+    sprite.transform.pos   = position;
+    sprite.transform.angle = angle;
+
+    sprite.region = SpriteRegion.explosion;
+    sprite.region.x += animOffset * animFrame;
+
+    sprite.color = lerp(Color.white, Color.clear, cast(float)animFrame / numFrames);
+
+    batch ~= sprite;
+  }
+
+  @property auto done() { return animFrame == numFrames; }
+
+  void update(float time) {
+    if ((tillNextFrame -= time) < 0) {
+      tillNextFrame = animTime;
+      ++animFrame;
+    }
   }
 }
