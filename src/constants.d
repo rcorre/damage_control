@@ -41,7 +41,8 @@ enum SpriteSheet {
 }
 
 enum Sounds {
-  reload = "menu_move",
+  reload     = "menu_move",
+  chooseBase = "place_ok",
 }
 
 abstract class FontSpec {
@@ -110,6 +111,7 @@ enum MusicPath {
 
 enum ScreenShakeIntensity {
   placeWall   = 1f,
+  chooseBase  = 1f,
   placeTurret = 2f,
   explosion   = 2f
 }

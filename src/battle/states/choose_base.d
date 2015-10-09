@@ -21,6 +21,7 @@ class ChooseBase : TimedPhase {
     Array!RowCol _reactorCoords;
     bool         _choiceConfirmed;
     InputHint    _hint;
+    SoundEffect  _confirmSound; // sound to play on confirming selection
   }
 
   this(Battle battle) {
@@ -30,6 +31,8 @@ class ChooseBase : TimedPhase {
         .filter!(x => battle.map.tileAt(x).hasReactor));
 
     selectReactor(battle, _reactorCoords.front);
+
+    _confirmSound = battle.game.audio.getSound(Sounds.chooseBase);
   }
 
   override {
@@ -111,5 +114,8 @@ class ChooseBase : TimedPhase {
     foreach(tile ; battle.map.enclosedTiles!(x => x.hasWall)(_currentCoord, Diagonals.yes)) {
       tile.isEnclosed = true;
     }
+
+    _confirmSound.play();
+    battle.shakeScreen(ScreenShakeIntensity.chooseBase);
   }
 }
