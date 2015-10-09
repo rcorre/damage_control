@@ -14,7 +14,6 @@ import transition;
 import common.input_hint;
 
 private enum {
-  explosionTime  = 0.40f,
   explosionSize  = 40,
 
   aimingSpeed = 200, // how far the crosshairs slide (per second)
@@ -244,7 +243,7 @@ abstract class Fight : TimedPhase {
 private:
 struct Explosion {
   enum {
-    animTime   = 0.04,
+    animTime   = 0.02,
     numFrames  = 8,
     animOffset = 128, // how much to offset x for each animation step
   }

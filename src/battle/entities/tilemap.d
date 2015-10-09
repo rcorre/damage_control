@@ -123,17 +123,10 @@ class TileMap {
 
       tileBatch ~= sprite;
 
-      // draw circuit animation
+      // draw circuit animation to visually indicate enclosed tiles
       if (tile.isEnclosed) {
-        // hack because of my messy tilemapping
-        if (sprite.region.x <= 2 * _map.tileWidth) { // inside of main set
-          sprite.region.x += circuitColOffset * _map.tileWidth + animationOffset.x;
-        }
-        else {
-          sprite.region.x = (1 + circuitColOffset) * _map.tileWidth + animationOffset.x;
-          sprite.region.y = _map.tileHeight;
-        }
-
+        sprite.region = SpriteRegion.circuits;
+        sprite.region.x += animationOffset.x;
         tileBatch ~= sprite;
       }
 
