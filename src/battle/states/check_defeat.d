@@ -11,7 +11,7 @@ import battle.states.pause_menu;
 class CheckDefeat : State!Battle {
   override void enter(Battle battle) {
     if (!battle.map.allTiles.any!(x => x.isEnclosed)) 
-      battle.states.replace(new FailMenu);
+      battle.states.replace(new FailMenu(battle.game));
     else
       battle.states.pop();
   }

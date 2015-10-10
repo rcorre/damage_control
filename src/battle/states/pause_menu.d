@@ -11,7 +11,17 @@ import common.gamepad_menu;
 
 /// Pause the battle and overaly a menu over the battle
 abstract class BattleMenu : BattleState {
+  private {
+    string _title;
+    Font   _titleFont;
+  }
+
   protected MenuStack _menus;
+
+  this(string title, Game game) {
+    _titleFont = game.graphics.fonts.get(FontSpec.title);
+    _title = title;
+  }
 
   protected Menu getMenu(Battle battle);
 
@@ -23,6 +33,7 @@ abstract class BattleMenu : BattleState {
   override void run(Battle battle) {
     super.run(battle);
     dimBackground(battle.game.graphics);
+    drawTitle(battle.game.graphics);
     _menus.updateAndDraw(battle.game);
   }
 
@@ -56,9 +67,26 @@ abstract class BattleMenu : BattleState {
     batch ~= prim;
     renderer.draw(batch);
   }
+
+  private void drawTitle(Renderer renderer) {
+    Text text;
+
+    text.text      = _title;
+    text.color     = Tint.neutral;
+    text.centered  = true;
+    text.transform = Vector2f(screenW * 0.1, screenH * 0.1);
+
+    auto batch = TextBatch(_titleFont, DrawDepth.overlayText);
+    batch ~= text;
+    renderer.draw(batch);
+  }
 }
 
 class PauseMenu : BattleMenu {
+  this(Game game) {
+    super("Pause", game);
+  }
+
   protected override Menu getMenu(Battle battle) {
     return new Menu(
         MenuEntry("Return"  , () => battle.states.pop()),
@@ -98,6 +126,10 @@ class PauseMenu : BattleMenu {
 }
 
 class FailMenu : BattleMenu {
+  this(Game game) {
+    super("Defeat", game);
+  }
+
   protected override Menu getMenu(Battle battle) {
     auto game = battle.game;
 
