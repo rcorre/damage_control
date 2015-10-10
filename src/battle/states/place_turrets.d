@@ -47,6 +47,9 @@ class PlaceTurrets : TimedPhase {
     void enter(Battle battle) {
       super.enter(battle);
       battle.cursor.positionInPlayerTerritory();
+
+      // cannot place any turrets, skip this phase
+      if (_turretsLeft <= 0) battle.states.pop();
     }
 
     void run(Battle battle) {
