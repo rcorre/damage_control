@@ -121,13 +121,13 @@ class GamepadMenu : Menu {
   }
 
   protected override void drawEntry(
-      MenuEntry       entry,
-      bool            isSelected,
-      Vector2i        center,
-      ref TextBatch   textBatch,
-      ref SpriteBatch spriteBatch)
+      MenuEntry          entry,
+      bool               isSelected,
+      Vector2i           center,
+      ref TextBatch      textBatch,
+      ref PrimitiveBatch primBatch)
   {
-      super.drawEntry(entry, isSelected, center, textBatch, spriteBatch);
+      super.drawEntry(entry, isSelected, center, textBatch, primBatch);
 
       Text text;
 

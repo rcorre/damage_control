@@ -10,8 +10,6 @@ import constants;
 import common.menu;
 
 private enum {
-  underlineSize = Vector2i(150, 6),
-
   fontName  = "Mecha",
   fontSize  = 36,
 }
@@ -21,7 +19,6 @@ class MenuStack {
   private {
     Array!Menu _menus;
     Menu       _poppedMenu;
-    Bitmap     _underlineBmp;
     Font       _font;
     SoundBank  _menuMoveSound;
     SoundBank  _menuSelectSound;
@@ -29,12 +26,6 @@ class MenuStack {
   }
 
   this(Game game, Menu firstMenu) {
-    // generate bitmap used for menu underline
-    _underlineBmp = Bitmap(al_create_bitmap(underlineSize.x, underlineSize.y));
-    al_set_target_bitmap(_underlineBmp);
-    al_clear_to_color(Color.white);
-    al_set_target_backbuffer(game.graphics.display);
-
     // load font for menu text
     _font = game.graphics.fonts.get(fontName, fontSize);
 
@@ -47,26 +38,22 @@ class MenuStack {
     _menus.back.activate();
   }
 
-  ~this() {
-    al_destroy_bitmap(_underlineBmp);
-  }
-
   @property length() { return _menus.length; }
 
   void updateAndDraw(Game game) {
-    auto spriteBatch = SpriteBatch(_underlineBmp, DrawDepth.menuText);
-    auto textBatch   = TextBatch(_font, DrawDepth.menuText);
+    auto primBatch = PrimitiveBatch(DrawDepth.menuText);
+    auto textBatch = TextBatch(_font, DrawDepth.menuText);
 
     foreach(menu ; _menus) {
       menu.update(game.deltaTime);
-      menu.draw(spriteBatch, textBatch);
+      menu.draw(primBatch, textBatch);
     }
     if (_poppedMenu) {
       _poppedMenu.update(game.deltaTime);
-      _poppedMenu.draw(spriteBatch, textBatch);
+      _poppedMenu.draw(primBatch, textBatch);
     }
 
-    game.graphics.draw(spriteBatch);
+    game.graphics.draw(primBatch);
     game.graphics.draw(textBatch);
   }
 

@@ -10,6 +10,9 @@ import constants;
 import transition;
 
 private enum {
+  // how large the underline rect is
+  underlineSize = Vector2f(150, 6),
+
   // x position of underline when not shown (entry not selected)
   underlineHideX = -100,
 
@@ -93,39 +96,38 @@ class Menu {
     _color.update(time);
   }
 
-  void draw(ref SpriteBatch spriteBatch, ref TextBatch textBatch) {
+  void draw(ref PrimitiveBatch primBatch, ref TextBatch textBatch) {
     foreach(i , entry ; _entries[].enumerate!int) {
       auto textPos = Vector2i(_positionX.value, entryY(i));
       bool isSelected = (i == _selection);
-      drawEntry(entry, isSelected, textPos, textBatch, spriteBatch);
+      drawEntry(entry, isSelected, textPos, textBatch, primBatch);
     }
   }
 
   protected void drawEntry(
-      MenuEntry       entry,
-      bool            isSelected,
-      Vector2i        center,
-      ref TextBatch   textBatch,
-      ref SpriteBatch spriteBatch)
+      MenuEntry          entry,
+      bool               isSelected,
+      Vector2i           center,
+      ref TextBatch      textBatch,
+      ref PrimitiveBatch primBatch)
   {
       Text text;
-      Sprite sprite;
+      RectPrimitive rect;
 
+      // text
       text.centered  = true;
       text.color     = isSelected ? entry.textColor : _color.value;
       text.transform = center;
       text.text      = entry.text;
 
-      sprite.centered  = true;
-      sprite.color     = entry.underlineColor;
-      sprite.transform = Vector2i(entry.underlineX, center.y + 30);
+      // underline
+      rect.centered = true;
+      rect.filled   = true;
+      rect.color    = entry.underlineColor;
+      rect.rect     = Rect2f(Vector2f(entry.underlineX, center.y + 30), underlineSize);
 
-      auto sw = spriteBatch.bitmap.width;
-      auto sh = spriteBatch.bitmap.height;
-      sprite.region    = Rect2i(0, 0, sw, sh);
-
-      textBatch   ~= text;
-      spriteBatch ~= sprite;
+      textBatch ~= text;
+      primBatch ~= rect;
   }
 }
 
