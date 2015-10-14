@@ -21,7 +21,6 @@ struct EnemyContext {
 
 class Enemy {
   private enum {
-    accuracy      = 0.5,
     speed         = 90,
     rotationSpeed = 4,
     circlingSpeed = 1.0,
@@ -136,7 +135,7 @@ abstract class EnemyState : State!(Enemy, EnemyContext) {
 class SelectTarget : EnemyState {
   override void enter(Enemy self, EnemyContext context) {
     self.target = context.targets.randomSample(1).front;
-    self.states.push(new ApproachTarget);
+    self.states.push(new ApproachTarget, new CircleTarget, new Hover, new FireAtTarget);
   }
 }
 
@@ -158,14 +157,10 @@ class ApproachTarget : EnemyState {
         angleDiff.sgn * self.rotationSpeed * context.timeElapsed;
     }
 
-    if (self.pos.distance(targetPos) > self.range) {
-      // not in range, so move towards the target
-      self.pos.moveTo(targetPos, context.timeElapsed * self.speed);
-    }
-    else {
-      self.states.replace(new FireAtTarget); // in range, prepare to fire
-      self.states.push(new Hover);           // but wait a bit first
-    }
+    if (self.pos.distance(targetPos) > self.range)
+      self.pos.moveTo(targetPos, context.timeElapsed * self.speed); // not in range
+    else
+      self.states.pop(); // in range, move to next step
   }
 }
 
@@ -186,21 +181,9 @@ class FireAtTarget : EnemyState {
   override void enter(Enemy self, EnemyContext context) {
     auto targetPos = context.tileMap.tileCenter(self.target).as!Vector2f;
 
-    if (uniform(0f, 1f) > self.accuracy) {
-      // simulate a 'miss' by targeting an area within 2 tiles of the target
-      targetPos += Vector2f(uniform(-2, 2), uniform(-2, 2)) * tileSize;
-    }
-
     context.spawnProjectile(self.pos, targetPos);
 
-    if (hasTarget(self, context)) {
-      // target was not destroyed
-      self.states.push(new CircleTarget, new Hover);
-    }
-    else {
-      // target was destroyed
-      self.states.pop();
-    }
+    self.states.pop();
   }
 }
 
