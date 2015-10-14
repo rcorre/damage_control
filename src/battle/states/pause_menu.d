@@ -125,16 +125,15 @@ class PauseMenu : BattleMenu {
   }
 }
 
-class FailMenu : BattleMenu {
+class VictoryMenu : BattleMenu {
   this(Game game) {
-    super("Defeat", game);
+    super("Victory!", game);
   }
 
   protected override Menu getMenu(Battle battle) {
     auto game = battle.game;
 
     return new Menu(
-        MenuEntry("Retry", () => game.states.replace(new Battle(battle))),
-        MenuEntry("Quit" , () => game.states.pop()));
+        MenuEntry("Return", () => game.states.replace(new Battle(battle))));
   }
 }

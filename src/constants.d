@@ -43,11 +43,15 @@ enum SpriteSheet {
 enum Sounds {
   reload     = "menu_move",
   chooseBase = "place_ok",
+  scoreEntry = "place_ok", // showing a score entry in the victory screen
+  scoreTotal = "big_boom", // showing the total score in the victory screen
 }
 
 abstract class FontSpec {
   enum title      = tuple("Mecha", 36).expand;
   enum versionTag = tuple("Mecha", 24).expand;
+  enum roundScore = tuple("Mecha", 24).expand; // per-round score in victory
+  enum totalScore = tuple("Mecha", 36).expand; // overall score in victory
 }
 
 /// The layer at which to draw various entities. Higher is drawn above lower.
@@ -100,13 +104,15 @@ enum Tint {
   emphasize = Color(0.75, 0.75, 0.75, 1f), // for important elements
   highlight = Color(1f  , 1f  , 1f  , 1f), // for active/focused elements
 
-  dimBackground = Color(0.0f,0.0f,0.0f,0.7f), // obscure the background
+  dimBackground = Color(0.0f,0.0f,0.0f,0.8f), // obscure the background
 }
 
 /// paths from which to stream music tracks
 enum MusicPath {
-  title = "./content/music/title.ogg",
-  battle = "./content/music/stage%d-%d.ogg", // e.g. stage2-3.ogg
+  title   = "./content/music/title.ogg",
+  defeat  = "./content/music/defeat.ogg",
+  victory = "./content/music/victory.ogg",
+  battle  = "./content/music/stage%d-%d.ogg", // e.g. stage2-3.ogg
 }
 
 enum ScreenShakeIntensity {

@@ -11,6 +11,7 @@ import battle.states.introduction;
 import battle.states.check_defeat;
 import battle.states.refill_ammo;
 import battle.states.recenter_camera;
+import battle.states.victory;
 
 private enum {
   cannonsTitle = "Install Turrets",
@@ -29,26 +30,30 @@ class StartRound : State!Battle {
       initialTurretCount :
       battle.player.statsThisRound.tilesEnclosed / tilesPerTurret;
 
-    battle.player.startNewRound();
+    if (_currentRound == battle.data.numRounds) {
+      battle.states.push(new BattleVictory(battle));
+    }
+    else {
+      battle.player.startNewRound();
 
-    // TODO: check if just finished last round
-    battle.states.push(
-        new BattleIntroduction(cannonsTitle, battle.game),
-        new PlaceTurrets(battle, numTurrets),
-        new RefillAmmo,
+      battle.states.push(
+          new BattleIntroduction(cannonsTitle, battle.game),
+          new PlaceTurrets(battle, numTurrets),
+          new RefillAmmo,
 
-        new BattleIntroduction(fightTitle, battle.game),
-        new FightAI(battle, _currentRound),
-        new RecenterCamera,
+          new BattleIntroduction(fightTitle, battle.game),
+          new FightAI(battle, _currentRound),
+          new RecenterCamera,
 
-        new BattleIntroduction(rebuildTitle, battle.game),
-        new PlaceWalls(battle),
+          new BattleIntroduction(rebuildTitle, battle.game),
+          new PlaceWalls(battle),
 
-        new CheckDefeat,
+          new CheckDefeat,
 
-        new StatsSummary(battle, _currentRound));
+          new StatsSummary(battle, _currentRound));
 
-    ++_currentRound;
+      ++_currentRound;
+    }
   }
 
   override void exit(Battle battle) { }

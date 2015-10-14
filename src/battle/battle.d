@@ -27,12 +27,14 @@ private enum {
 
 /// Start a new match.
 class Battle : State!Game {
-  TileMap            map;
-  BattleData         data;
-  Game               game;
-  StateStack!Battle  states;
-  Player             player;
-  Camera             camera;
+  immutable int     worldNum;
+  immutable int     stageNum;
+  TileMap           map;
+  BattleData        data;
+  Game              game;
+  StateStack!Battle states;
+  Player            player;
+  Camera            camera;
 
   private {
     Bitmap      _tileAtlas;
@@ -43,17 +45,15 @@ class Battle : State!Game {
     bool        _turboMode;
     float       _screenShakeIntensity = 0f;
     AudioStream _music;
-    int         _worldNum;
-    int         _stageNum;
   }
 
   this(int worldNum, int stageNum) {
-    _worldNum = worldNum;
-    _stageNum = stageNum;
+    this.worldNum = worldNum;
+    this.stageNum = stageNum;
   }
 
   this(Battle other) {
-    this(other._worldNum, other._stageNum);
+    this(other.worldNum, other.stageNum);
   }
 
   @property auto animationOffset() {
@@ -67,7 +67,7 @@ class Battle : State!Game {
   override {
     void enter(Game game) {
       this.game = game;
-      auto mapData = MapData.load(mapPathFormat.format(_worldNum, _stageNum));
+      auto mapData = MapData.load(mapPathFormat.format(worldNum, stageNum));
       this.map = new TileMap(mapData);
       this.data = BattleData(mapData);
       _tileAtlas = game.graphics.bitmaps.get("tileset");
@@ -80,7 +80,7 @@ class Battle : State!Game {
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;
       _cursor = new Cursor(this);
-      _music = game.audio.loadStream(MusicPath.battle.format(_worldNum, _stageNum));
+      _music = game.audio.loadStream(MusicPath.battle.format(worldNum, stageNum));
       _music.playmode = AudioPlayMode.loop;
     }
 
@@ -116,6 +116,10 @@ class Battle : State!Game {
   void shakeScreen(float intensity) {
     _screenShakeIntensity = intensity;
     game.events.after(screenShakeDuration, { _screenShakeIntensity = 0; });
+  }
+
+  void stopMusic() {
+    _music.playing = false;
   }
 }
 
@@ -204,6 +208,8 @@ struct BattleData {
       .map!(obj => WallRegion(obj, data.tileWidth, data.tileHeight))
       .array;
   }
+
+  auto numRounds() { return _enemyWaves.length; }
 
   auto getEnemyWave(int round) {
     return _enemyWaves[round];

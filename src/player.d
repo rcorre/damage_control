@@ -10,6 +10,7 @@ class Player {
   private Array!PlayerStats _stats;
 
   @property ref auto statsThisRound() { return _stats.back; }
+  @property auto allStats() { return _stats[]; }
 
   this(Color color) {
     this.color = color;
