@@ -135,7 +135,7 @@ class BattleVictory : BattleState {
   }
 
   void drawTitle(Renderer renderer) {
-    auto textBatch = TextBatch(_titleFont, DrawDepth.menuText);
+    auto batch = TextBatch(_titleFont, DrawDepth.menuText);
     Text text;
 
     text.text      = _titleText;
