@@ -45,7 +45,7 @@ class Battle : State!Game {
     bool            _turboMode;
     float           _screenShakeIntensity = 0f;
     AudioStream     _music;
-    Transform!float _cameraTransform;
+    Transform!float _shakeTransform;
   }
 
   this(int worldNum, int stageNum) {
@@ -64,7 +64,8 @@ class Battle : State!Game {
   @property auto cursor() { return _cursor; }
   @property auto tileAtlas() { return _tileAtlas; }
   @property auto turboMode() { return _turboMode; }
-  @property auto cameraTransform() { return _cameraTransform; }
+  @property auto shakeTransform() { return _shakeTransform; }
+  @property auto cameraTransform() { return Transform!float(shakeTransform.pos + camera.topLeft); }
 
   override {
     void enter(Game game) {
@@ -96,7 +97,7 @@ class Battle : State!Game {
 
     void run(Game game) {
       states.run(this);
-      map.draw(_tileAtlas, game.graphics, animationOffset, _cameraTransform);
+      map.draw(_tileAtlas, game.graphics, animationOffset, cameraTransform);
 
       // animation
       _animationTimer -= game.deltaTime;
@@ -107,9 +108,7 @@ class Battle : State!Game {
 
       _cursor.update(game.deltaTime, _turboMode);
 
-      _cameraTransform =
-        Vector2f(uniform(-1f, 1f), uniform(-1f, 1f)) * _screenShakeIntensity -
-        camera.topLeft;
+      _shakeTransform = Vector2f(uniform(-1f, 1f), uniform(-1f, 1f)) * _screenShakeIntensity;
     }
   }
 

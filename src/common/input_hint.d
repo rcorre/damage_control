@@ -50,10 +50,14 @@ struct InputHint {
   }
 
   void draw(Game game, Button[] actions ...) {
+    draw(game, Transform!float(), actions);
+  }
+
+  void draw(Game game, Transform!float trans, Button[] actions ...) {
     auto font = game.graphics.fonts.get("Mecha", 16);
 
-    auto textBatch = TextBatch(font, 6);
-    auto primBatch = PrimitiveBatch(5);
+    auto textBatch = TextBatch(font, 6, trans);
+    auto primBatch = PrimitiveBatch(5, trans);
 
     foreach(i, action ; actions) {
       // get the name of the key currently mapped to this action

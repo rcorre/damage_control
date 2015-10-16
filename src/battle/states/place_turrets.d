@@ -64,8 +64,8 @@ class PlaceTurrets : TimedPhase {
       }
 
       _hint.update(battle.game.deltaTime);
-      _hint.draw(battle.game, Button.up, Button.down, Button.left, Button.right,
-          Button.build, Button.rotateL, Button.rotateR);
+      _hint.draw(battle.game, battle.shakeTransform, Button.up, Button.down, Button.left,
+                 Button.right, Button.build);
     }
 
     override void onConfirm(Battle battle) {
@@ -92,7 +92,7 @@ class PlaceTurrets : TimedPhase {
     sprite.transform = battle.cursor.topLeft;
     sprite.region    = SpriteRegion.turretCursor;
 
-    auto spriteBatch = SpriteBatch(battle.tileAtlas, DrawDepth.newTurret);
+    auto spriteBatch = SpriteBatch(battle.tileAtlas, DrawDepth.newTurret, battle.cameraTransform);
     spriteBatch ~= sprite;
     battle.game.graphics.draw(spriteBatch);
 
@@ -102,7 +102,7 @@ class PlaceTurrets : TimedPhase {
     text.color     = Color.white;
     text.centered  = true;
 
-    auto textBatch = TextBatch(_font, DrawDepth.newTurret);
+    auto textBatch = TextBatch(_font, DrawDepth.newTurret, battle.cameraTransform);
     textBatch ~= text;
     battle.game.graphics.draw(textBatch);
   }

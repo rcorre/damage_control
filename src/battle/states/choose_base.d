@@ -49,8 +49,8 @@ class ChooseBase : TimedPhase {
       super.run(battle);
 
       _hint.update(battle.game.deltaTime);
-      _hint.draw(battle.game, Button.up, Button.down, Button.left, Button.right,
-          Button.confirm);
+      _hint.draw(battle.game, battle.shakeTransform, Button.up, Button.down, Button.left,
+                 Button.right, Button.confirm);
     }
 
     void onTimeout(Battle battle) {

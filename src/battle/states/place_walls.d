@@ -49,8 +49,8 @@ class PlaceWalls : TimedPhase {
       _piece.draw(battle.cursor.topLeft, _tileAtlas, battle.game.graphics);
 
       _hint.update(battle.game.deltaTime);
-      _hint.draw(battle.game, Button.up, Button.down, Button.left, Button.right,
-          Button.build, Button.rotateL, Button.rotateR);
+      _hint.draw(battle.game, battle.shakeTransform, Button.up, Button.down, Button.left,
+                 Button.right, Button.build, Button.rotateL, Button.rotateR);
     }
 
     void exit(Battle battle) {

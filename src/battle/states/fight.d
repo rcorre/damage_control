@@ -101,7 +101,7 @@ abstract class Fight : TimedPhase {
       drawTarget(battle.game.graphics, _targetPos, battle.animationOffset, battle.cameraTransform);
 
       _hint.update(game.deltaTime);
-      _hint.draw(game, Button.up, Button.down, Button.left, Button.right,
+      _hint.draw(game, battle.shakeTransform, Button.up, Button.down, Button.left, Button.right,
           Button.shoot);
     }
 
