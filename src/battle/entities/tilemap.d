@@ -109,9 +109,9 @@ class TileMap {
     return _constructs.map!(x => cast(Reactor) x).filter!(x => x !is null);
   }
 
-  void draw(Bitmap tileAtlas, Renderer renderer, Vector2i animationOffset) {
-    auto tileBatch    = SpriteBatch(tileAtlas, DrawDepth.tile);
-    auto constructBatch = SpriteBatch(tileAtlas, DrawDepth.feature);
+  void draw(Bitmap tileAtlas, Renderer renderer, Vector2i animationOffset, Transform!float trans) {
+    auto tileBatch    = SpriteBatch(tileAtlas, DrawDepth.tile, trans);
+    auto constructBatch = SpriteBatch(tileAtlas, DrawDepth.feature, trans);
 
     foreach(coord, tile; _map) {
       Sprite sprite;

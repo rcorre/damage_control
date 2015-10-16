@@ -84,7 +84,7 @@ abstract class Fight : TimedPhase {
       auto map = battle.map;
 
       processProjectiles(battle);
-      processExplosions(game);
+      processExplosions(battle);
       processParticles(battle);
 
       _reloadCountdown = max(0, _reloadCountdown - game.deltaTime);
@@ -98,7 +98,7 @@ abstract class Fight : TimedPhase {
 
       battle.camera.focus(_targetPos);
 
-      drawTarget(battle.game.graphics, _targetPos, battle.animationOffset);
+      drawTarget(battle.game.graphics, _targetPos, battle.animationOffset, battle.cameraTransform);
 
       _hint.update(game.deltaTime);
       _hint.draw(game, Button.up, Button.down, Button.left, Button.right,
@@ -141,7 +141,7 @@ abstract class Fight : TimedPhase {
 
   private:
   void processProjectiles(Battle battle) {
-    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.projectile);
+    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.projectile, battle.cameraTransform);
 
     foreach(ref proj ; _projectiles) {
       proj.update(battle.game.deltaTime, &spawnParticle);
@@ -161,19 +161,19 @@ abstract class Fight : TimedPhase {
     battle.game.graphics.draw(batch);
   }
 
-  void processExplosions(Game game) {
-    auto batch = SpriteBatch(_spriteSheet, DrawDepth.explosion);
+  void processExplosions(Battle battle) {
+    auto batch = SpriteBatch(_spriteSheet, DrawDepth.explosion, battle.cameraTransform);
 
     foreach(ref expl ; _explosions) {
-      expl.update(game.deltaTime);
+      expl.update(battle.game.deltaTime);
       expl.draw(batch);
     }
 
-    game.graphics.draw(batch);
+    battle.game.graphics.draw(batch);
   }
 
   void processParticles(Battle battle) {
-    auto batch = PrimitiveBatch(DrawDepth.particle);
+    auto batch = PrimitiveBatch(DrawDepth.particle, battle.cameraTransform);
 
     foreach(ref particle ; _particles) {
       particle.update(battle.game.deltaTime);
@@ -201,7 +201,7 @@ abstract class Fight : TimedPhase {
     }
   }
 
-  void drawTarget(Renderer renderer, Vector2f pos, Vector2i animationOffset) {
+  void drawTarget(Renderer renderer, Vector2f pos, Vector2i animationOffset, Transform!float trans) {
     Sprite sprite;
 
     sprite.transform.pos = pos;
@@ -222,7 +222,7 @@ abstract class Fight : TimedPhase {
       sprite.color.a = 0.5;
     }
 
-    auto batch = SpriteBatch(_spriteSheet, DrawDepth.crosshair);
+    auto batch = SpriteBatch(_spriteSheet, DrawDepth.crosshair, trans);
     batch ~= sprite;
     renderer.draw(batch);
   }

@@ -84,7 +84,7 @@ class FightAI : Fight {
   }
 
   void drawEnemies(Battle battle) {
-    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.enemy);
+    auto batch = SpriteBatch(battle.tileAtlas, DrawDepth.enemy, battle.cameraTransform);
 
     foreach(enemy ; _enemies) enemy.draw(batch, battle.animationOffset);
 
