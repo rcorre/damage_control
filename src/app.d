@@ -1,20 +1,44 @@
+import std.path;
+import std.stdio;
+import std.getopt;
+
 import cid;
 import jsonizer;
 import constants;
 import title.title;
 
-int main(char[][] args) {
-  Game.Settings settings;
+int main(string[] args) {
+  version(Posix)
+    string savePath = "~/.config/damage_control/save.json";
+  else
+    static assert(0, "figure out where to save on windows");
 
-  // general settings
-  settings.fps = frameRate;
+  bool printVersion;
 
-  // display settings
-  settings.display.windowSize = [screenW, screenH];
-  settings.display.canvasSize = [screenW, screenH];
-  settings.display.color = Color.black;
+  auto helpInfo = getopt(
+    args,
+    "savepath|s", "path to JSON save data file", &savePath,
+    "version|v" , "print version info and exit", &printVersion);
 
-  return Game.run(new InitializeGame(), settings);
+  if (helpInfo.helpWanted)
+    defaultGetoptPrinter(gameTitle, helpInfo.options);
+  else if (printVersion)
+    writeln(gameTitle, " ", gameVersion);
+  else {
+    Game.Settings settings;
+
+    // general settings
+    settings.fps = frameRate;
+
+    // display settings
+    settings.display.windowSize = [screenW, screenH];
+    settings.display.canvasSize = [screenW, screenH];
+    settings.display.color = Color.black;
+
+    return Game.run(new InitializeGame(), settings);
+  }
+
+  return 0;
 }
 
 class InitializeGame : State!Game {
