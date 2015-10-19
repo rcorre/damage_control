@@ -1,4 +1,4 @@
-module savedata;
+module common.savedata;
 
 import std.file;
 import std.path;
@@ -10,10 +10,8 @@ struct SaveData {
 
   private string _path;
 
-  static auto create(string path) {
-    auto data = SaveData();
-    data._path = path;
-    return data;
+  this(string path) {
+    _path = path;
   }
 
   static auto load(string path) {
@@ -23,6 +21,8 @@ struct SaveData {
   }
 
   void save() {
+    if (_path is null) return; // playing without saving
+
     auto dir = _path.dirName;
     if (!dir.exists) dir.mkdirRecurse();
     _path.writeJSON(this);

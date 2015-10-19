@@ -1,3 +1,4 @@
+import std.file;
 import std.path;
 import std.stdio;
 import std.getopt;
@@ -5,6 +6,8 @@ import std.getopt;
 import cid;
 import jsonizer;
 import constants;
+
+import common.savedata;
 import title.title;
 
 int main(string[] args) {
@@ -35,13 +38,20 @@ int main(string[] args) {
     settings.display.canvasSize = [screenW, screenH];
     settings.display.color = Color.black;
 
-    return Game.run(new InitializeGame(), settings);
+    return Game.run(new InitializeGame(savePath), settings);
   }
 
   return 0;
 }
 
+private:
 class InitializeGame : State!Game {
+  private string _savePath;
+
+  this(string savePath) {
+    _savePath = savePath;
+  }
+
   override {
     void enter(Game game) {
       // load control scheme

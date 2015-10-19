@@ -11,14 +11,9 @@ class NavigateMenus : State!(Title, Game) {
 
   override {
     void enter(Title title, Game game) {
-      _handlers.insert(game.events.onButtonDown("confirm", () =>
-            title.select(game)));
-
-      _handlers.insert(game.events.onButtonDown("cancel", &title.popMenu));
-
-      _handlers.insert(game.events.onAxisMoved("move", (pos) {
-            title.moveSelection(pos, game);
-      }));
+      _handlers.insert(game.events.onButtonDown("confirm", () => title.select()));
+      _handlers.insert(game.events.onButtonDown("cancel" , &title.popMenu));
+      _handlers.insert(game.events.onAxisMoved("move"    , (pos) => title.moveSelection(pos) ));
     }
 
     void exit(Title title, Game game) {

@@ -4,8 +4,9 @@ module title.title;
 import std.conv    : to;
 import std.string  : toUpper;
 import std.process : browse;
-import battle.battle;
+
 import cid;
+
 import constants;
 import common.menu;
 import common.menu_stack;
@@ -13,6 +14,8 @@ import common.keyboard_menu;
 import common.gamepad_menu;
 import common.options_menu;
 import common.input_hint;
+import common.savedata;
+import battle.battle;
 import title.states.navigate;
 
 private enum {
@@ -29,11 +32,13 @@ class Title : State!Game {
     AudioStream              _music;
     Font                     _titleFont;
     Font                     _versionFont;
+    SaveData                 _saveData;
   }
 
-  this(Game game) {
+  this(Game game, SaveData saveData) {
     _titleFont   = game.graphics.fonts.get(FontSpec.title);
     _versionFont = game.graphics.fonts.get(FontSpec.versionTag);
+    _saveData    = saveData;
   }
 
   override {
@@ -72,7 +77,7 @@ class Title : State!Game {
     }
   }
 
-  void select(Game game) {
+  void select() {
     _menus.select();
   }
 
@@ -80,7 +85,7 @@ class Title : State!Game {
     _menus.popMenu();
   }
 
-  void moveSelection(Vector2f pos, Game game) {
+  void moveSelection(Vector2f pos) {
     _menus.moveSelection(pos);
   }
 
