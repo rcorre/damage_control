@@ -1,5 +1,3 @@
-import std.file;
-import std.path;
 import std.stdio;
 import std.getopt;
 
@@ -61,7 +59,8 @@ class InitializeGame : State!Game {
       game.audio.loadSamples("./content/sound", "*.wav");
 
       // start on title state
-      game.states.replace(new Title(game));
+      writefln("Using save path '%s'", _savePath);
+      game.states.replace(new Title(game, SaveData.load(_savePath)));
 
       // make sure user can close the window
       game.graphics.onClose = { game.stop(); };

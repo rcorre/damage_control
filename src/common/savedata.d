@@ -10,12 +10,15 @@ struct SaveData {
 
   private string _path;
 
-  this(string path) {
-    _path = path;
-  }
-
   static auto load(string path) {
-    auto data = path.readJSON!SaveData;
+    // default save data
+    SaveData data;
+
+    // try to populate it if a save file is found
+    if (path.exists)
+      data = path.readJSON!SaveData;
+
+    // set the path so it remembers where to save
     data._path = path;
     return data;
   }
