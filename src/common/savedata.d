@@ -31,8 +31,32 @@ struct SaveData {
     _path.writeJSON(this);
   }
 
-  @jsonize:
-  int[][] scores; // scores[worldNum][stageNum] = score
+  auto currentHighScore(int worldNum, int stageNum) {
+    // stage/world num start at 1, normalize to 0-indexed
+    return _scores[worldNum - 1][stageNum - 1];
+  }
+
+  /**
+   * Record a new score for the given world and stage.
+   * Returns: true if it is a new high score, else false.
+   */
+  bool recordScore(int worldNum, int stageNum, int score) {
+    // make sure there is a slot allocated for this world-stage score
+    if (worldNum > _scores.length)           _scores.length = worldNum;
+    if (stageNum > _scores[worldNum].length) _scores[worldNum].length = stageNum;
+
+    if (score > _scores[worldNum][stageNum]) {
+      // stage/world num start at 1, normalize to 0-indexed
+      _scores[worldNum - 1][stageNum - 1] = score;
+      save();
+      return true;
+    }
+
+    return false;
+  }
+
+  private:
+  @jsonize("scores") int[][] _scores; // scores[worldNum][stageNum] = score
 }
 
 unittest {

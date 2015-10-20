@@ -130,9 +130,9 @@ class Title : State!Game {
 
   auto worldMenu(Game game, int worldNum) {
     return new Menu(
-        MenuEntry("Stage 1", () => game.states.push(new Battle(worldNum, 1))),
-        MenuEntry("Stage 2", () => game.states.push(new Battle(worldNum, 2))),
-        MenuEntry("Stage 3", () => game.states.push(new Battle(worldNum, 3))));
+        MenuEntry("Stage 1", () => game.states.push(new Battle(worldNum, 1, _saveData))),
+        MenuEntry("Stage 2", () => game.states.push(new Battle(worldNum, 2, _saveData))),
+        MenuEntry("Stage 3", () => game.states.push(new Battle(worldNum, 3, _saveData))));
   }
 
   auto optionsMenu(Game game) {

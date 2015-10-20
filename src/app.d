@@ -1,3 +1,4 @@
+import std.path;
 import std.stdio;
 import std.getopt;
 
@@ -35,6 +36,8 @@ int main(string[] args) {
     settings.display.windowSize = [screenW, screenH];
     settings.display.canvasSize = [screenW, screenH];
     settings.display.color = Color.black;
+
+    savePath = savePath.expandTilde;
 
     return Game.run(new InitializeGame(savePath), settings);
   }

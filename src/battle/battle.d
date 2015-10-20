@@ -4,10 +4,13 @@ import std.array     : array;
 import std.string    : format, startsWith;
 import std.container : Array;
 import std.algorithm : sort, uniq;
+
 import cid;
 import dtiled;
+
 import player;
 import constants;
+import common.savedata;
 import battle.states.pause_menu;
 import battle.states.choose_base;
 import battle.states.start_round;
@@ -46,15 +49,17 @@ class Battle : State!Game {
     float           _screenShakeIntensity = 0f;
     AudioStream     _music;
     Transform!float _shakeTransform;
+    SaveData        _saveData;
   }
 
-  this(int worldNum, int stageNum) {
+  this(int worldNum, int stageNum, SaveData saveData) {
     this.worldNum = worldNum;
     this.stageNum = stageNum;
+    _saveData     = saveData;
   }
 
   this(Battle other) {
-    this(other.worldNum, other.stageNum);
+    this(other.worldNum, other.stageNum, other._saveData);
   }
 
   @property auto animationOffset() {
@@ -78,7 +83,7 @@ class Battle : State!Game {
 
       states.push(new BattleIntroduction("Choose Base", game),
                   new ChooseBase(this),
-                  new StartRound);
+                  new StartRound(_saveData));
 
       _numAnimationFrames = _tileAtlas.width / tilesetSize.x;
       _animationTimer = animationTime;

@@ -1,7 +1,9 @@
 module battle.states.start_round;
 
 import cid;
+
 import constants;
+import common.savedata;
 import battle.battle;
 import battle.states.place_walls;
 import battle.states.place_turrets;
@@ -23,7 +25,14 @@ private enum {
 /// Every time it is entered, it pushes all the states involved in a single round and
 /// increments the round counter.
 class StartRound : State!Battle {
-  private int _currentRound; // the round to start the next time this stated is entered
+  private {
+    int      _currentRound; // the round to start the next time this stated is entered
+    SaveData _saveData;
+  }
+
+  this(SaveData saveData) {
+    _saveData = saveData;
+  }
 
   override void enter(Battle battle) {
     int numTurrets = _currentRound == 0 ?
@@ -31,7 +40,7 @@ class StartRound : State!Battle {
       battle.player.statsThisRound.tilesEnclosed / tilesPerTurret;
 
     if (_currentRound == battle.data.numRounds) {
-      battle.states.push(new BattleVictory(battle));
+      battle.states.push(new BattleVictory(battle, _saveData));
     }
     else {
       battle.player.startNewRound();

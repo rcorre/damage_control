@@ -9,6 +9,7 @@ import cid;
 import constants;
 import battle.battle;
 import common.input_hint;
+import common.savedata;
 
 private enum {
   titlePos    = Vector2f(screenW * 0.5, screenH * 0.10), // title text position
@@ -34,9 +35,10 @@ class BattleVictory : BattleState {
     int         _showEntries; // show score entries up to this number
     bool        _done;        // true if done displaying scores
     InputHint   _hints;
+    SaveData    _saveData;
   }
 
-  this(Battle battle) {
+  this(Battle battle, SaveData saveData) {
     _music          = battle.game.audio.loadStream(MusicPath.victory);
     _music.playmode = AudioPlayMode.loop;
     _music.playing  = false;
@@ -49,6 +51,8 @@ class BattleVictory : BattleState {
     _totalFont = battle.game.graphics.fonts.get(FontSpec.totalScore);
 
     _titleText = "Completed Stage %d-%d".format(battle.worldNum, battle.stageNum);
+
+    _saveData = saveData;
   }
 
   ~this() {
@@ -60,6 +64,7 @@ class BattleVictory : BattleState {
     battle.stopMusic;
 
     int totalScore = battle.player.allStats.map!(x => x.totalScore).sum;
+    _saveData.recordScore(battle.worldNum, battle.stageNum, totalScore);
 
     _scoreEntries = battle.player.allStats.enumerate.map!(
       pair => "Round %d: %d".format(pair.index, pair.value.totalScore)).array;
