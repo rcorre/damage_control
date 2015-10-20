@@ -65,7 +65,7 @@ class Battle : State!Game {
   @property auto tileAtlas() { return _tileAtlas; }
   @property auto turboMode() { return _turboMode; }
   @property auto shakeTransform() { return _shakeTransform; }
-  @property auto cameraTransform() { return Transform!float(shakeTransform.pos + camera.topLeft); }
+  @property auto cameraTransform() { return Transform!float(shakeTransform.pos - camera.topLeft); }
 
   override {
     void enter(Game game) {
