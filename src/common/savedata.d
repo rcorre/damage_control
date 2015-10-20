@@ -2,6 +2,7 @@ module common.savedata;
 
 import std.file;
 import std.path;
+import std.algorithm;
 
 import jsonizer;
 
@@ -32,8 +33,7 @@ struct SaveData {
   }
 
   auto currentHighScore(int worldNum, int stageNum) {
-    // stage/world num start at 1, normalize to 0-indexed
-    return _scores[worldNum - 1][stageNum - 1];
+    return getScore(worldNum, stageNum);
   }
 
   /**
@@ -41,13 +41,8 @@ struct SaveData {
    * Returns: true if it is a new high score, else false.
    */
   bool recordScore(int worldNum, int stageNum, int score) {
-    // make sure there is a slot allocated for this world-stage score
-    if (worldNum > _scores.length)           _scores.length = worldNum;
-    if (stageNum > _scores[worldNum].length) _scores[worldNum].length = stageNum;
-
-    if (score > _scores[worldNum][stageNum]) {
-      // stage/world num start at 1, normalize to 0-indexed
-      _scores[worldNum - 1][stageNum - 1] = score;
+    if (score > getScore(worldNum, stageNum)) {
+      getScore(worldNum, stageNum) = score;
       save();
       return true;
     }
@@ -57,6 +52,20 @@ struct SaveData {
 
   private:
   @jsonize("scores") int[][] _scores; // scores[worldNum][stageNum] = score
+
+  auto ref getScore(int worldNum, int stageNum) {
+    // TODO: this is just a mess. maybe replace with unique world/stage names
+    // especially important for supporting saves on custom maps.
+    // stage/world num start at 1, normalize to 0-indexed
+    int w = worldNum - 1;
+    int s = stageNum - 1;
+
+    // make sure there is a slot allocated for this world-stage score
+    if (w >= _scores.length)    _scores.length    = w + 1;
+    if (s >= _scores[w].length) _scores[w].length = s + 1;
+
+    return _scores[w][s];
+  }
 }
 
 unittest {
@@ -64,31 +73,38 @@ unittest {
 
   auto path = buildPath(tempDir, "damage_control_test", randomUUID().toString, "save.json");
 
-  // create a new save file and populate some scores
-  auto data = SaveData.create(path);
-  data.scores = [
-    [ 1000, 2000, 0 ],
-    [ 1200,    0, 0 ],
-    [    0,    0, 0 ],
-  ];
+  {
+    // create a new save file and populate some scores
+    auto data = SaveData(path);
 
-  // save and try loading it
-  data.save();
-  auto data2 = SaveData.load(path);
-  assert(data.scores[0][0] == 1000);
-  assert(data.scores[0][1] == 2000);
-  assert(data.scores[0][2] ==    0);
-  assert(data.scores[1][0] == 1200);
+    data.recordScore(1, 1, 1000);
+    assert(data.currentHighScore(1, 1) == 1000);
 
-  // set a new value and save over the old file
-  data.scores[1][1] = 1600;
-  data.save();
+    data.recordScore(2, 3, 2000);
+    assert(data.currentHighScore(2, 3) == 2000);
 
-  // check that the new values were saved
-  auto data3 = SaveData.load(path);
-  assert(data.scores[0][0] == 1000);
-  assert(data.scores[0][1] == 2000);
-  assert(data.scores[0][2] ==    0);
-  assert(data.scores[1][0] == 1200);
-  assert(data.scores[1][1] == 1600);
+    data.save();
+  }
+
+  {
+    auto data = SaveData.load(path);
+
+    assert(data.currentHighScore(1,1) == 1000);
+    assert(data.currentHighScore(1,2) == 0);
+    assert(data.currentHighScore(2,3) == 2000);
+
+    // set a new value and save over the old file
+    data.recordScore(1, 2, 1500);
+    assert(data.currentHighScore(1, 2) == 1500);
+    data.save();
+  }
+
+  {
+    // check that the new values were saved
+    auto data = SaveData.load(path);
+
+    assert(data.currentHighScore(1,1) == 1000);
+    assert(data.currentHighScore(1,2) == 1500);
+    assert(data.currentHighScore(2,3) == 2000);
+  }
 }
