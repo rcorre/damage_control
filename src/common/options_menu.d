@@ -17,12 +17,15 @@ class OptionsMenu : Menu {
   private {
     int[string] _values;
     string      _selection;
+    Game        _game;
   }
 
   this(Game game) {
     super(
       MenuEntry(Label.music, () {}),
       MenuEntry(Label.sound, () {}));
+
+    _game = game;
 
     _values[Label.music] = 100;
     _values[Label.sound] = 100;
@@ -56,11 +59,23 @@ class OptionsMenu : Menu {
 
   private:
   void adjustValue(Vector2f direction) {
-    auto value = selectedEntry.text in _values;
+    auto name = selectedEntry.text;
+    auto value = name in _values;
     assert(value, "unknown option " ~ _selection);
 
     if      (direction.x > 0) *value += 5;
     else if (direction.x < 0) *value -= 5;
+
+    switch (name) {
+      case Label.music:
+        _game.audio.streamMixer.gain = (*value) / 100f;
+        break;
+      case Label.sound:
+        _game.audio.streamMixer.gain = (*value) / 100f;
+        break;
+      default:
+        assert(0, "unknown option");
+    }
   }
 
   string valueText(string name) {
