@@ -7,7 +7,7 @@ import constants;
 struct Camera {
   private enum {
     // the cursor must move out of this region to begin scrolling
-    scrolloff = Rect2f(100, 100, screenW - 200, screenH - 200),
+    scrolloff = Rect2f(32, 32, screenW - 64, screenH - 64),
 
     screencenter = Vector2f(screenW, screenH) / 2,
   }
