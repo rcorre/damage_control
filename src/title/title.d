@@ -129,10 +129,13 @@ class Title : State!Game {
   }
 
   auto worldMenu(Game game, int worldNum) {
-    return new Menu(
-        MenuEntry("Stage 1", () => game.states.push(new Battle(worldNum, 1, _saveData))),
-        MenuEntry("Stage 2", () => game.states.push(new Battle(worldNum, 2, _saveData))),
-        MenuEntry("Stage 3", () => game.states.push(new Battle(worldNum, 3, _saveData))));
+    auto stageEntry(int num) {
+      auto score = _saveData.currentHighScore(worldNum, num);
+      return MenuEntry("Stage %d (%d)".format(num, score),
+                       () => game.states.push(new Battle(worldNum, num, _saveData)));
+    }
+
+    return new Menu(stageEntry(1), stageEntry(2), stageEntry(3));
   }
 
   auto optionsMenu(Game game) {
