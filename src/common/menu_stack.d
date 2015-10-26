@@ -29,9 +29,9 @@ class MenuStack {
     // load font for menu text
     _font = game.graphics.fonts.get(fontName, fontSize);
 
-    _menuMoveSound   = game.audio.getSoundBank("menu_move");
-    _menuSelectSound = game.audio.getSoundBank("menu_select");
-    _menuPopSound    = game.audio.getSoundBank("menu_pop");
+    _menuMoveSound   = game.audio.getSoundBank(Sounds.menuMove);
+    _menuSelectSound = game.audio.getSoundBank(Sounds.menuSelect);
+    _menuPopSound    = game.audio.getSoundBank(Sounds.menuPop);
 
     _menus ~= firstMenu;
     _menus.back.moveTo(targetX(0));

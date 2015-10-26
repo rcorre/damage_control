@@ -62,7 +62,6 @@ class InitializeGame : State!Game {
       game.audio.loadSamples("./content/sound", "*.wav");
 
       // start on title state
-      writefln("Using save path '%s'", _savePath);
       game.states.replace(new Title(game, SaveData.load(_savePath)));
 
       // make sure user can close the window

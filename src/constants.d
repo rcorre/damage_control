@@ -43,8 +43,12 @@ enum SpriteSheet {
 enum Sounds {
   reload     = "menu_move",
   chooseBase = "place_ok",
-  scoreEntry = "place_ok", // showing a score entry in the victory screen
-  scoreTotal = "big_boom", // showing the total score in the victory screen
+  scoreEntry = "place_ok", /// showing a score entry in the victory screen
+  scoreTotal = "big_boom", /// showing the total score in the victory screen
+
+  menuPop    = "menu_pop",    /// a menu column has been 'exited' and popped off the stack
+  menuMove   = "menu_move",   /// sliding the cursor through menus
+  menuSelect = "menu_select", /// selecting a menu entry
 }
 
 abstract class FontSpec {

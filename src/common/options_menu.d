@@ -18,6 +18,7 @@ class OptionsMenu : Menu {
     int[string] _values;
     string      _selection;
     Game        _game;
+    SoundBank   _clickSound; // plays when adjusting options
   }
 
   this(Game game) {
@@ -31,6 +32,8 @@ class OptionsMenu : Menu {
     _values[Label.sound] = 100;
 
     _selection = Label.music;
+
+    _clickSound = game.audio.getSoundBank(Sounds.menuSelect);
   }
 
   override void moveSelection(Vector2f direction) {
@@ -63,19 +66,22 @@ class OptionsMenu : Menu {
     auto value = name in _values;
     assert(value, "unknown option " ~ _selection);
 
-    if      (direction.x > 0) *value += 5;
-    else if (direction.x < 0) *value -= 5;
+    if      (direction.x == 0) return;
+    else if (direction.x > 0 ) (*value) = (*value + 10).clamp(0, 100);
+    else if (direction.x < 0 ) (*value) = (*value - 10).clamp(0, 100);
 
     switch (name) {
       case Label.music:
-        _game.audio.streamMixer.gain = (*value) / 100f;
+        _game.audio.streamMixer.gain = *value / 100f;
         break;
       case Label.sound:
-        _game.audio.streamMixer.gain = (*value) / 100f;
+        _game.audio.soundMixer.gain = *value / 100f;
         break;
       default:
         assert(0, "unknown option");
     }
+
+    _clickSound.play();
   }
 
   string valueText(string name) {
