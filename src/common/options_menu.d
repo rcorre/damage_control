@@ -5,6 +5,7 @@ import std.format : format;
 import cid;
 import constants;
 import common.menu;
+import common.savedata;
 
 /// Menu with left/right sliders to adjust numeric values.
 class OptionsMenu : Menu {
@@ -15,21 +16,19 @@ class OptionsMenu : Menu {
   }
 
   private {
-    int[string] _values;
     string      _selection;
     Game        _game;
     SoundBank   _clickSound; // plays when adjusting options
+    SaveData    _saveData;
   }
 
-  this(Game game) {
+  this(Game game, SaveData saveData) {
     super(
       MenuEntry(Label.music, () {}),
       MenuEntry(Label.sound, () {}));
 
     _game = game;
-
-    _values[Label.music] = 100;
-    _values[Label.sound] = 100;
+    _saveData = saveData;
 
     _selection = Label.music;
 
@@ -39,6 +38,11 @@ class OptionsMenu : Menu {
   override void moveSelection(Vector2f direction) {
     super.moveSelection(direction);
     adjustValue(direction);
+  }
+
+  override void deactivate() {
+    super.deactivate();
+    _saveData.save();
   }
 
   protected override void drawEntry(
@@ -62,20 +66,18 @@ class OptionsMenu : Menu {
 
   private:
   void adjustValue(Vector2f direction) {
-    auto name = selectedEntry.text;
-    auto value = name in _values;
-    assert(value, "unknown option " ~ _selection);
+    auto adjust(ref float val) {
+      if      (direction.x > 0 ) return val = clamp(val + .1f, 0, 1);
+      else if (direction.x < 0 ) return val = clamp(val - .1f, 0, 1);
+      else                       return val;
+    }
 
-    if      (direction.x == 0) return;
-    else if (direction.x > 0 ) (*value) = (*value + 10).clamp(0, 100);
-    else if (direction.x < 0 ) (*value) = (*value - 10).clamp(0, 100);
-
-    switch (name) {
+    switch (selectedEntry.text) {
       case Label.music:
-        _game.audio.streamMixer.gain = *value / 100f;
+        _game.audio.streamMixer.gain = adjust(_saveData.musicVolume);
         break;
       case Label.sound:
-        _game.audio.soundMixer.gain = *value / 100f;
+        _game.audio.soundMixer.gain = adjust(_saveData.soundVolume);
         break;
       default:
         assert(0, "unknown option");
@@ -85,9 +87,10 @@ class OptionsMenu : Menu {
   }
 
   string valueText(string name) {
-    auto value = name in _values;
-    assert(value, "unknown option " ~ name);
-
-    return "%d".format(*value);
+    switch (name) {
+      case Label.music: return "%3.0f".format(_saveData.musicVolume * 100);
+      case Label.sound: return "%3.0f".format(_saveData.soundVolume * 100);
+      default: assert(0, "unknown option");
+    }
   }
 }

@@ -139,7 +139,7 @@ class Title : State!Game {
   }
 
   auto optionsMenu(Game game) {
-    return new OptionsMenu(game);
+    return new OptionsMenu(game, _saveData);
   }
 
   auto controlsMenu(Game game) {

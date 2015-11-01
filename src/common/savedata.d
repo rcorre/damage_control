@@ -9,7 +9,13 @@ import jsonizer;
 struct SaveData {
   mixin JsonizeMe;
 
-  private string _path;
+  private {
+    string _path;
+    @jsonize("scores") int[][] _scores; // scores[worldNum][stageNum] = score
+  }
+
+  @jsonize float musicVolume = 1f;
+  @jsonize float soundVolume = 1f;
 
   static auto load(string path) {
     // default save data
@@ -51,8 +57,6 @@ struct SaveData {
   }
 
   private:
-  @jsonize("scores") int[][] _scores; // scores[worldNum][stageNum] = score
-
   auto ref getScore(int worldNum, int stageNum) {
     // TODO: this is just a mess. maybe replace with unique world/stage names
     // especially important for supporting saves on custom maps.

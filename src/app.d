@@ -55,14 +55,16 @@ class InitializeGame : State!Game {
 
   override {
     void enter(Game game) {
-      // load control scheme
       game.events.controlScheme = "controls.json".readJSON!ControlScheme;
-
-      // load content
       game.audio.loadSamples("./content/sound", "*.wav");
 
+      auto saveData = SaveData.load(_savePath);
+
+      game.audio.streamMixer.gain = saveData.musicVolume.clamp(0, 1);
+      game.audio.soundMixer.gain  = saveData.soundVolume.clamp(0, 1);
+
       // start on title state
-      game.states.replace(new Title(game, SaveData.load(_savePath)));
+      game.states.replace(new Title(game, saveData));
 
       // make sure user can close the window
       game.graphics.onClose = { game.stop(); };
