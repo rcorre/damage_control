@@ -7,16 +7,14 @@ import common.menu_stack;
 import constants;
 import transition;
 import common.savedata;
+import common.options_menu;
 import common.gamepad_menu;
 import common.keyboard_menu;
 
 /// Pause the battle and overaly a menu over the battle
 abstract class BattleMenu : BattleState {
-  private {
-    string   _title;
-    Font     _titleFont;
-  }
-
+  private string      _title;
+  private Font        _titleFont;
   protected MenuStack _menus;
 
   this(string title, Game game) {
@@ -36,6 +34,11 @@ abstract class BattleMenu : BattleState {
     dimBackground(battle.game.graphics);
     drawTitle(battle.game.graphics);
     _menus.updateAndDraw(battle.game);
+  }
+
+  override void exit(Battle battle) {
+    super.exit(battle);
+    _menus.deactivate();
   }
 
   override void onConfirm(Battle battle) {
@@ -101,25 +104,13 @@ class PauseMenu : BattleMenu {
 
   private:
   auto optionsMenu(Game game) {
-    auto dummy() {}
-
-    return new Menu(
-        MenuEntry("Sound", &dummy),
-        MenuEntry("Music", &dummy));
+    return new OptionsMenu(game, _saveData);
   }
 
   auto controlsMenu(Game game) {
     return new Menu(
-        MenuEntry("Keyboard", () => _menus.pushMenu(keyboardMenu(game))),
-        MenuEntry("Gamepad" , () => _menus.pushMenu(gamepadMenu(game))));
-  }
-
-  auto keyboardMenu(Game game) {
-    return new KeyboardMenu(game, _saveData);
-  }
-
-  auto gamepadMenu(Game game) {
-    return new GamepadMenu(game, _saveData);
+        MenuEntry("Keyboard", () => _menus.pushMenu(new KeyboardMenu(game, _saveData))),
+        MenuEntry("Gamepad" , () => _menus.pushMenu(new GamepadMenu(game, _saveData))));
   }
 
   auto quitMenu(Game game) {

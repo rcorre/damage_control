@@ -97,6 +97,8 @@ class MenuStack {
     _menus.back.activate();
   }
 
+  void deactivate() { foreach(menu ; _menus) menu.deactivate(); }
+
   private:
   auto targetX(int menuIdx) {
     int n = cast(int) _menus.length;
