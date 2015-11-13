@@ -6,14 +6,15 @@ import common.menu;
 import common.menu_stack;
 import constants;
 import transition;
-import common.keyboard_menu;
+import common.savedata;
 import common.gamepad_menu;
+import common.keyboard_menu;
 
 /// Pause the battle and overaly a menu over the battle
 abstract class BattleMenu : BattleState {
   private {
-    string _title;
-    Font   _titleFont;
+    string   _title;
+    Font     _titleFont;
   }
 
   protected MenuStack _menus;
@@ -83,8 +84,11 @@ abstract class BattleMenu : BattleState {
 }
 
 class PauseMenu : BattleMenu {
-  this(Game game) {
+  private SaveData _saveData;
+
+  this(Game game, SaveData saveData) {
     super("Pause", game);
+    _saveData = saveData;
   }
 
   protected override Menu getMenu(Battle battle) {
@@ -111,11 +115,11 @@ class PauseMenu : BattleMenu {
   }
 
   auto keyboardMenu(Game game) {
-    return new KeyboardMenu(game, game.events.controlScheme);
+    return new KeyboardMenu(game, _saveData);
   }
 
   auto gamepadMenu(Game game) {
-    return new GamepadMenu(game, game.events.controlScheme);
+    return new GamepadMenu(game, _saveData);
   }
 
   auto quitMenu(Game game) {

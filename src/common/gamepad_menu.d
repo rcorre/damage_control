@@ -7,16 +7,19 @@ import std.string : format, toUpper;
 import cid;
 import constants;
 import common.menu;
+import common.savedata;
 
 /// Show the title screen.
 class GamepadMenu : Menu {
   private {
-    ControlScheme _controls;
-    EventHandler  _handler;
-    string        _currentlyRemapping;
+    SaveData     _saveData;
+    EventHandler _handler;
+    string       _currentlyRemapping;
   }
 
-  this(Game game, ControlScheme controls) {
+  private ref auto controls() { return _saveData.controls; }
+
+  this(Game game, SaveData saveData) {
     super(
       MenuEntry("up"     , () => startMappingAxis  (game, "up"     )),
       MenuEntry("down"   , () => startMappingAxis  (game, "down"   )),
@@ -28,10 +31,15 @@ class GamepadMenu : Menu {
       MenuEntry("rotateL", () => startMappingButton(game, "rotateL")),
       MenuEntry("rotateR", () => startMappingButton(game, "rotateR")));
 
-    _controls = controls;
+    _saveData = saveData;
   }
 
   @property bool isRemapping() { return _handler !is null; }
+
+  override void deactivate() {
+    super.deactivate();
+    _saveData.save();
+  }
 
   void startMappingButton(Game game, string name) {
     // the next time a button is pressed, map it to the selected action
@@ -59,13 +67,13 @@ class GamepadMenu : Menu {
       case "turbo":
       case "rotateL":
       case "rotateR":
-        _controls.buttons[name].buttons[0] = button;
+        controls.buttons[name].buttons[0] = button;
         break;
       default: assert(0, "unknown key " ~ name);
     }
 
     // register the new control scheme
-    game.events.controlScheme = _controls;
+    game.events.controlScheme = controls;
 
     // stop intercepting key events
     _handler.unregister();
@@ -89,13 +97,13 @@ class GamepadMenu : Menu {
     switch (name) {
       case "up":
       case "down":
-        _controls.axes["move"].yAxis.stick = stick;
-        _controls.axes["move"].yAxis.axis = axis;
+        controls.axes["move"].yAxis.stick = stick;
+        controls.axes["move"].yAxis.axis = axis;
         break;
       case "left":
       case "right":
-        _controls.axes["move"].xAxis.stick = stick;
-        _controls.axes["move"].xAxis.axis = axis;
+        controls.axes["move"].xAxis.stick = stick;
+        controls.axes["move"].xAxis.axis = axis;
         break;
       case "confirm":
       case "cancel":
@@ -106,7 +114,7 @@ class GamepadMenu : Menu {
     }
 
     // register the new control scheme
-    game.events.controlScheme = _controls;
+    game.events.controlScheme = controls;
 
     // stop intercepting key events
     _handler.unregister();
@@ -148,17 +156,17 @@ class GamepadMenu : Menu {
     switch (entryText) {
       case "up":
       case "down":
-        auto yAxis = _controls.axes["move"].yAxis;
+        auto yAxis = controls.axes["move"].yAxis;
         return "<%d,%d>".format(yAxis.stick, yAxis.axis);
       case "left":
       case "right":
-        auto xAxis = _controls.axes["move"].xAxis;
+        auto xAxis = controls.axes["move"].xAxis;
         return "<%d,%d>".format(xAxis.stick, xAxis.axis);
       case "confirm":
       case "cancel":
       case "rotateL":
       case "rotateR":
-        return _controls.buttons[entryText].buttons[0].to!string;
+        return controls.buttons[entryText].buttons[0].to!string;
       default:
         return "";
     }

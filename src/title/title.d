@@ -149,11 +149,11 @@ class Title : State!Game {
   }
 
   auto keyboardMenu(Game game) {
-    return new KeyboardMenu(game, game.events.controlScheme);
+    return new KeyboardMenu(game, _saveData);
   }
 
   auto gamepadMenu(Game game) {
-    return new GamepadMenu(game, game.events.controlScheme);
+    return new GamepadMenu(game, _saveData);
   }
 
   auto creditsMenu(Game game) {

@@ -1,0 +1,38 @@
+{
+  "buttons": {
+    "confirm": {
+      "keys": [ "j", "enter", "space" ],
+      "buttons": [ 1 ]
+    },
+    "cancel": {
+      "keys": [ "k" ],
+      "buttons": [ 0 ]
+    },
+    "turbo": {
+      "keys": [ "lshift" ],
+      "buttons": [ 3 ]
+    },
+    "rotateR": {
+      "keys": [ "q" ],
+      "buttons": [ 4 ]
+    },
+    "rotateL": {
+      "keys": [ "e" ],
+      "buttons": [ 5 ]
+    },
+    "menu": {
+      "keys": [ "escape" ],
+      "buttons": [ 7 ]
+    }
+  },
+  "axes": {
+    "move": {
+      "upKey"   : "w",
+      "downKey" : "s",
+      "leftKey" : "a",
+      "rightKey": "d",
+      "xAxis": { "stick": 0, "axis": 0 },
+      "yAxis": { "stick": 0, "axis": 1 }
+    }
+  }
+}

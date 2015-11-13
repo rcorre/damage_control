@@ -7,16 +7,17 @@ import std.string : toUpper;
 import cid;
 import constants;
 import common.menu;
+import common.savedata;
 
 /// Show the title screen.
 class KeyboardMenu : Menu {
   private {
-    ControlScheme _controls;
+    SaveData      _saveData;
     EventHandler  _handler;
     string        _currentlyRemapping;
   }
 
-  this(Game game, ControlScheme controls) {
+  this(Game game, SaveData saveData) {
     super(
       MenuEntry("up"     , () => startMappingKey(game, "up"     )),
       MenuEntry("down"   , () => startMappingKey(game, "down"   )),
@@ -27,10 +28,15 @@ class KeyboardMenu : Menu {
       MenuEntry("rotateL", () => startMappingKey(game, "rotateL")),
       MenuEntry("rotateR", () => startMappingKey(game, "rotateR")));
 
-    _controls = controls;
+    _saveData = saveData;
   }
 
   @property bool isRemapping() { return _handler !is null; }
+
+  override void deactivate() {
+    super.deactivate();
+    _saveData.save();
+  }
 
   void startMappingKey(Game game, string name) {
     // the next time a key is pressed, map it to the selected action
@@ -46,28 +52,28 @@ class KeyboardMenu : Menu {
     // and update the corresponding control scheme entry
     switch (name) {
       case "up":
-        _controls.axes["move"].upKey = keycode;
+        _saveData.controls.axes["move"].upKey = keycode;
         break;
       case "down":
-        _controls.axes["move"].downKey = keycode;
+        _saveData.controls.axes["move"].downKey = keycode;
         break;
       case "left":
-        _controls.axes["move"].leftKey = keycode;
+        _saveData.controls.axes["move"].leftKey = keycode;
         break;
       case "right":
-        _controls.axes["move"].rightKey = keycode;
+        _saveData.controls.axes["move"].rightKey = keycode;
         break;
       case "confirm":
       case "cancel":
       case "rotateL":
       case "rotateR":
-        _controls.buttons[name].keys[0] = keycode;
+        _saveData.controls.buttons[name].keys[0] = keycode;
         break;
       default: assert(0, "unknown key " ~ name);
     }
 
     // register the new control scheme
-    game.events.controlScheme = _controls;
+    game.events.controlScheme = _saveData.controls;
 
     // stop intercepting key events
     _handler.unregister();
@@ -108,18 +114,18 @@ class KeyboardMenu : Menu {
 
     switch (entryText) {
       case "up":
-        return _controls.axes["move"].upKey.to!string.toUpper;
+        return _saveData.controls.axes["move"].upKey.to!string.toUpper;
       case "down":
-        return _controls.axes["move"].downKey.to!string.toUpper;
+        return _saveData.controls.axes["move"].downKey.to!string.toUpper;
       case "left":
-        return _controls.axes["move"].leftKey.to!string.toUpper;
+        return _saveData.controls.axes["move"].leftKey.to!string.toUpper;
       case "right":
-        return _controls.axes["move"].rightKey.to!string.toUpper;
+        return _saveData.controls.axes["move"].rightKey.to!string.toUpper;
       case "confirm":
       case "cancel":
       case "rotateL":
       case "rotateR":
-        return _controls.buttons[entryText].keys[0].to!string.toUpper;
+        return _saveData.controls.buttons[entryText].keys[0].to!string.toUpper;
       default:
         return "";
     }

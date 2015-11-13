@@ -4,60 +4,24 @@ import std.file;
 import std.path;
 import std.algorithm;
 
+import cid;
 import jsonizer;
 
-struct SaveData {
-  mixin JsonizeMe;
+import constants;
 
-  private {
-    string _path;
-    @jsonize("scores") int[][] _scores; // scores[worldNum][stageNum] = score
-  }
+struct GameOptions {
+  mixin JsonizeMe;
 
   @jsonize float musicVolume = 1f;
   @jsonize float soundVolume = 1f;
+}
 
-  static auto load(string path) {
-    // default save data
-    SaveData data;
+struct ProgressData {
+  mixin JsonizeMe;
 
-    // try to populate it if a save file is found
-    if (path.exists)
-      data = path.readJSON!SaveData;
+  @jsonize("scores") private int[][] _scores; // scores[worldNum][stageNum] = score
 
-    // set the path so it remembers where to save
-    data._path = path;
-    return data;
-  }
-
-  void save() {
-    if (_path is null) return; // playing without saving
-
-    auto dir = _path.dirName;
-    if (!dir.exists) dir.mkdirRecurse();
-    _path.writeJSON(this);
-  }
-
-  auto currentHighScore(int worldNum, int stageNum) {
-    return getScore(worldNum, stageNum);
-  }
-
-  /**
-   * Record a new score for the given world and stage.
-   * Returns: true if it is a new high score, else false.
-   */
-  bool recordScore(int worldNum, int stageNum, int score) {
-    if (score > getScore(worldNum, stageNum)) {
-      getScore(worldNum, stageNum) = score;
-      save();
-      return true;
-    }
-
-    return false;
-  }
-
-  private:
-  auto ref getScore(int worldNum, int stageNum) {
+  private auto ref getScore(int worldNum, int stageNum) {
     // TODO: this is just a mess. maybe replace with unique world/stage names
     // especially important for supporting saves on custom maps.
     // stage/world num start at 1, normalize to 0-indexed
@@ -72,15 +36,99 @@ struct SaveData {
   }
 }
 
+class SaveData {
+  private {
+    enum   _defaultPath = "./data";
+    string _saveDir;
+
+    ControlScheme _controls;
+    ProgressData  _progress;
+    GameOptions   _options;
+  }
+
+  static auto load(string path) {
+    // 'real' user save paths
+    auto controlsPath = path.buildPath(SaveFile.controls);
+    auto progressPath = path.buildPath(SaveFile.progress);
+    auto optionsPath  = path.buildPath(SaveFile.options);
+
+    // replace with default data if not available
+    if (!controlsPath.exists) controlsPath = _defaultPath.buildPath(SaveFile.controls);
+    if (!progressPath.exists) progressPath = _defaultPath.buildPath(SaveFile.progress);
+    if (!optionsPath.exists ) optionsPath  = _defaultPath.buildPath(SaveFile.options);
+
+    auto data = new SaveData;
+
+    data._controls = controlsPath.readJSON!ControlScheme;
+    data._progress = progressPath.readJSON!ProgressData;
+    data._options  = optionsPath.readJSON!GameOptions;
+
+    // set the path so it remembers where to save
+    data._saveDir = path;
+    return data;
+  }
+
+  void save() {
+    if (_saveDir is null) return; // playing without saving
+
+    if (!_saveDir.exists) _saveDir.mkdirRecurse();
+
+    _saveDir.buildPath(SaveFile.controls).writeJSON(_controls);
+    _saveDir.buildPath(SaveFile.progress).writeJSON(_progress);
+    _saveDir.buildPath(SaveFile.options).writeJSON(_options);
+  }
+
+  @property ref auto musicVolume() { return _options.musicVolume; }
+  @property ref auto soundVolume() { return _options.soundVolume; }
+  @property ref auto controls() { return _controls; }
+
+  auto currentHighScore(int worldNum, int stageNum) {
+    return _progress.getScore(worldNum, stageNum);
+  }
+
+  /**
+   * Record a new score for the given world and stage.
+   * Returns: true if it is a new high score, else false.
+   */
+  bool recordScore(int worldNum, int stageNum, int score) {
+    if (score > _progress.getScore(worldNum, stageNum)) {
+      _progress.getScore(worldNum, stageNum) = score;
+      return true;
+    }
+
+    return false;
+  }
+
+}
+
 unittest {
   import std.uuid;
 
-  auto path = buildPath(tempDir, "damage_control_test", randomUUID().toString, "save.json");
+  auto path = buildPath(tempDir, "damage_control_test", randomUUID().toString);
 
   {
-    // create a new save file and populate some scores
-    auto data = SaveData(path);
+    // new user experience: creates a default save file
+    auto data = SaveData.load(path);
 
+    // check that default values were created
+    assert(data.controls.buttons["confirm"].keys[0] == KeyCode.j);
+    assert(data.controls.buttons["cancel"].keys[0]  == KeyCode.k);
+
+    assert(data.controls.axes["move"].upKey       == KeyCode.w);
+    assert(data.controls.axes["move"].downKey     == KeyCode.s);
+    assert(data.controls.axes["move"].leftKey     == KeyCode.a);
+    assert(data.controls.axes["move"].rightKey    == KeyCode.d);
+    assert(data.controls.axes["move"].xAxis.stick == 0);
+    assert(data.controls.axes["move"].xAxis.axis  == 0);
+    assert(data.controls.axes["move"].yAxis.stick == 0);
+    assert(data.controls.axes["move"].yAxis.axis  == 1);
+
+    assert(data.currentHighScore(1,1) == 0);
+
+    assert(data.musicVolume == 1f);
+    assert(data.soundVolume == 1f);
+
+    // record some new scores and save
     data.recordScore(1, 1, 1000);
     assert(data.currentHighScore(1, 1) == 1000);
 
@@ -93,13 +141,31 @@ unittest {
   {
     auto data = SaveData.load(path);
 
+    // validate that controls were preserved
+    assert(data.controls.buttons["confirm"].keys[0] == KeyCode.j);
+    assert(data.controls.buttons["cancel"].keys[0]  == KeyCode.k);
+
+    assert(data.controls.axes["move"].upKey       == KeyCode.w);
+    assert(data.controls.axes["move"].downKey     == KeyCode.s);
+    assert(data.controls.axes["move"].leftKey     == KeyCode.a);
+    assert(data.controls.axes["move"].rightKey    == KeyCode.d);
+    assert(data.controls.axes["move"].xAxis.stick == 0);
+    assert(data.controls.axes["move"].xAxis.axis  == 0);
+    assert(data.controls.axes["move"].yAxis.stick == 0);
+    assert(data.controls.axes["move"].yAxis.axis  == 1);
+
+    // validate the scores saved previously
     assert(data.currentHighScore(1,1) == 1000);
     assert(data.currentHighScore(1,2) == 0);
     assert(data.currentHighScore(2,3) == 2000);
 
-    // set a new value and save over the old file
+    // set some new values and save over the old file
     data.recordScore(1, 2, 1500);
     assert(data.currentHighScore(1, 2) == 1500);
+
+    data.musicVolume = 0.5f;
+    data.controls.buttons["confirm"].keys[0] = KeyCode.q;
+    data.controls.axes["move"].leftKey = KeyCode.left;
     data.save();
   }
 
@@ -107,8 +173,23 @@ unittest {
     // check that the new values were saved
     auto data = SaveData.load(path);
 
+    // validate that controls were preserved
+    assert(data.controls.buttons["confirm"].keys[0] == KeyCode.q);
+    assert(data.controls.buttons["cancel"].keys[0]  == KeyCode.k);
+
+    assert(data.controls.axes["move"].upKey       == KeyCode.w);
+    assert(data.controls.axes["move"].downKey     == KeyCode.s);
+    assert(data.controls.axes["move"].leftKey     == KeyCode.left);
+    assert(data.controls.axes["move"].rightKey    == KeyCode.d);
+    assert(data.controls.axes["move"].xAxis.stick == 0);
+    assert(data.controls.axes["move"].xAxis.axis  == 0);
+    assert(data.controls.axes["move"].yAxis.stick == 0);
+    assert(data.controls.axes["move"].yAxis.axis  == 1);
+
     assert(data.currentHighScore(1,1) == 1000);
     assert(data.currentHighScore(1,2) == 1500);
     assert(data.currentHighScore(2,3) == 2000);
+
+    assert(data.musicVolume == 0.5f);
   }
 }

@@ -174,7 +174,7 @@ abstract class BattleState : State!Battle {
 
   // action to take when the "menu" button is pressed
   void onMenu(Battle battle) {
-    battle.states.push(new PauseMenu(battle.game));
+    battle.states.push(new PauseMenu(battle.game, battle._saveData));
   }
 }
 

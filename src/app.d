@@ -11,7 +11,7 @@ import title.title;
 
 int main(string[] args) {
   version(Posix)
-    string savePath = "~/.config/damage_control/save.json";
+    string saveDir = "~/.config/damage_control/";
   else
     static assert(0, "figure out where to save on windows");
 
@@ -19,8 +19,8 @@ int main(string[] args) {
 
   auto helpInfo = getopt(
     args,
-    "savepath|s", "path to JSON save data file", &savePath,
-    "version|v" , "print version info and exit", &printVersion);
+    "savedir|s", "path to save file directory", &saveDir,
+    "version|v", "print version info and exit", &printVersion);
 
   if (helpInfo.helpWanted)
     defaultGetoptPrinter(gameTitle, helpInfo.options);
@@ -37,9 +37,9 @@ int main(string[] args) {
     settings.display.canvasSize = [screenW, screenH];
     settings.display.color = Color.black;
 
-    savePath = savePath.expandTilde;
+    saveDir = saveDir.expandTilde;
 
-    return Game.run(new InitializeGame(savePath), settings);
+    return Game.run(new InitializeGame(saveDir), settings);
   }
 
   return 0;
@@ -47,18 +47,19 @@ int main(string[] args) {
 
 private:
 class InitializeGame : State!Game {
-  private string _savePath;
+  private string _saveDir;
 
-  this(string savePath) {
-    _savePath = savePath;
+  this(string saveDir) {
+    _saveDir = saveDir;
   }
 
   override {
     void enter(Game game) {
-      game.events.controlScheme = "controls.json".readJSON!ControlScheme;
       game.audio.loadSamples("./content/sound", "*.wav");
 
-      auto saveData = SaveData.load(_savePath);
+      auto saveData = SaveData.load(_saveDir);
+
+      game.events.controlScheme = saveData.controls;
 
       game.audio.streamMixer.gain = saveData.musicVolume.clamp(0, 1);
       game.audio.soundMixer.gain  = saveData.soundVolume.clamp(0, 1);

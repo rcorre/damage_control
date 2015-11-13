@@ -3,6 +3,7 @@ module constants;
 import std.typecons : tuple;
 
 import cid.geometry;
+import cid.events.input;
 import cid.graphics.color;
 
 enum {
@@ -124,4 +125,10 @@ enum ScreenShakeIntensity {
   chooseBase  = 1f,
   placeTurret = 2f,
   explosion   = 2f
+}
+
+enum SaveFile {
+  controls = "controls.json",
+  progress = "progress.json",
+  options  = "options.json",
 }
