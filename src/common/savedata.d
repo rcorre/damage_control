@@ -12,8 +12,11 @@ import constants;
 struct GameOptions {
   mixin JsonizeMe;
 
-  @jsonize float musicVolume = 1f;
-  @jsonize float soundVolume = 1f;
+  @jsonize(JsonizeOptional.yes) {
+    float musicVolume = 1f;
+    float soundVolume = 1f;
+    int   screenShake = 1;
+  }
 }
 
 struct ProgressData {
@@ -80,6 +83,7 @@ class SaveData {
 
   @property ref auto musicVolume() { return _options.musicVolume; }
   @property ref auto soundVolume() { return _options.soundVolume; }
+  @property ref auto screenShake() { return _options.screenShake; }
   @property ref auto controls() { return _controls; }
 
   auto currentHighScore(int worldNum, int stageNum) {
@@ -98,7 +102,6 @@ class SaveData {
 
     return false;
   }
-
 }
 
 unittest {

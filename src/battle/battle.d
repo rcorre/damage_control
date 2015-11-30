@@ -118,7 +118,7 @@ class Battle : State!Game {
   }
 
   void shakeScreen(float intensity) {
-    _screenShakeIntensity = intensity;
+    _screenShakeIntensity = intensity * _saveData.screenShake;
     game.events.after(screenShakeDuration, { _screenShakeIntensity = 0; });
   }
 

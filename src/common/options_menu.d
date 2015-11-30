@@ -13,19 +13,28 @@ class OptionsMenu : Menu {
   private enum Label : string {
     music = "Music",
     sound = "Sound",
+    shake = "Shake"
   }
 
+  private immutable _shakeLevels = [
+    "None",      // 0
+    "Taseteful", // 1
+    "Excessive", // 2
+    "Obscene"    // 3
+  ];
+
   private {
-    string      _selection;
-    Game        _game;
-    SoundBank   _clickSound; // plays when adjusting options
-    SaveData    _saveData;
+    string    _selection;
+    Game      _game;
+    SoundBank _clickSound; // plays when adjusting options
+    SaveData  _saveData;
   }
 
   this(Game game, SaveData saveData) {
     super(
       MenuEntry(Label.music, () {}),
-      MenuEntry(Label.sound, () {}));
+      MenuEntry(Label.sound, () {}),
+      MenuEntry(Label.shake, () {}));
 
     _game = game;
     _saveData = saveData;
@@ -66,18 +75,26 @@ class OptionsMenu : Menu {
 
   private:
   void adjustValue(Vector2f direction) {
-    auto adjust(ref float val) {
-      if      (direction.x > 0 ) return val = clamp(val + .1f, 0, 1);
-      else if (direction.x < 0 ) return val = clamp(val - .1f, 0, 1);
-      else                       return val;
+    auto adjustVol(ref float val) {
+      if      (direction.x > 0) return val = clamp(val + .1f, 0, 1);
+      else if (direction.x < 0) return val = clamp(val - .1f, 0, 1);
+      else                      return val;
+    }
+
+    void adjustShake(ref int val) {
+      if      (direction.x > 0) val = cast(int) ((val + 1) % _shakeLevels.length);
+      else if (direction.x < 0) val = cast(int) ((val - 1) % _shakeLevels.length);
     }
 
     switch (selectedEntry.text) {
       case Label.music:
-        _game.audio.streamMixer.gain = adjust(_saveData.musicVolume);
+        _game.audio.streamMixer.gain = adjustVol(_saveData.musicVolume);
         break;
       case Label.sound:
-        _game.audio.soundMixer.gain = adjust(_saveData.soundVolume);
+        _game.audio.soundMixer.gain = adjustVol(_saveData.soundVolume);
+        break;
+      case Label.shake:
+        adjustShake(_saveData.screenShake);
         break;
       default:
         assert(0, "unknown option");
@@ -90,6 +107,7 @@ class OptionsMenu : Menu {
     switch (name) {
       case Label.music: return "%3.0f".format(_saveData.musicVolume * 100);
       case Label.sound: return "%3.0f".format(_saveData.soundVolume * 100);
+      case Label.shake: return _shakeLevels[_saveData.screenShake];
       default: assert(0, "unknown option");
     }
   }
