@@ -72,6 +72,13 @@ class Menu {
     _selection = idx;
   }
 
+  void setSelection(string name) {
+    import std.algorithm : countUntil;
+    auto idx = _entries[].countUntil!(x => x.text == name);
+    assert(idx >= 0 && idx < _entries.length, "cannot set selection to unknown entry " ~ name);
+    setSelection(idx);
+  }
+
   void moveSelection(Vector2f direction) {
     if (direction.y > 0) {
       setSelection((_selection + 1) % _entries.length);

@@ -4,6 +4,7 @@ module common.keyboard_menu;
 import std.conv   : to;
 import std.array  : array;
 import std.string : toUpper;
+import std.algorithm : countUntil;
 import cid;
 import constants;
 import common.menu;
@@ -16,6 +17,7 @@ class KeyboardMenu : Menu {
     EventHandler  _handler;
     string        _currentlyRemapping;
   }
+
 
   this(Game game, SaveData saveData) {
     super(
@@ -47,6 +49,17 @@ class KeyboardMenu : Menu {
   }
 
   void remapKey(Game game, string name, KeyCode keycode) {
+    // check if we need to overwrite another key mapping to avoid a conflict
+    string conflict;
+    auto moveAxis = _saveData.controls.axes["move"];
+    if (moveAxis.upKey    == keycode && name != "up")    conflict = "up";
+    if (moveAxis.downKey  == keycode && name != "down")  conflict = "down";
+    if (moveAxis.leftKey  == keycode && name != "left")  conflict = "left";
+    if (moveAxis.rightKey == keycode && name != "right") conflict = "right";
+
+    foreach(keyname, keycodes ; _saveData.controls.buttons)
+      if (keycodes.keys[0] == keycode && keyname != name) conflict = keyname;
+
     // a button was pressed while mapping 'name'
     // figure out which contol 'name' corresponds to,
     // and update the corresponding control scheme entry
@@ -79,6 +92,13 @@ class KeyboardMenu : Menu {
     _handler.unregister();
     _handler = null;
     _currentlyRemapping = null;
+
+    // if we conflicted with a different key, immediately start remapping that
+    if (conflict !is null && conflict != name) {
+      // jump the menu selection to the new key so it's obvious to the user
+      setSelection(conflict);
+      startMappingKey(game, conflict);
+    }
   }
 
   override void moveSelection(Vector2f direction) {
