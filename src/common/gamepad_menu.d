@@ -50,6 +50,12 @@ class GamepadMenu : Menu {
   }
 
   void remapButton(Game game, string name, int button) {
+    // check if we need to overwrite another key mapping to avoid a conflict
+    string conflict;
+
+    foreach(action, buttons ; controls.buttons)
+      if (buttons.buttons[0] == button && action != name) conflict = action;
+
     // a button was pressed while mapping 'name'
     // figure out which control 'name' corresponds to,
     // and update the corresponding control scheme entry
@@ -79,6 +85,13 @@ class GamepadMenu : Menu {
     _handler.unregister();
     _handler = null;
     _currentlyRemapping = null;
+
+    // if we conflicted with a different button, immediately start remapping that
+    if (conflict !is null && conflict != name) {
+      // jump the menu selection to the new key so it's obvious to the user
+      setSelection(conflict);
+      startMappingButton(game, conflict);
+    }
   }
 
   void startMappingAxis(Game game, string name) {
@@ -91,6 +104,12 @@ class GamepadMenu : Menu {
   }
 
   void remapAxis(Game game, string name, int stick, int axis, float pos) {
+    string conflict;
+
+    auto moveAxis = controls.axes["move"];
+    if (moveAxis.yAxis.stick == stick && moveAxis.yAxis.axis == axis) conflict = "up";
+    if (moveAxis.xAxis.stick == stick && moveAxis.xAxis.axis == axis) conflict = "left";
+
     // an axis was moved.
     // figure out which control 'name' corresponds to,
     // and update the corresponding control scheme entry
@@ -120,6 +139,13 @@ class GamepadMenu : Menu {
     _handler.unregister();
     _handler = null;
     _currentlyRemapping = null;
+
+    // if we conflicted with a different button, immediately start remapping that
+    if (conflict !is null && conflict != name) {
+      // jump the menu selection to the new key so it's obvious to the user
+      setSelection(conflict);
+      startMappingAxis(game, conflict);
+    }
   }
 
   override void moveSelection(Vector2f direction) {
