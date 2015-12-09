@@ -27,6 +27,7 @@ class KeyboardMenu : Menu {
       MenuEntry("right"  , () => startMappingKey(game, "right"  )),
       MenuEntry("confirm", () => startMappingKey(game, "confirm")),
       MenuEntry("cancel" , () => startMappingKey(game, "cancel" )),
+      MenuEntry("turbo"  , () => startMappingKey(game, "turbo"  )),
       MenuEntry("rotateL", () => startMappingKey(game, "rotateL")),
       MenuEntry("rotateR", () => startMappingKey(game, "rotateR")));
 
@@ -78,6 +79,7 @@ class KeyboardMenu : Menu {
         break;
       case "confirm":
       case "cancel":
+      case "turbo":
       case "rotateL":
       case "rotateR":
         _saveData.controls.buttons[name].keys[0] = keycode;
@@ -143,6 +145,7 @@ class KeyboardMenu : Menu {
         return _saveData.controls.axes["move"].rightKey.to!string.toUpper;
       case "confirm":
       case "cancel":
+      case "turbo":
       case "rotateL":
       case "rotateR":
         return _saveData.controls.buttons[entryText].keys[0].to!string.toUpper;

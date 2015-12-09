@@ -125,6 +125,7 @@ class GamepadMenu : Menu {
         controls.axes["move"].xAxis.axis = axis;
         break;
       case "confirm":
+      case "turbo":
       case "cancel":
       case "rotateL":
       case "rotateR":
@@ -190,6 +191,7 @@ class GamepadMenu : Menu {
         return "<%d,%d>".format(xAxis.stick, xAxis.axis);
       case "confirm":
       case "cancel":
+      case "turbo":
       case "rotateL":
       case "rotateR":
         return controls.buttons[entryText].buttons[0].to!string;
