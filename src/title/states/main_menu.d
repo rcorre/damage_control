@@ -30,8 +30,8 @@ class ShowMainMenu : State!(Title, Game) {
     Array!EventHandler _handlers;
   }
 
-  this(Game game, SaveData saveData) {
-    _menus       = new MenuStack(game, mainMenu(game));
+  this(Game game, Title title, SaveData saveData) {
+    _menus       = new MenuStack(game, mainMenu(game, title));
     _saveData    = saveData;
     _titleFont   = game.graphics.fonts.get(FontSpec.title);
     _versionFont = game.graphics.fonts.get(FontSpec.versionTag);
@@ -90,12 +90,12 @@ class ShowMainMenu : State!(Title, Game) {
     batch ~= text;
   }
 
-  auto mainMenu(Game game) {
+  auto mainMenu(Game game, Title title) {
     return new Menu(
       MenuEntry("Play"    , () => _menus.pushMenu(playMenu(game))),
       MenuEntry("Options" , () => _menus.pushMenu(optionsMenu(game))),
       MenuEntry("Controls", () => _menus.pushMenu(controlsMenu(game))),
-      MenuEntry("Credits" , () => _menus.pushMenu(creditsMenu(game))),
+      MenuEntry("Credits" , () => title.showCredits),
       MenuEntry("Quit"    , () => game.stop()));
   }
 

@@ -11,6 +11,7 @@ import constants;
 import common.savedata;
 import battle.battle;
 import title.states.main_menu;
+import title.states.credits;
 
 /// Show the title screen.
 class Title : State!Game {
@@ -24,9 +25,12 @@ class Title : State!Game {
     _saveData = saveData;
   }
 
+  void showCredits() { _states.push(new ShowCredits); }
+  void popState() { _states.pop(); }
+
 override:
   void enter(Game game) {
-    _states.push(new ShowMainMenu(game, _saveData));
+    _states.push(new ShowMainMenu(game, this, _saveData));
     _music = game.audio.loadStream(MusicPath.title);
     _music.playmode = AudioPlayMode.loop;
   }
