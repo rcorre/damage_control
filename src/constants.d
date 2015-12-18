@@ -57,6 +57,8 @@ abstract class FontSpec {
   enum versionTag = tuple("Mecha", 24).expand;
   enum roundScore = tuple("Mecha", 24).expand; // per-round score in victory
   enum totalScore = tuple("Mecha", 36).expand; // overall score in victory
+  enum creditsTitle = tuple("Mecha", 48).expand;
+  enum creditsBody  = tuple("Mecha", 36).expand;
 }
 
 /// The layer at which to draw various entities. Higher is drawn above lower.
