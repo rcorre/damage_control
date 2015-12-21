@@ -97,6 +97,10 @@ class Menu {
     _positionX.go(_positionX.value, xPos);
   }
 
+  void transition(int startX, int endX) {
+    _positionX.go(startX, endX);
+  }
+
   void update(float time) {
     foreach(ref entry ; _entries) entry.update(time);
     _positionX.update(time);

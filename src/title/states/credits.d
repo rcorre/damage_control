@@ -10,9 +10,9 @@ import title.title;
 
 private enum {
   titlePos    = Vector2f(screenW / 2, 40),
-  leftMenuX   = 0,
+  leftMenuX   = -screenW / 2,
   centerMenuX = screenW / 2,
-  rightMenuX  = screenW,
+  rightMenuX  = screenW * 3 / 2,
   bodySpacing = Vector2f(0, 40) // space between lines in the body
 }
 
@@ -67,7 +67,8 @@ class ShowCredits : State!(Title, Game) {
       _handlers ~= game.events.onAxisMoved("move", &moveSelection);
 
       _menus ~= pageInfo.map!(x => new Menu(x[1]));
-      currentMenu.moveTo(screenW / 2);
+      currentMenu.moveTo(centerMenuX);
+      currentMenu.setSelection(0);
     }
 
     void exit(Title title, Game game) {
@@ -98,12 +99,14 @@ class ShowCredits : State!(Title, Game) {
     if (direction.x < 0) {
       currentMenu.moveTo(leftMenuX);
       _pageNum = (_pageNum + pageInfo.length - 1) % pageInfo.length;
-      currentMenu.moveTo(centerMenuX);
+      currentMenu.transition(leftMenuX, centerMenuX);
+      currentMenu.setSelection(0);
     }
     else if (direction.x > 0) {
       currentMenu.moveTo(leftMenuX);
       _pageNum = (_pageNum + 1) % pageInfo.length;
-      currentMenu.moveTo(centerMenuX);
+      currentMenu.transition(rightMenuX, centerMenuX);
+      currentMenu.setSelection(0);
     }
     else // vertical selection
       currentMenu.moveSelection(direction);
