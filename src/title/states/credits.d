@@ -1,6 +1,7 @@
 /// Move through menus in the title screen
 module title.states.credits;
 
+import std.process;
 import std.typecons;
 
 import cid;
@@ -16,45 +17,13 @@ private enum {
   bodySpacing = Vector2f(0, 40) // space between lines in the body
 }
 
-private immutable pageInfo = [
-  tuple("Code", [
-        MenuEntry("by Ryan Roden-Corrent (rcorre)", null),
-        MenuEntry("MIT Licensed", null),
-        MenuEntry("written in D", null),
-        MenuEntry("using Allegro5", null),
-        MenuEntry("D bindings by SeigeLord", null),
-  ]),
-  tuple("Art", [
-        MenuEntry("by Ryan Roden-Corrent (rcorre)", null),
-        MenuEntry("Creative Commons with Attribution", null),
-        MenuEntry("created with Aseprite", null),
-  ]),
-  tuple("Music", [
-        MenuEntry("by Ryan Roden-Corrent (rcorre)", null),
-        MenuEntry("Creative Commons with Attribution", null),
-        MenuEntry("created with LMMS", null),
-  ]),
-  tuple("Sound", [
-        MenuEntry("by Ryan Roden-Corrent (rcorre)", null),
-        MenuEntry("Creative Commons with Attribution", null),
-        MenuEntry("with help from Audacity", null),
-        MenuEntry("and bxfr", null),
-        MenuEntry("and random objects around my apartment", null),
-  ]),
-  tuple("Font", [
-        MenuEntry("Mecha by Captain Falcon", null),
-        MenuEntry("Creative Commons Zero (CC0)", null),
-        MenuEntry("but hey, nice to give credit anyways :)", null),
-  ])
-];
-
 /// Show the credits screen.
 class ShowCredits : State!(Title, Game) {
   private {
     size_t             _pageNum;
     Font               _titleFont;
     Font               _bodyFont;
-    Array!Menu         _menus;
+    Array!CreditsPage  _pages;
     Array!EventHandler _handlers;
   }
 
@@ -63,12 +32,14 @@ class ShowCredits : State!(Title, Game) {
       _bodyFont  = game.graphics.fonts.get(FontSpec.creditsBody);
       _titleFont = game.graphics.fonts.get(FontSpec.creditsTitle);
 
-      _handlers ~= game.events.onButtonDown("cancel" , &title.popState);
+      _handlers ~= game.events.onButtonDown("confirm", { currentMenu.confirmSelection(); });
+      _handlers ~= game.events.onButtonDown("cancel", &title.popState);
       _handlers ~= game.events.onAxisMoved("move", &moveSelection);
 
-      _menus ~= pageInfo.map!(x => new Menu(x[1]));
+      populatePages(); // assigns to _pages
+
       currentMenu.moveTo(centerMenuX);
-      currentMenu.setSelection(0);
+      currentMenu.activate();
     }
 
     void exit(Title title, Game game) {
@@ -82,10 +53,12 @@ class ShowCredits : State!(Title, Game) {
       auto textBatch = TextBatch(_bodyFont, DrawDepth.menuText);
       auto primBatch = PrimitiveBatch(DrawDepth.menuText);
 
-      foreach(menu ; _menus) {
-        menu.update(game.deltaTime);
-        currentMenu.draw(primBatch, textBatch);
+      foreach(page ; _pages) {
+        page.menu.update(game.deltaTime);
+        //page.menu.draw(primBatch, textBatch);
       }
+
+      currentMenu.draw(primBatch, textBatch);
 
       game.graphics.draw(primBatch);
       game.graphics.draw(textBatch);
@@ -93,35 +66,73 @@ class ShowCredits : State!(Title, Game) {
   }
 
   private:
-  auto currentMenu() { return _menus[_pageNum]; }
+  auto currentPage() { return _pages[_pageNum]; }
+  auto currentMenu() { return currentPage.menu; }
 
   void moveSelection(Vector2f direction) {
     if (direction.x < 0) {
       currentMenu.moveTo(leftMenuX);
-      _pageNum = (_pageNum + pageInfo.length - 1) % pageInfo.length;
+      _pageNum = (_pageNum + _pages.length - 1) % _pages.length;
       currentMenu.transition(leftMenuX, centerMenuX);
-      currentMenu.setSelection(0);
+      currentMenu.activate();
     }
     else if (direction.x > 0) {
       currentMenu.moveTo(leftMenuX);
-      _pageNum = (_pageNum + 1) % pageInfo.length;
+      _pageNum = (_pageNum + 1) % _pages.length;
       currentMenu.transition(rightMenuX, centerMenuX);
-      currentMenu.setSelection(0);
+      currentMenu.activate();
     }
     else // vertical selection
       currentMenu.moveSelection(direction);
   }
 
-  private void drawTitle(Game game) {
+  void drawTitle(Game game) {
     auto batch = TextBatch(_titleFont, DrawDepth.menuText);
 
     Text text;
     text.centered  = true;
     text.color     = Tint.emphasize;
     text.transform = titlePos;
-    text.text      = pageInfo[_pageNum][0]; // title of credits page
+    text.text      = _pages[_pageNum].title;
 
     batch ~= text;
     game.graphics.draw(batch);
+  }
+
+  struct CreditsPage { string title; Menu menu; }
+
+  private void populatePages() {
+    _pages ~= CreditsPage("Code",
+        new Menu(
+          MenuEntry("by Ryan Roden-Corrent (rcorre)", { browse("https://github.com/rcorre"); }),
+          MenuEntry("MIT Licensed", { }),
+          MenuEntry("written in D", { browse("https://dlang.org"); }),
+          MenuEntry("using Allegro5", { browse("https://allegro.cc/"); }),
+          MenuEntry("D bindings by SeigeLord", { })));
+
+    _pages ~= CreditsPage("Art",
+        new Menu(
+          MenuEntry("by Ryan Roden-Corrent (rcorre)", { }),
+          MenuEntry("Creative Commons with Attribution", { }),
+          MenuEntry("created with Aseprite", { browse("http://aseprite.org"); })));
+
+    _pages ~= CreditsPage("Music",
+        new Menu(
+          MenuEntry("by Ryan Roden-Corrent (rcorre)", { }),
+          MenuEntry("Creative Commons with Attribution", { }),
+          MenuEntry("created with LMMS", { browse("https://lmms.io"); })));
+
+    _pages ~= CreditsPage("Sound",
+        new Menu(
+          MenuEntry("by Ryan Roden-Corrent (rcorre)", { }),
+          MenuEntry("Creative Commons with Attribution", { }),
+          MenuEntry("with help from Audacity", { }),
+          MenuEntry("and bxfr", { }),
+          MenuEntry("and random objects around my apartment", { })));
+
+    _pages ~= CreditsPage("Other",
+        new Menu(
+          MenuEntry("Font: Mecha by Captain Falcon", { }),
+          MenuEntry("Maps created with Tiled", { browse("http://mapeditor.org"); })));
   }
 }
