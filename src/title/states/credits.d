@@ -2,7 +2,6 @@
 module title.states.credits;
 
 import std.process;
-import std.typecons;
 
 import cid;
 import constants;
@@ -32,14 +31,14 @@ class ShowCredits : State!(Title, Game) {
       _bodyFont  = game.graphics.fonts.get(FontSpec.creditsBody);
       _titleFont = game.graphics.fonts.get(FontSpec.creditsTitle);
 
-      _handlers ~= game.events.onButtonDown("confirm", { currentMenu.confirmSelection(); });
+      _handlers ~= game.events.onButtonDown("confirm", { currentPage.confirmSelection(); });
       _handlers ~= game.events.onButtonDown("cancel", &title.popState);
       _handlers ~= game.events.onAxisMoved("move", &moveSelection);
 
       populatePages(); // assigns to _pages
 
-      currentMenu.moveTo(centerMenuX);
-      currentMenu.activate();
+      currentPage.moveTo(centerMenuX);
+      currentPage.activate();
     }
 
     void exit(Title title, Game game) {
@@ -54,11 +53,11 @@ class ShowCredits : State!(Title, Game) {
       auto primBatch = PrimitiveBatch(DrawDepth.menuText);
 
       foreach(page ; _pages) {
-        page.menu.update(game.deltaTime);
+        page.update(game.deltaTime);
         //page.menu.draw(primBatch, textBatch);
       }
 
-      currentMenu.draw(primBatch, textBatch);
+      currentPage.draw(primBatch, textBatch);
 
       game.graphics.draw(primBatch);
       game.graphics.draw(textBatch);
@@ -67,23 +66,22 @@ class ShowCredits : State!(Title, Game) {
 
   private:
   auto currentPage() { return _pages[_pageNum]; }
-  auto currentMenu() { return currentPage.menu; }
 
   void moveSelection(Vector2f direction) {
     if (direction.x < 0) {
-      currentMenu.moveTo(leftMenuX);
+      currentPage.moveTo(leftMenuX);
       _pageNum = (_pageNum + _pages.length - 1) % _pages.length;
-      currentMenu.transition(leftMenuX, centerMenuX);
-      currentMenu.activate();
+      currentPage.transition(leftMenuX, centerMenuX);
+      currentPage.activate();
     }
     else if (direction.x > 0) {
-      currentMenu.moveTo(leftMenuX);
+      currentPage.moveTo(leftMenuX);
       _pageNum = (_pageNum + 1) % _pages.length;
-      currentMenu.transition(rightMenuX, centerMenuX);
-      currentMenu.activate();
+      currentPage.transition(rightMenuX, centerMenuX);
+      currentPage.activate();
     }
     else // vertical selection
-      currentMenu.moveSelection(direction);
+      currentPage.moveSelection(direction);
   }
 
   void drawTitle(Game game) {
@@ -99,40 +97,81 @@ class ShowCredits : State!(Title, Game) {
     game.graphics.draw(batch);
   }
 
-  struct CreditsPage { string title; Menu menu; }
-
   private void populatePages() {
-    _pages ~= CreditsPage("Code",
-        new Menu(
-          MenuEntry("by Ryan Roden-Corrent (rcorre)", { browse("https://github.com/rcorre"); }),
-          MenuEntry("MIT Licensed", { }),
-          MenuEntry("written in D", { browse("https://dlang.org"); }),
-          MenuEntry("using Allegro5", { browse("https://allegro.cc/"); }),
-          MenuEntry("D bindings by SeigeLord", { })));
+    _pages ~= new CreditsPage("Code",
+      "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
+      "MIT Licensed", null,
+      "written in D", "https://dlang.org",
+      "using Allegro5", "https://allegro.cc/",
+      "D bindings by SeigeLord", "github.com/SiegeLord/DAllegro5");
 
-    _pages ~= CreditsPage("Art",
-        new Menu(
-          MenuEntry("by Ryan Roden-Corrent (rcorre)", { }),
-          MenuEntry("Creative Commons with Attribution", { }),
-          MenuEntry("created with Aseprite", { browse("http://aseprite.org"); })));
+    _pages ~= new CreditsPage("Art",
+      "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
+      "Creative Commons with Attribution", null,
+      "created with Aseprite", "http://aseprite.org");
 
-    _pages ~= CreditsPage("Music",
-        new Menu(
-          MenuEntry("by Ryan Roden-Corrent (rcorre)", { }),
-          MenuEntry("Creative Commons with Attribution", { }),
-          MenuEntry("created with LMMS", { browse("https://lmms.io"); })));
+    _pages ~= new CreditsPage("Music",
+      "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
+      "Creative Commons with Attribution", null,
+      "created with LMMS", "https://lmms.io");
 
-    _pages ~= CreditsPage("Sound",
-        new Menu(
-          MenuEntry("by Ryan Roden-Corrent (rcorre)", { }),
-          MenuEntry("Creative Commons with Attribution", { }),
-          MenuEntry("with help from Audacity", { }),
-          MenuEntry("and bxfr", { }),
-          MenuEntry("and random objects around my apartment", { })));
+    _pages ~= new CreditsPage("Sound",
+      "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
+      "Creative Commons with Attribution", null,
+      "with help from Audacity", null,
+      "and bxfr", null,
+      "and random objects around my apartment", null);
 
-    _pages ~= CreditsPage("Other",
-        new Menu(
-          MenuEntry("Font: Mecha by Captain Falcon", { }),
-          MenuEntry("Maps created with Tiled", { browse("http://mapeditor.org"); })));
+    _pages ~= new CreditsPage("Other",
+      "Font: Mecha by Captain Falcon", "www.fontspace.com/captain-falcon/mecha",
+      "Maps created with Tiled", "http://mapeditor.org");
+  }
+}
+
+private:
+class CreditsPage : Menu {
+  string title;
+  string[] urls;
+
+  this(T...)(string title, T pairs) {
+    import std.range, std.array;
+
+    this.title = title;
+    this.urls = only(pairs).drop(1).stride(2).array;
+
+    auto entries = only(pairs)
+      .chunks(2)
+      .map!(x => MenuEntry(x[0], { if (x[1] !is null) browse(x[1]); }));
+
+    super(entries);
+  }
+
+  protected override void drawEntry(
+      MenuEntry          entry,
+      bool               isSelected,
+      Vector2i           center,
+      ref TextBatch      textBatch,
+      ref PrimitiveBatch primBatch)
+  {
+    Text text;
+
+    // text
+    text.centered  = true;
+    text.color     = isSelected ? entry.textColor : Tint.subdued;
+    text.transform = center;
+    text.text      = entry.text;
+
+    textBatch ~= text;
+
+    // draw the url below the selected element
+    if (isSelected) {
+      text.centered  = true;
+      text.color     = Tint.subdued;
+      text.text      = urls[selectedIndex];
+      text.transform.pos = center + Vector2f(0, 32);
+      text.transform.scale = [0.5, 0.5];
+
+      textBatch ~= text;
+    }
   }
 }

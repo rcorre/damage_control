@@ -48,6 +48,7 @@ class Menu {
   }
 
   @property auto selectedEntry() { return _entries[_selection]; }
+  @property auto selectedIndex() { return _selection; }
 
   // y offsets are determined to space out the entries within the screen height
   auto entryY(int idx) {
