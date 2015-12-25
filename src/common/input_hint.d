@@ -21,20 +21,20 @@ private enum {
 }
 
 enum Button {
-  up      = "up",
-  down    = "down",
-  left    = "left",
-  right   = "right",
+  up,
+  down,
+  left,
+  right,
 
-  build   = "confirm",
-  shoot   = "confirm",
-  confirm = "confirm",
+  build,
+  shoot,
+  confirm,
 
-  back    = "cancel",
-  cancel  = "cancel",
+  back,
+  cancel,
 
-  rotateL = "rotateL",
-  rotateR = "rotateR",
+  rotateL,
+  rotateR,
 }
 
 struct InputHint {
@@ -120,11 +120,26 @@ auto keyName(ControlScheme controls, Button b) {
     case right:
       key = controls.axes["move"].rightKey;
       break;
+    case build:
+      key = controls.buttons["confirm"].keys[0];
+      break;
+    case shoot:
+      key = controls.buttons["confirm"].keys[0];
+      break;
     case confirm:
+      key = controls.buttons["confirm"].keys[0];
+      break;
+    case back:
+      key = controls.buttons["cancel"].keys[0];
+      break;
     case cancel:
+      key = controls.buttons["cancel"].keys[0];
+      break;
     case rotateL:
+      key = controls.buttons["rotateL"].keys[0];
+      break;
     case rotateR:
-      key = controls.buttons[b].keys[0];
+      key = controls.buttons["rotateR"].keys[0];
       break;
   }
 
