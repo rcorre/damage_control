@@ -180,10 +180,10 @@ class CreditsPage : Menu {
     // draw the url below the selected element
     if (isSelected) {
       text.centered  = true;
-      text.color     = Tint.subdued;
+      text.color     = Tint.neutral;
       text.text      = urls[selectedIndex];
       text.transform.pos = center + Vector2f(0, 32);
-      text.transform.scale = [0.5, 0.5];
+      text.transform.scale = [0.6, 0.6];
 
       textBatch ~= text;
     }
