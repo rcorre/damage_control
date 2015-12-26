@@ -92,6 +92,8 @@ class ShowCredits : State!(Title, Game) {
     }
     else // vertical selection
       currentPage.moveSelection(direction);
+
+    _hint.reset();
   }
 
   void drawTitle(Game game) {

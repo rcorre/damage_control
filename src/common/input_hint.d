@@ -41,12 +41,9 @@ struct InputHint {
     turbo,
   }
 
-  private {
-    string[] _prevHints;
-    string[] _currentHints;
+  private float _progress = 0f;
 
-    float _progress = 0f;
-  }
+  void reset() { _progress = 0f; }
 
   void update(float time) {
     _progress = clamp(_progress + time / hintTime, 0, 1);
