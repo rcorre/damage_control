@@ -29,6 +29,7 @@ struct InputHint {
 
     build,
     shoot,
+    browse,
     confirm,
 
     back,
@@ -126,6 +127,9 @@ auto keyName(ControlScheme controls, InputHint.Action b) {
       key = controls.buttons["confirm"].keys[0];
       break;
     case shoot:
+      key = controls.buttons["confirm"].keys[0];
+      break;
+    case browse:
       key = controls.buttons["confirm"].keys[0];
       break;
     case confirm:

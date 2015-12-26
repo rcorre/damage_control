@@ -7,6 +7,7 @@ import cid;
 import constants;
 import common.menu;
 import title.title;
+import common.input_hint;
 
 private enum {
   titlePos    = Vector2f(screenW / 2, 40),
@@ -22,6 +23,7 @@ class ShowCredits : State!(Title, Game) {
     size_t             _pageNum;
     Font               _titleFont;
     Font               _bodyFont;
+    InputHint          _hint;
     Array!CreditsPage  _pages;
     Array!EventHandler _handlers;
   }
@@ -61,6 +63,14 @@ class ShowCredits : State!(Title, Game) {
 
       game.graphics.draw(primBatch);
       game.graphics.draw(textBatch);
+
+      _hint.update(game.deltaTime);
+      with (InputHint.Action) {
+        if (currentPage.hasUrl)
+          _hint.draw(game, up, down, left, right, browse, back);
+        else
+          _hint.draw(game, up, down, left, right, back);
+      }
     }
   }
 
@@ -145,6 +155,8 @@ class CreditsPage : Menu {
 
     super(entries);
   }
+
+  bool hasUrl() { return urls[selectedIndex] !is null; }
 
   protected override void drawEntry(
       MenuEntry          entry,
