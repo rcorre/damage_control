@@ -111,7 +111,7 @@ class BattleVictory : BattleState {
     // draw hint showing button to continue
     if (_done) {
       _hints.update(battle.game.deltaTime);
-      _hints.draw(battle.game, Button.confirm);
+      _hints.draw(battle.game, InputHint.Action.confirm);
     }
   }
 

@@ -20,24 +20,24 @@ private enum {
   textColor = Color(1,1,1,0.5),
 }
 
-enum Button {
-  up,
-  down,
-  left,
-  right,
-
-  build,
-  shoot,
-  confirm,
-
-  back,
-  cancel,
-
-  rotateL,
-  rotateR,
-}
-
 struct InputHint {
+  enum Action {
+    up,
+    down,
+    left,
+    right,
+
+    build,
+    shoot,
+    confirm,
+
+    back,
+    cancel,
+
+    rotateL,
+    rotateR,
+  }
+
   private {
     string[] _prevHints;
     string[] _currentHints;
@@ -49,11 +49,11 @@ struct InputHint {
     _progress = clamp(_progress + time / hintTime, 0, 1);
   }
 
-  void draw(Game game, Button[] actions ...) {
+  void draw(Game game, Action[] actions ...) {
     draw(game, Transform!float(), actions);
   }
 
-  void draw(Game game, Transform!float trans, Button[] actions ...) {
+  void draw(Game game, Transform!float trans, Action[] actions ...) {
     auto font = game.graphics.fonts.get("Mecha", 16);
 
     auto textBatch = TextBatch(font, 6, trans);
@@ -104,10 +104,10 @@ struct InputHint {
 
 private:
 // get the name of the keyboard currently mapped to this button
-auto keyName(ControlScheme controls, Button b) {
+auto keyName(ControlScheme controls, InputHint.Action b) {
   KeyCode key;
 
-  final switch (b) with (Button) {
+  final switch (b) with (InputHint.Action) {
     case up:
       key = controls.axes["move"].upKey;
       break;

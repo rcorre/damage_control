@@ -56,7 +56,8 @@ class ShowMainMenu : State!(Title, Game) {
       auto controls = game.events.controlScheme;
 
       // draw hints for menu navigation keys
-      _hint.draw(game, Button.up, Button.down, Button.confirm, Button.back);
+      with (InputHint.Action)
+        _hint.draw(game, up, down, confirm, back);
 
       auto titleBatch   = TextBatch(_titleFont, DrawDepth.menuText);
       auto versionBatch = TextBatch(_versionFont, DrawDepth.menuText);
