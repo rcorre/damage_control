@@ -65,7 +65,8 @@ class PlaceTurrets : TimedPhase {
 
       _hint.update(battle.game.deltaTime);
       with (InputHint.Action)
-        _hint.draw(battle.game, battle.shakeTransform, up, down, left, right, build);
+        _hint.draw(battle.game, battle.shakeTransform, up, down, left, right,
+                   build, turbo);
     }
 
     override void onConfirm(Battle battle) {

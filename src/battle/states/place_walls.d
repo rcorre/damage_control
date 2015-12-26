@@ -51,7 +51,7 @@ class PlaceWalls : TimedPhase {
       _hint.update(battle.game.deltaTime);
       with (InputHint.Action)
         _hint.draw(battle.game, battle.shakeTransform, up, down, left, right,
-                   build, rotateL, rotateR);
+                   build, rotateL, rotateR, turbo);
     }
 
     void exit(Battle battle) {

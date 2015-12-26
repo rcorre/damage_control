@@ -36,6 +36,8 @@ struct InputHint {
 
     rotateL,
     rotateR,
+
+    turbo,
   }
 
   private {
@@ -140,6 +142,9 @@ auto keyName(ControlScheme controls, InputHint.Action b) {
       break;
     case rotateR:
       key = controls.buttons["rotateR"].keys[0];
+      break;
+    case turbo:
+      key = controls.buttons["turbo"].keys[0];
       break;
   }
 

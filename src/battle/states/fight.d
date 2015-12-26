@@ -102,7 +102,8 @@ abstract class Fight : TimedPhase {
 
       _hint.update(game.deltaTime);
       with (InputHint.Action)
-        _hint.draw(game, battle.shakeTransform, up, down, left, right, shoot);
+        _hint.draw(game, battle.shakeTransform, up, down, left, right, shoot,
+                   turbo);
     }
 
     void onConfirm(Battle battle) {
