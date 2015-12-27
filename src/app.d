@@ -13,7 +13,7 @@ int main(string[] args) {
   version(Posix)
     string saveDir = "~/.config/damage_control/";
   else
-    static assert(0, "figure out where to save on windows");
+    string saveDir = r"%APPDATA%\damage_control\";
 
   bool printVersion;
 
