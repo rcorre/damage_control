@@ -90,6 +90,6 @@ music: $(MUSIC_FILES:$(MUSIC_SOURCE)/%.mmpz=$(MUSIC_DEST)/%.ogg)
 # this silently assumes success even if lmms 'fails'
 $(MUSIC_DEST)/%.ogg : $(MUSIC_SOURCE)/%.mmpz
 	@echo building song $*
-	@-! { lmms -r $(MUSIC_SOURCE)/$*.mmpz -f ogg -b 64 -o $(MUSIC_DEST)/$*.ogg ; } >/dev/null 2>&1
+	@-! { lmms -r $(MUSIC_SOURCE)/$*.mmpz -f ogg -b 64 -o $(MUSIC_DEST)/$*.ogg --loop ; } >/dev/null 2>&1
 
 # vim: set textwidth=100:
