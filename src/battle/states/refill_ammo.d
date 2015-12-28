@@ -46,9 +46,11 @@ class RefillAmmo : BattleState {
           1.0, { ammo.position.go(turret.center); },
           0.5, { turret.ammo += 1;                },
           0  , { _reloadSound.play();             },
-          0  , { ammo.visible = false;            },
-          0  , { _done = true;                    });
+          0  , { ammo.visible = false;            });
     }
+
+    // transition to next stage after the ammo refill animation
+    battle.game.events.after(1.5, { _done = true; });
   }
 
   override void run(Battle battle) {
