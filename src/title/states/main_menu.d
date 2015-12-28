@@ -41,7 +41,7 @@ class ShowMainMenu : State!(Title, Game) {
     void enter(Title title, Game game) {
       _handlers.insert(game.events.onButtonDown("confirm", () => _menus.select()));
       _handlers.insert(game.events.onButtonDown("cancel" , () => _menus.popMenu));
-      _handlers.insert(game.events.onAxisMoved("move"    , (pos) => _menus.moveSelection(pos) ));
+      _handlers.insert(game.events.onAxisTapped("move"   , (pos) => _menus.moveSelection(pos) ));
     }
 
     void exit(Title title, Game game) {

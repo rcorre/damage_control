@@ -13,9 +13,10 @@ import common.keyboard_menu;
 
 /// Pause the battle and overaly a menu over the battle
 abstract class BattleMenu : BattleState {
-  private string      _title;
-  private Font        _titleFont;
-  protected MenuStack _menus;
+  private string       _title;
+  private Font         _titleFont;
+  private EventHandler _handler;
+  protected MenuStack  _menus;
 
   this(string title, Game game) {
     _titleFont = game.graphics.fonts.get(FontSpec.title);
@@ -27,6 +28,8 @@ abstract class BattleMenu : BattleState {
   override void enter(Battle battle) {
     super.enter(battle);
     _menus = new MenuStack(battle.game, getMenu(battle));
+    _handler = battle.game.events.onAxisTapped("move",
+                                               (dir) => _menus.moveSelection(dir));
   }
 
   override void run(Battle battle) {
@@ -39,6 +42,7 @@ abstract class BattleMenu : BattleState {
   override void exit(Battle battle) {
     super.exit(battle);
     _menus.deactivate();
+    _handler.unregister();
   }
 
   override void onConfirm(Battle battle) {
@@ -53,7 +57,7 @@ abstract class BattleMenu : BattleState {
   }
 
   override void onCursorMove(Battle battle, Vector2f direction) {
-    _menus.moveSelection(direction);
+    // ignore cursor move event -- instead hook in to axis tap events
   }
 
   override void onMenu(Battle battle) {

@@ -35,7 +35,7 @@ class ShowCredits : State!(Title, Game) {
 
       _handlers ~= game.events.onButtonDown("confirm", { currentPage.confirmSelection(); });
       _handlers ~= game.events.onButtonDown("cancel", &title.popState);
-      _handlers ~= game.events.onAxisMoved("move", &moveSelection);
+      _handlers ~= game.events.onAxisTapped("move", &moveSelection);
 
       populatePages(); // assigns to _pages
 

@@ -39,6 +39,7 @@ class ChooseBase : TimedPhase {
     void enter(Battle battle) {
       super.enter(battle);
       selectReactor(battle, _currentCoord);
+      battle.game.events.onAxisTapped("move", (dir) => onAxisTap(battle, dir));
     }
 
     void exit(Battle battle) {
@@ -58,33 +59,13 @@ class ChooseBase : TimedPhase {
       if (!_choiceConfirmed) confirmChoice(battle);
     }
 
-    void onCursorMove(Battle battle, Vector2f direction) {
-      auto dist(RowCol coord) { return _currentCoord.manhattan(coord); }
-
-      // try to pick the closest reactor in the direction the cursor was moved
-      auto res = _reactorCoords[]
-        .filter!(x => battle.map.tileAt(x).reactor !is
-                      battle.map.tileAt(_currentCoord).reactor)
-        .filter!(coord =>
-          (direction.y < 0 && (coord.row - _currentCoord.row) < 0) ||
-          (direction.y > 0 && (coord.row - _currentCoord.row) > 0) ||
-          (direction.x < 0 && (coord.col - _currentCoord.col) < 0) ||
-          (direction.x > 0 && (coord.col - _currentCoord.col) > 0))
-        .minPos!((a,b) => dist(a) < dist(b));
-
-      if (!res.empty) {
-        // clear walls from previous selection
-        foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-          battle.map.clear(coord);
-        }
-
-        selectReactor(battle, res.front);
-      }
-    }
-
     void onConfirm(Battle battle) {
       confirmChoice(battle);
       battle.states.pop();
+    }
+
+    override void onCursorMove(Battle battle, Vector2f direction) {
+      // ignore cursor move event -- instead hook in to axis tap events
     }
   }
 
@@ -117,5 +98,29 @@ class ChooseBase : TimedPhase {
 
     _confirmSound.play();
     battle.shakeScreen(ScreenShakeIntensity.chooseBase);
+  }
+
+  void onAxisTap(Battle battle, Vector2f direction) {
+    auto dist(RowCol coord) { return _currentCoord.manhattan(coord); }
+
+    // try to pick the closest reactor in the direction the cursor was moved
+    auto res = _reactorCoords[]
+      .filter!(x => battle.map.tileAt(x).reactor !is
+               battle.map.tileAt(_currentCoord).reactor)
+      .filter!(coord =>
+               (direction.y < 0 && (coord.row - _currentCoord.row) < 0) ||
+               (direction.y > 0 && (coord.row - _currentCoord.row) > 0) ||
+               (direction.x < 0 && (coord.col - _currentCoord.col) < 0) ||
+               (direction.x > 0 && (coord.col - _currentCoord.col) > 0))
+      .minPos!((a,b) => dist(a) < dist(b));
+
+    if (!res.empty) {
+      // clear walls from previous selection
+      foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
+        battle.map.clear(coord);
+      }
+
+      selectReactor(battle, res.front);
+    }
   }
 }

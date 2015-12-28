@@ -309,8 +309,7 @@ class AxisTapHandler : EventHandler {
 
     if (_tap && _joystick.len < _innerBand) {
       // moved from a 'tapped' position to a 'neutral' position
-      _tap = true;
-      _action(_joystick);
+      _tap = false;
     }
     else if (!_tap && _joystick.len > _outerBand) {
       // moved from a 'neutral' position to a 'tapped' position
@@ -320,12 +319,17 @@ class AxisTapHandler : EventHandler {
   }
 
   void dpad(Direction direction, bool pressed) {
-    final switch (direction) with (Direction) {
-      case up:    _action(Vector2f( 0, -1)); break;
-      case down:  _action(Vector2f( 0,  1)); break;
-      case left:  _action(Vector2f(-1,  0)); break;
-      case right: _action(Vector2f( 1,  0)); break;
+    if (pressed) {
+      final switch (direction) with (Direction) {
+        case up:    _action(Vector2f( 0, -1)); break;
+        case down:  _action(Vector2f( 0,  1)); break;
+        case left:  _action(Vector2f(-1,  0)); break;
+        case right: _action(Vector2f( 1,  0)); break;
+      }
+      _tap = true;
     }
+    else
+      _tap = false;
   }
 }
 
