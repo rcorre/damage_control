@@ -22,6 +22,7 @@ class ChooseBase : TimedPhase {
     bool         _choiceConfirmed;
     InputHint    _hint;
     SoundEffect  _confirmSound; // sound to play on confirming selection
+    EventHandler _handler;
   }
 
   this(Battle battle) {
@@ -39,11 +40,12 @@ class ChooseBase : TimedPhase {
     void enter(Battle battle) {
       super.enter(battle);
       selectReactor(battle, _currentCoord);
-      battle.game.events.onAxisTapped("move", (dir) => onAxisTap(battle, dir));
+      _handler = battle.game.events.onAxisTapped("move", (dir) => onAxisTap(battle, dir));
     }
 
     void exit(Battle battle) {
       super.exit(battle);
+      _handler.unregister();
     }
 
     void run(Battle battle) {
