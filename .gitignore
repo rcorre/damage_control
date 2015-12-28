@@ -17,3 +17,6 @@ recordings/
 
 # LMMS backup files
 *.mmpz.bak
+
+# Allegro libraries cmake build dir
+build/
