@@ -7,5 +7,59 @@ license     "MIT"
 
 targetPath "bin"
 
-dependency "cid"    path="ext/cid"
-dependency "dtiled" version="~>0.3.0"
+dependency "dtiled"   version="~>0.3.0"
+dependency "allegro"  version="==2.0.3+5.0.10"
+dependency "jsonizer" version="~>0.5.2"
+
+configuration "dynamic" {
+  targetType "executable"
+
+  libs "allegro"        \
+       "allegro_acodec" \
+       "allegro_audio"  \
+       "allegro_color"  \
+       "allegro_font"   \
+       "allegro_image"  \
+       "allegro_main"   \
+       "allegro_ttf"    \
+       "allegro_primitives"
+}
+
+configuration "static" {
+  targetType "executable"
+
+  libs "allegro-static"        \
+       "allegro_acodec-static" \
+       "allegro_audio-static"  \
+       "allegro_color-static"  \
+       "allegro_font-static"   \
+       "allegro_image-static"  \
+       "allegro_main-static"   \
+       "allegro_ttf-static"    \
+       "allegro_primitives-static"
+
+  lflags "-lGLU"          \
+         "-lFLAC"         \
+         "-logg"          \
+         "-lvorbisfile"   \
+         "-lvorbis"       \
+         "-lpulse-simple" \
+         "-lpulse"        \
+         "-lasound"       \
+         "-lopenal"       \
+         "-lpng"          \
+         "-lz"            \
+         "-ljpeg"         \
+         "-lfreetype"     \
+         "-lm"            \
+         "-lpthread"      \
+         "-lSM"           \
+         "-lICE"          \
+         "-lX11"          \
+         "-lXext"         \
+         "-lXcursor"      \
+         "-lXinerama"     \
+         "-lXrandr"       \
+         "-lGL"           \
+         "-Lbuild/lib"
+}
