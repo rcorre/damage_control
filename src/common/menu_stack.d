@@ -5,7 +5,7 @@ import std.math      : pow;
 import std.process   : browse;
 import std.container : Array;
 import battle.battle;
-import cid;
+import engine;
 import constants;
 import common.menu;
 

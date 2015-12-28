@@ -3,7 +3,7 @@ module title.states.credits;
 
 import std.process;
 
-import cid;
+import engine;
 import constants;
 import common.menu;
 import title.title;

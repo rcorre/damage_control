@@ -1,7 +1,7 @@
 /// Represents a smooth transition between two values
 module transition;
 
-import cid;
+import engine;
 import std.math : pow;
 import std.algorithm : swap;
 

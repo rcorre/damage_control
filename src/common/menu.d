@@ -5,7 +5,7 @@ import std.math      : pow;
 import std.range     : only, enumerate, isInputRange, ElementType;
 import std.container : Array;
 import battle.battle;
-import cid;
+import engine;
 import constants;
 import transition;
 

@@ -1,7 +1,7 @@
 module battle.entities.construct;
 
 import std.range;
-import cid;
+import engine;
 import jsonizer;
 import constants;
 

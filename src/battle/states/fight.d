@@ -4,7 +4,7 @@ import std.math      : PI_2, PI;
 import std.array     : array;
 import std.random    : uniform;
 import std.algorithm : map, filter;
-import cid;
+import engine;
 import dtiled;
 import battle.battle;
 import battle.states.timed_phase;

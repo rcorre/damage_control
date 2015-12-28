@@ -1,6 +1,6 @@
 module battle.entities.camera;
 
-import cid;
+import engine;
 
 import constants;
 

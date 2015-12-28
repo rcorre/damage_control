@@ -5,7 +5,7 @@ import std.range     : walkLength;
 import std.format    : format;
 import std.algorithm : count, filter;
 
-import cid;
+import engine;
 import dtiled;
 
 import battle.battle;

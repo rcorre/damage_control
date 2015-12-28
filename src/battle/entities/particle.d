@@ -1,6 +1,6 @@
 module battle.entities.particle;
 
-import cid;
+import engine;
 import constants;
 
 struct Particle {

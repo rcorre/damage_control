@@ -4,7 +4,7 @@ module common.gamepad_menu;
 import std.conv   : to;
 import std.array  : array;
 import std.string : format, toUpper;
-import cid;
+import engine;
 import constants;
 import common.menu;
 import common.savedata;

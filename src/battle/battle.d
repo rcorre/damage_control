@@ -5,7 +5,7 @@ import std.string    : format, startsWith;
 import std.container : Array;
 import std.algorithm : sort, uniq;
 
-import cid;
+import engine;
 import dtiled;
 
 import player;

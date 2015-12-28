@@ -1,6 +1,6 @@
 module battle.entities.rocket;
 
-import cid;
+import engine;
 import constants;
 
 struct Rocket {

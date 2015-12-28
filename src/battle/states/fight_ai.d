@@ -1,7 +1,7 @@
 module battle.states.fight_ai;
 
 import std.array  : array;
-import cid;
+import engine;
 import dtiled;
 import constants;
 import battle.entities.enemy;

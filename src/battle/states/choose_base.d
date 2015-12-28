@@ -5,7 +5,7 @@ import std.random;
 import std.algorithm : filter, minPos;
 import std.container : Array;
 
-import cid;
+import engine;
 import dtiled;
 
 import battle.battle;

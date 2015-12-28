@@ -2,7 +2,7 @@
 module player;
 
 import std.container : Array;
-import cid;
+import engine;
 import constants;
 
 class Player {

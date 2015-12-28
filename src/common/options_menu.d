@@ -2,7 +2,7 @@
 module common.options_menu;
 
 import std.format : format;
-import cid;
+import engine;
 import constants;
 import common.menu;
 import common.savedata;

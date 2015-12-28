@@ -1,7 +1,7 @@
 /// Move through menus in the title screen
 module title.states.main_menu;
 
-import cid;
+import engine;
 
 import constants;
 import common.menu;

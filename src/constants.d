@@ -2,9 +2,9 @@ module constants;
 
 import std.typecons : tuple;
 
-import cid.geometry;
-import cid.events.input;
-import cid.graphics.color;
+import engine.geometry;
+import engine.events.input;
+import engine.graphics.color;
 
 enum {
   gameTitle   = "Damage Control",

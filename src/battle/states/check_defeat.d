@@ -1,7 +1,7 @@
 module battle.states.check_defeat;
 
 import std.algorithm : any;
-import cid;
+import engine;
 import common.menu;
 import common.menu_stack;
 import battle.battle;

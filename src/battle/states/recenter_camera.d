@@ -1,6 +1,6 @@
 module battle.states.recenter_camera;
 
-import cid;
+import engine;
 import battle.battle;
 import battle.entities.camera;
 

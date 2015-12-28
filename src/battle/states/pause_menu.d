@@ -1,6 +1,6 @@
 module battle.states.pause_menu;
 
-import cid;
+import engine;
 import battle.battle;
 import common.menu;
 import common.menu_stack;
