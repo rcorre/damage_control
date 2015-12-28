@@ -1,6 +1,7 @@
 module engine.events.handlers;
 
 import std.conv      : to;
+import std.math      : abs;
 import std.traits    : EnumMembers;
 import std.typecons  : Flag;
 import std.algorithm : any;
@@ -251,11 +252,10 @@ class AxisTapHandler : EventHandler {
     AxisAction _action;
     string     _name;
 
-    Vector2f _joystick = Vector2f.zero;
+    bool _xTapped, _yTapped;
 
-    bool  _tap;       // whether the axis is in a 'tapped' position
-    float _innerBand = 0.3f; // point to cross to release a tap
-    float _outerBand = 0.6f; // point to cross to trigger a tap
+    immutable _innerBand = 0.3f; // point to cross to release a tap
+    immutable _outerBand = 0.6f; // point to cross to trigger a tap
   }
 
   this(AxisAction action,
@@ -288,9 +288,9 @@ class AxisTapHandler : EventHandler {
       else if (ev.isKeyRelease(_map.rightKey)) dpad(right, false);
 
       else if (ev.isAxisMotion(_map.xAxis))
-        joystick(ev.joystick.pos, _joystick.y);
+        joystickX(ev.joystick.pos);
       else if (ev.isAxisMotion(_map.yAxis))
-        joystick(_joystick.x, ev.joystick.pos);
+        joystickY(ev.joystick.pos);
 
       else handled = false;
     }
@@ -304,21 +304,25 @@ class AxisTapHandler : EventHandler {
   }
 
   private:
-  void joystick(float x, float y) {
-    _joystick = Vector2f(x, y);
-
-    if (_tap && _joystick.len < _innerBand) {
-      // moved from a 'tapped' position to a 'neutral' position
-      _tap = false;
+  void joystickX(float x) {
+    if (!_xTapped) {
+      if (x >  _outerBand) dpad(Direction.right);
+      if (x < -_outerBand) dpad(Direction.left);
     }
-    else if (!_tap && _joystick.len > _outerBand) {
-      // moved from a 'neutral' position to a 'tapped' position
-      _tap = true;
-      _action(_joystick);
-    }
+    else if (abs(x) < _innerBand)
+      _xTapped = false;
   }
 
-  void dpad(Direction direction, bool pressed) {
+  void joystickY(float y) {
+    if (!_yTapped) {
+      if (y >  _outerBand) dpad(Direction.down);
+      if (y < -_outerBand) dpad(Direction.up);
+    }
+    else if (abs(y) < _innerBand)
+      _yTapped = false;
+  }
+
+  void dpad(Direction direction, bool pressed = true) {
     if (pressed) {
       final switch (direction) with (Direction) {
         case up:    _action(Vector2f( 0, -1)); break;
@@ -326,10 +330,18 @@ class AxisTapHandler : EventHandler {
         case left:  _action(Vector2f(-1,  0)); break;
         case right: _action(Vector2f( 1,  0)); break;
       }
-      _tap = true;
     }
-    else
-      _tap = false;
+
+    final switch (direction) with (Direction) {
+      case up:
+      case down:
+        _yTapped = pressed;
+        break;
+      case left:
+      case right:
+        _xTapped = pressed;
+        break;
+    }
   }
 }
 
@@ -432,8 +444,8 @@ bool isButtonRelease(in ALLEGRO_EVENT ev, int button) {
 
 bool isAxisMotion(in ALLEGRO_EVENT ev, AxisMap.SubAxis map) {
   return (ev.type == ALLEGRO_EVENT_JOYSTICK_AXIS &&
-      ev.joystick.stick == map.stick &&
-      ev.joystick.axis == map.axis);
+          ev.joystick.stick == map.stick &&
+          ev.joystick.axis == map.axis);
 }
 
 unittest {
@@ -601,9 +613,9 @@ unittest {
   }
 
   auto moveHandler = new AxisHandler((pos) { axisPos = pos; },
-      controls,
-      "move",
-      ConsumeEvent.no);
+                                     controls,
+                                     "move",
+                                     ConsumeEvent.no);
 
   auto keyDown(int key) {
     ALLEGRO_EVENT ev;
