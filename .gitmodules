@@ -1,0 +1,3 @@
+[submodule "allegro5"]
+	path = allegro5
+	url = git@github.com:liballeg/allegro5
