@@ -22,7 +22,6 @@ class ChooseBase : TimedPhase {
     bool         _choiceConfirmed;
     InputHint    _hint;
     SoundEffect  _confirmSound; // sound to play on confirming selection
-    EventHandler _handler;
   }
 
   this(Battle battle) {
@@ -40,12 +39,10 @@ class ChooseBase : TimedPhase {
     void enter(Battle battle) {
       super.enter(battle);
       selectReactor(battle, _currentCoord);
-      _handler = battle.game.events.onAxisTapped("move", (dir) => onAxisTap(battle, dir));
     }
 
     void exit(Battle battle) {
       super.exit(battle);
-      _handler.unregister();
     }
 
     void run(Battle battle) {
@@ -66,8 +63,32 @@ class ChooseBase : TimedPhase {
       battle.states.pop();
     }
 
-    override void onCursorMove(Battle battle, Vector2f direction) {
+    void onCursorMove(Battle battle, Vector2f direction) {
       // ignore cursor move event -- instead hook in to axis tap events
+    }
+
+    void onAxisTap(Battle battle, Vector2f direction) {
+      auto dist(RowCol coord) { return _currentCoord.manhattan(coord); }
+
+      // try to pick the closest reactor in the direction the cursor was moved
+      auto res = _reactorCoords[]
+        .filter!(x => battle.map.tileAt(x).reactor !is
+                 battle.map.tileAt(_currentCoord).reactor)
+        .filter!(coord =>
+                 (direction.y < 0 && (coord.row - _currentCoord.row) < 0) ||
+                 (direction.y > 0 && (coord.row - _currentCoord.row) > 0) ||
+                 (direction.x < 0 && (coord.col - _currentCoord.col) < 0) ||
+                 (direction.x > 0 && (coord.col - _currentCoord.col) > 0))
+        .minPos!((a,b) => dist(a) < dist(b));
+
+      if (!res.empty) {
+        // clear walls from previous selection
+        foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
+          battle.map.clear(coord);
+        }
+
+        selectReactor(battle, res.front);
+      }
     }
   }
 
@@ -100,29 +121,5 @@ class ChooseBase : TimedPhase {
 
     _confirmSound.play();
     battle.shakeScreen(ScreenShakeIntensity.chooseBase);
-  }
-
-  void onAxisTap(Battle battle, Vector2f direction) {
-    auto dist(RowCol coord) { return _currentCoord.manhattan(coord); }
-
-    // try to pick the closest reactor in the direction the cursor was moved
-    auto res = _reactorCoords[]
-      .filter!(x => battle.map.tileAt(x).reactor !is
-               battle.map.tileAt(_currentCoord).reactor)
-      .filter!(coord =>
-               (direction.y < 0 && (coord.row - _currentCoord.row) < 0) ||
-               (direction.y > 0 && (coord.row - _currentCoord.row) > 0) ||
-               (direction.x < 0 && (coord.col - _currentCoord.col) < 0) ||
-               (direction.x > 0 && (coord.col - _currentCoord.col) > 0))
-      .minPos!((a,b) => dist(a) < dist(b));
-
-    if (!res.empty) {
-      // clear walls from previous selection
-      foreach(coord ; battle.data.getWallCoordsForReactor(_currentCoord)) {
-        battle.map.clear(coord);
-      }
-
-      selectReactor(battle, res.front);
-    }
   }
 }
