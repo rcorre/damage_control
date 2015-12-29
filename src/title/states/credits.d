@@ -130,9 +130,8 @@ class ShowCredits : State!(Title, Game) {
     _pages ~= new CreditsPage("Sound",
       "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
       "Creative Commons with Attribution", null,
-      "with help from Audacity", null,
-      "and bxfr", null,
-      "and random objects around my apartment", null);
+      "with help from Audacity", "http://www.audacityteam.org/",
+      "and bxfr", null);
 
     _pages ~= new CreditsPage("Other",
       "Font: Mecha by Captain Falcon", "www.fontspace.com/captain-falcon/mecha",
