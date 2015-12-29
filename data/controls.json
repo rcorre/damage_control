@@ -1,38 +1,70 @@
 {
-  "buttons": {
-    "confirm": {
-      "keys": [ "j", "enter", "space" ],
-      "buttons": [ 1 ]
+    "axes": {
+        "move": {
+            "downKey": "s",
+            "leftKey": "a",
+            "rightKey": "d",
+            "upKey": "w",
+            "xAxis": {
+                "axis": 0,
+                "stick": 0
+            },
+            "yAxis": {
+                "axis": 1,
+                "stick": 0
+            }
+        }
     },
-    "cancel": {
-      "keys": [ "k" ],
-      "buttons": [ 0 ]
-    },
-    "turbo": {
-      "keys": [ "lshift" ],
-      "buttons": [ 3 ]
-    },
-    "rotateR": {
-      "keys": [ "q" ],
-      "buttons": [ 4 ]
-    },
-    "rotateL": {
-      "keys": [ "e" ],
-      "buttons": [ 5 ]
-    },
-    "menu": {
-      "keys": [ "escape" ],
-      "buttons": [ 7 ]
+    "buttons": {
+        "cancel": {
+            "buttons": [
+                1
+            ],
+            "keys": [
+                "k"
+            ]
+        },
+        "confirm": {
+            "buttons": [
+                0
+            ],
+            "keys": [
+                "j",
+                "enter",
+                "space"
+            ]
+        },
+        "menu": {
+            "buttons": [
+                7
+            ],
+            "keys": [
+                "escape"
+            ]
+        },
+        "rotateL": {
+            "buttons": [
+                5
+            ],
+            "keys": [
+                "e"
+            ]
+        },
+        "rotateR": {
+            "buttons": [
+                4
+            ],
+            "keys": [
+                "q"
+            ]
+        },
+        "turbo": {
+            "buttons": [
+                2
+            ],
+            "keys": [
+                "lshift"
+            ]
+        }
     }
-  },
-  "axes": {
-    "move": {
-      "upKey"   : "w",
-      "downKey" : "s",
-      "leftKey" : "a",
-      "rightKey": "d",
-      "xAxis": { "stick": 0, "axis": 0 },
-      "yAxis": { "stick": 0, "axis": 1 }
-    }
-  }
 }
