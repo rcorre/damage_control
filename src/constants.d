@@ -8,7 +8,7 @@ import engine.graphics.color;
 
 enum {
   gameTitle   = "Damage Control",
-  gameVersion = "v0.0 pre-alpha",
+  gameVersion = "v0.0.0 (alpha)",
 
   screenW   = 800,
   screenH   = 600,
