@@ -1,5 +1,6 @@
 module battle.entities.cursor;
 
+import std.math : ceil;
 import std.algorithm : map, filter;
 import engine;
 import dtiled;
@@ -14,7 +15,7 @@ class Cursor {
 
     TileMap  _map;
     RowCol   _coord;
-    Vector2i _velocity;
+    Vector2f _velocity = Vector2f.zero;
     float    _tillNextMove;
   }
 
@@ -29,22 +30,26 @@ class Cursor {
     auto center() { return _map.tileCenter(coord).as!Vector2f; }
   }
 
-  void startMoving(Vector2i direction) {
-    if (_velocity == Vector2i.zero) {
-      // just started moving, jump in the given direction
-      _coord += RowCol(direction.y, direction.x);
-      _tillNextMove = moveDelay;
-    }
-
+  void startMoving(Vector2f direction) {
     _velocity = direction;
   }
 
+  void shift(Vector2f direction) {
+  _tillNextMove = moveDelay;
+    if      (direction.x > 0) _coord = _coord.east;
+    else if (direction.x < 0) _coord = _coord.west;
+    else if (direction.y > 0) _coord = _coord.south;
+    else if (direction.y < 0) _coord = _coord.north;
+  }
+
   void update(float timeElapsed, bool turboMode) {
+    import std.math : lrint; // round to nearest long int
+
     _tillNextMove -= timeElapsed * (turboMode ? turboSpeedFactor : 1);
 
     if (_tillNextMove < 0) {
       _tillNextMove = moveDelay;
-      _coord += RowCol(_velocity.y, _velocity.x);
+      _coord += RowCol(_velocity.y.lrint, _velocity.x.lrint);
     }
   }
 

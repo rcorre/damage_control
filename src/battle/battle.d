@@ -148,6 +148,8 @@ abstract class BattleState : State!Battle {
             () => onRotate(battle, false)));
       _handlers.insert(events.onAxisMoved("move",
             (pos) => onCursorMove(battle, pos)));
+      _handlers.insert(events.onAxisTapped("move",
+            (pos) => onAxisTap(battle, pos)));
     }
 
     void exit(Battle battle) {
@@ -160,7 +162,12 @@ abstract class BattleState : State!Battle {
 
   // action to take when cursor is moved in the given direction
   void onCursorMove(Battle battle, Vector2f direction) {
-    battle.cursor.startMoving(cast(Vector2i) direction);
+    battle.cursor.startMoving(direction);
+  }
+
+  // action to take when the movement axis (WASD, joystick, ect.) is tapped
+  void onAxisTap(Battle battle, Vector2f direction) {
+    battle.cursor.shift(direction);
   }
 
   // action to take when the "confirm" button is pressed
