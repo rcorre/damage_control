@@ -52,6 +52,6 @@ sources.
 - Music created with [LMMS](https://lmms.io).
 - Maps created with [Tiled](http://mapeditor.org).
 - Sounds processed with [Audacity](http://www.audacityteam.org/).
-- Font: [Mecha by Captain Falcon](www.fontspace.com/captain-falcon/mecha)
+- Font: [Mecha by Captain Falcon](http://www.fontspace.com/captain-falcon/mecha)
 - Some sounds were generated with [bxfr](http://www.bfxr.net/).
 - Other sounds are just various recordings I took.
