@@ -21,9 +21,16 @@ ALLEGRO_OPTS = \
 	-DWANT_EXAMPLES=off \
 	-DWANT_TESTS=off
 
+# Packaging
+GAME_VERSION = $(shell git describe --candidates=1 --abbrev=0)
+PACKAGE_DIR = damage_control-linux-$(GAME_VERSION)
+PACKAGE_ARCHIVE = $(PACKAGE_DIR).tar.gz
+GAME_BINARY = bin/damage_control
+
 # These are the files that end up packaged with the game
 # They are not version controlled but are generated from resource files
 CONTENT_DIR = content
+DATA_DIR = data
 
 MAP_DEST   = $(CONTENT_DIR)/map
 FONT_DEST  = $(CONTENT_DIR)/font
@@ -68,6 +75,17 @@ clean:
 allegro-static:
 	@mkdir -p $(ALLEGRO_BUILD)
 	@cd $(ALLEGRO_BUILD) && cmake ../$(ALLEGRO_SOURCE) $(ALLEGRO_OPTS) && $(MAKE)
+
+# --- Package ---
+
+package-linux: debug-static
+	@mkdir -p $(PACKAGE_DIR)
+	@cp -r $(CONTENT_DIR) $(PACKAGE_DIR)
+	@cp -r $(DATA_DIR) $(PACKAGE_DIR)
+	@cp $(GAME_BINARY) $(PACKAGE_DIR)
+	@cp LICENSE $(PACKAGE_DIR)
+	@cp README.md $(PACKAGE_DIR)
+	@tar cvz $(PACKAGE_DIR) -f $(PACKAGE_ARCHIVE)
 
 # --- Content Pipeline ---
 
