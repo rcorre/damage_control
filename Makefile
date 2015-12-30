@@ -8,6 +8,19 @@ SOUND_SOURCE = $(RESOURCE_DIR)/sound
 IMAGE_SOURCE = $(RESOURCE_DIR)/image
 MUSIC_SOURCE = $(RESOURCE_DIR)/music
 
+# Building Allegro
+ALLEGRO_SOURCE = allegro5
+ALLEGRO_BUILD = build
+ALLEGRO_OPTS = \
+	-DSHARED=off \
+	-DWANT_DOCS=off \
+	-DWANT_MEMFILE=off \
+	-DWANT_PHYSFS=off \
+	-DWANT_NATIVE_DIALOG=off \
+	-DWANT_DEMO=off \
+	-DWANT_EXAMPLES=off \
+	-DWANT_TESTS=off
+
 # These are the files that end up packaged with the game
 # They are not version controlled but are generated from resource files
 CONTENT_DIR = content
@@ -28,26 +41,35 @@ MUSIC_FILES := $(wildcard $(MUSIC_SOURCE)/*.mmpz)
 # All generated content files
 ALL_CONTENT := $(wildcard $(CONTENT_DIR)/**/*)
 
-all: debug
+# --- Top-level Rules ---
 
-verify:
-	@echo $(MAP_FILES)
-	@echo $(FONT_FILES)
-	@echo $(SOUND_FILES)
-	@echo $(IMAGE_FILES)
-	@echo $(MUSIC_FILES)
+all: debug-shared
 
-debug: content
-	@dub build --build=debug
-
-release: content
-	@dub build --build=release
-
-run: content
+run: debug-shared
 	@dub run
+
+debug-shared: content
+	@dub build --build=debug --config=shared
+
+release-shared: content
+	@dub build --build=release --config=shared
+
+debug-static: content allegro-static
+	@dub build --build=debug --config=static
+
+release-static: content allegro-static
+	@dub build --build=release --config=static
 
 clean:
 	$(RM) $(ALL_CONTENT)
+
+# --- Allegro ---
+
+allegro-static:
+	@mkdir -p $(ALLEGRO_BUILD)
+	@cd $(ALLEGRO_BUILD) && cmake ../$(ALLEGRO_SOURCE) $(ALLEGRO_OPTS) && $(MAKE)
+
+# --- Content Pipeline ---
 
 content: dirs maps fonts images music sounds
 
