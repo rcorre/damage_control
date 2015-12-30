@@ -1,7 +1,7 @@
 module engine.audio.manager;
 
 import std.file   : dirEntries, SpanMode;
-import std.path   : stripExtension;
+import std.path   : stripExtension, dirSeparator;
 import std.string : toStringz, chompPrefix;
 import engine.allegro;
 import engine.audio.sound;
@@ -76,10 +76,10 @@ class AudioManager {
     bool followSymlink = false;
     foreach(entry ; dir.dirEntries(glob, SpanMode.depth, followSymlink)) {
       auto path = entry.name;
-      auto name = path    // the name consists of the path
-        .chompPrefix(dir) // minus the directory prefix
-        .chompPrefix("/") // minus the leading /
-        .stripExtension;  // minus the extension
+      auto name = path             // the name consists of the path
+        .chompPrefix(dir)          // minus the directory prefix
+        .chompPrefix(dirSeparator) // minus the leading /
+        .stripExtension;           // minus the extension
 
       auto sample = al_load_sample(path.toStringz);
       assert(sample, "failed to load " ~ path);
