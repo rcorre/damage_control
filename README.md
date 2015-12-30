@@ -1,6 +1,8 @@
 Damage Control
 ===
 
+![Gameplay Screenshot](./screenshots/combat.png)
+
 Damage Control is a game similar to
 [Rampart](https://en.wikipedia.org/wiki/Rampart_(video_game)).
 
@@ -37,16 +39,10 @@ file. This is a [known bug](https://github.com/LMMS/lmms/issues/588) where
 `lmms` will segfault at the end of rendering but still produce the output file.
 
 ## Static Linkage
-To link statically to Allegro, you can use the `static` dub configuration.
-This expects to find static allegro libs in build/lib.
-You can produce these from the allegro5 submodule:
-
-- `git submodule update --init` to clone the allegro5 submodule.
-- `mkdir build && cd build`
-- `cmake ../allegro5 -DSHARED=off`
-- `make`
-- `cd ..`
-- `dub build --config=static`
+To link statically to Allegro, invoke `make static-debug` or `make
+static-release`.
+Make sure you run `git submodule update --init` first to get the allegro
+sources.
 
 # Credits:
 
