@@ -49,7 +49,7 @@ class Cursor {
 
     if (_tillNextMove < 0) {
       _tillNextMove = moveDelay;
-      _coord += RowCol(_velocity.y.lrint, _velocity.x.lrint);
+      _coord += RowCol(cast(int) _velocity.y.lrint, cast(int) _velocity.x.lrint);
     }
   }
 
