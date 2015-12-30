@@ -22,8 +22,9 @@ Just grab the most recent
 [release](https://github.com/rcorre/damage_control/releases) for your platorm,
 unpack it, and run the `damage_control` executable.
 
-The binaries are statically linked to Allegro5, but other dependencies are
-dynamically linked.
+The linux binaries are statically linked to Allegro5, but other dependencies are
+dynamically linked. The Windows binaries just come packaged with a bunch of .dll
+files.
 
 ## Build it yourself
 You will need a [D compiler](http://dlang.org/download.html) and
@@ -39,8 +40,8 @@ file. This is a [known bug](https://github.com/LMMS/lmms/issues/588) where
 `lmms` will segfault at the end of rendering but still produce the output file.
 
 ## Static Linkage
-To link statically to Allegro, invoke `make static-debug` or `make
-static-release`.
+To link statically to Allegro, invoke `make debug-static` or
+`make release-static`.
 Make sure you run `git submodule update --init` first to get the allegro
 sources.
 
