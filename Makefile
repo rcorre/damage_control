@@ -69,6 +69,8 @@ release-static: content allegro-static
 
 clean:
 	$(RM) $(ALL_CONTENT)
+	$(RM) $(PACKAGE_ARCHIVE)
+	$(RM) -r $(PACKAGE_DIR)
 
 # --- Allegro ---
 
