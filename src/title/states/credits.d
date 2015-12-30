@@ -128,26 +128,26 @@ class ShowCredits : State!(Title, Game) {
   private void populatePages() {
     _pages ~= new CreditsPage("Code",
       "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
-      "MIT Licensed", null,
+      "MIT Licensed", "http://opensource.org/licenses/MIT",
       "written in D", "https://dlang.org",
       "using Allegro5", "https://allegro.cc/",
       "D bindings by SeigeLord", "github.com/SiegeLord/DAllegro5");
 
     _pages ~= new CreditsPage("Art",
-      "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
-      "Creative Commons with Attribution", null,
+      "by Ryan Roden-Corrent (rcorre)", "http://opengameart.org/users/rcorre",
+      "CC-BY-SA 3.0", "http://creativecommons.org/licenses/by-sa/3.0/",
       "created with Aseprite", "http://aseprite.org");
 
     _pages ~= new CreditsPage("Music",
       "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
-      "Creative Commons with Attribution", null,
+      "CC-BY-SA 3.0", "http://creativecommons.org/licenses/by-sa/3.0/",
       "created with LMMS", "https://lmms.io");
 
     _pages ~= new CreditsPage("Sound",
       "by Ryan Roden-Corrent (rcorre)", "https://github.com/rcorre",
-      "Creative Commons with Attribution", null,
+      "CC-BY-SA 3.0", "http://creativecommons.org/licenses/by-sa/3.0/",
       "with help from Audacity", "http://www.audacityteam.org/",
-      "and bxfr", null);
+      "and bxfr", "http://www.bfxr.net/");
 
     _pages ~= new CreditsPage("Other",
       "Font: Mecha by Captain Falcon", "www.fontspace.com/captain-falcon/mecha",

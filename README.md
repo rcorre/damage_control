@@ -4,6 +4,15 @@ Damage Control
 Damage Control is a game similar to
 [Rampart](https://en.wikipedia.org/wiki/Rampart_(video_game)).
 
+The source code is released under the
+[MIT License](http://opensource.org/licenses/MIT)
+
+The music, sounds, and art are available under
+[CC-BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/).
+
+The font used is
+[Mecha by Captain Falcon](http://www.fontspace.com/captain-falcon/mecha)
+
 # Give it a try!
 
 ## Pre-built
@@ -41,20 +50,12 @@ You can produce these from the allegro5 submodule:
 
 # Credits:
 
-Written in [D](http://dlang.org).
-
-Using the [Allegro](https://allegro.cc/) game library.
-
-Pixel art created with [Aseprite](http://aseprite.org).
-
-Music created with [LMMS](https://lmms.io).
-
-Maps created with [Tiled](http://mapeditor.org).
-
-Sounds processed with [Audacity](http://www.audacityteam.org/).
-
-Font: [Mecha by Captain Falcon](www.fontspace.com/captain-falcon/mecha)
-
-Some sounds were generated with [bxfr](http://www.bfxr.net/).
-
-Other sounds are just various recordings I took.
+- Written in [D](http://dlang.org).
+- Using the [Allegro](https://allegro.cc/) game library.
+- Pixel art created with [Aseprite](http://aseprite.org).
+- Music created with [LMMS](https://lmms.io).
+- Maps created with [Tiled](http://mapeditor.org).
+- Sounds processed with [Audacity](http://www.audacityteam.org/).
+- Font: [Mecha by Captain Falcon](www.fontspace.com/captain-falcon/mecha)
+- Some sounds were generated with [bxfr](http://www.bfxr.net/).
+- Other sounds are just various recordings I took.
