@@ -11,6 +11,7 @@ import common.input_hint;
 
 private enum {
   titlePos    = Vector2f(screenW / 2, 40),
+  arrowMargin = Vector2i(80, 5),  // distance between title text and arrows
   leftMenuX   = -screenW / 2,
   centerMenuX = screenW / 2,
   rightMenuX  = screenW * 3 / 2,
@@ -23,6 +24,7 @@ class ShowCredits : State!(Title, Game) {
     size_t             _pageNum;
     Font               _titleFont;
     Font               _bodyFont;
+    Bitmap             _spriteSheet;
     InputHint          _hint;
     Array!CreditsPage  _pages;
     Array!EventHandler _handlers;
@@ -32,6 +34,7 @@ class ShowCredits : State!(Title, Game) {
     void enter(Title title, Game game) {
       _bodyFont  = game.graphics.fonts.get(FontSpec.creditsBody);
       _titleFont = game.graphics.fonts.get(FontSpec.creditsTitle);
+      _spriteSheet = game.graphics.bitmaps.get(SpriteSheet.tileset);
 
       _handlers ~= game.events.onButtonDown("confirm", { currentPage.confirmSelection(); });
       _handlers ~= game.events.onButtonDown("cancel", &title.popState);
@@ -54,15 +57,28 @@ class ShowCredits : State!(Title, Game) {
       auto textBatch = TextBatch(_bodyFont, DrawDepth.menuText);
       auto primBatch = PrimitiveBatch(DrawDepth.menuText);
 
-      foreach(page ; _pages) {
+      foreach(page ; _pages)
         page.update(game.deltaTime);
-        //page.menu.draw(primBatch, textBatch);
-      }
 
       currentPage.draw(primBatch, textBatch);
 
       game.graphics.draw(primBatch);
       game.graphics.draw(textBatch);
+
+      // draw arrows to the left and right of the title
+      auto spriteBatch = SpriteBatch(_spriteSheet, DrawDepth.menuText);
+      Sprite arrow;
+      arrow.centered = true;
+
+      arrow.region = SpriteRegion.leftArrow;
+      arrow.transform = titlePos + Vector2i(-arrowMargin.x, arrowMargin.y);
+      spriteBatch ~= arrow;
+
+      arrow.region = SpriteRegion.rightArrow;
+      arrow.transform = titlePos + Vector2i(arrowMargin.x, arrowMargin.y);
+      spriteBatch ~= arrow;
+
+      game.graphics.draw(spriteBatch);
 
       _hint.update(game.deltaTime);
       with (InputHint.Action) {

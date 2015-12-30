@@ -35,6 +35,8 @@ enum SpriteRegion {
   turretCursor = Rect2i(6 * 16, 6 * 16, 32, 32), // turret placement cursor
   explosion    = Rect2i(5 * 16, 0 * 16, 32, 32),
   circuits     = Rect2i(4 * 16, 2 * 16, 16, 16),
+  leftArrow    = Rect2i(5 * 16, 2 * 16, 16, 16),
+  rightArrow   = Rect2i(6 * 16, 2 * 16, 16, 16),
 }
 
 enum SpriteSheet {
