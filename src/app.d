@@ -2,18 +2,17 @@ import std.path;
 import std.stdio;
 import std.getopt;
 
-import engine;
 import jsonizer;
-import constants;
+import standardpaths;
 
+import engine;
+import constants;
 import common.savedata;
 import title.title;
 
 int main(string[] args) {
-  version(Posix)
-    string saveDir = "~/.config/damage_control/";
-  else
-    string saveDir = r"%APPDATA%\damage_control\";
+  // e.g. ~/.config/damage_control or %APPDATA%/damage_control
+  string saveDir = StandardPath.config.writablePath.buildPath("damage_control");
 
   bool printVersion;
 
