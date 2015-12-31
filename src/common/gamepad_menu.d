@@ -29,7 +29,8 @@ class GamepadMenu : Menu {
       MenuEntry("cancel" , () => startMappingButton(game, "cancel" )),
       MenuEntry("turbo"  , () => startMappingButton(game, "turbo"  )),
       MenuEntry("rotateL", () => startMappingButton(game, "rotateL")),
-      MenuEntry("rotateR", () => startMappingButton(game, "rotateR")));
+      MenuEntry("rotateR", () => startMappingButton(game, "rotateR")),
+      MenuEntry("menu",    () => startMappingButton(game, "menu")));
 
     _saveData = saveData;
   }
@@ -73,6 +74,7 @@ class GamepadMenu : Menu {
       case "turbo":
       case "rotateL":
       case "rotateR":
+      case "menu":
         controls.buttons[name].buttons[0] = button;
         break;
       default: assert(0, "unknown key " ~ name);
@@ -129,6 +131,7 @@ class GamepadMenu : Menu {
       case "cancel":
       case "rotateL":
       case "rotateR":
+      case "menu":
         break;
       default: assert(0, "unknown key " ~ name);
     }
@@ -194,6 +197,7 @@ class GamepadMenu : Menu {
       case "turbo":
       case "rotateL":
       case "rotateR":
+      case "menu":
         return controls.buttons[entryText].buttons[0].to!string;
       default:
         return "";

@@ -29,7 +29,8 @@ class KeyboardMenu : Menu {
       MenuEntry("cancel" , () => startMappingKey(game, "cancel" )),
       MenuEntry("turbo"  , () => startMappingKey(game, "turbo"  )),
       MenuEntry("rotateL", () => startMappingKey(game, "rotateL")),
-      MenuEntry("rotateR", () => startMappingKey(game, "rotateR")));
+      MenuEntry("rotateR", () => startMappingKey(game, "rotateR")),
+      MenuEntry("menu",    () => startMappingKey(game, "menu")));
 
     _saveData = saveData;
   }
@@ -82,6 +83,7 @@ class KeyboardMenu : Menu {
       case "turbo":
       case "rotateL":
       case "rotateR":
+      case "menu":
         _saveData.controls.buttons[name].keys[0] = keycode;
         break;
       default: assert(0, "unknown key " ~ name);
@@ -148,6 +150,7 @@ class KeyboardMenu : Menu {
       case "turbo":
       case "rotateL":
       case "rotateR":
+      case "menu":
         return _saveData.controls.buttons[entryText].keys[0].to!string.toUpper;
       default:
         return "";
