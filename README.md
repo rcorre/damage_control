@@ -45,6 +45,24 @@ To link statically to Allegro, invoke `make debug-static` or
 Make sure you run `git submodule update --init` first to get the allegro
 sources.
 
+# How to play
+
+At the start of a match, you get to pick one of several starting locations. 
+Now you just need to survive for a few rounds. Each round, you will:
+
+1. Place turrets within your territory
+2. Fend off enemies, taking them down with your turrets
+3. Place walls to repair the damage done
+
+If, at the end of a round, you have no territory, you are defeated. Territory is
+defined as an area completely enclosed by walls. The more territory you enclose,
+the more turrets you can place. Each turret has limited ammo -- at the end of
+each round, you gain 6 ammo for each base you have enclosed (bases are the
+squarish things on the map).
+
+Don't forget that you can use Q/E (default) to rotate blocks and hold shift
+(default) to move the cursor faster .
+
 # Credits:
 
 - Written in [D](http://dlang.org).
