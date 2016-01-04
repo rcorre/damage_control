@@ -13,12 +13,14 @@ import title.title;
 int main(string[] args) {
   // e.g. ~/.config/damage_control or %APPDATA%/damage_control
   string saveDir = StandardPath.config.writablePath.buildPath("damage_control");
+  string mapDir = "./data/map";
 
   bool printVersion;
 
   auto helpInfo = getopt(
     args,
     "savedir|s", "path to save file directory", &saveDir,
+    "mapdir|s", "directory to search for map files", &mapDir,
     "version|v", "print version info and exit", &printVersion);
 
   if (helpInfo.helpWanted)
@@ -38,7 +40,7 @@ int main(string[] args) {
 
     saveDir = saveDir.expandTilde;
 
-    return Game.run(new InitializeGame(saveDir), settings);
+    return Game.run(new InitializeGame(saveDir, mapDir), settings);
   }
 
   return 0;
@@ -47,9 +49,11 @@ int main(string[] args) {
 private:
 class InitializeGame : State!Game {
   private string _saveDir;
+  private string _mapDir;
 
-  this(string saveDir) {
+  this(string saveDir, string mapDir) {
     _saveDir = saveDir;
+    _mapDir = mapDir;
   }
 
   override {
@@ -64,7 +68,7 @@ class InitializeGame : State!Game {
       game.audio.soundMixer.gain  = saveData.soundVolume.clamp(0, 1);
 
       // start on title state
-      game.states.replace(new Title(game, saveData));
+      game.states.replace(new Title(game, saveData, _mapDir));
 
       // make sure user can close the window
       game.graphics.onClose = { game.stop(); };

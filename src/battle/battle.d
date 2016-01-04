@@ -25,7 +25,7 @@ private enum {
 
   screenShakeDuration = 0.2f,
 
-  mapPathFormat = "./content/map/stage%d-%d.json"
+  mapPathFormat = "%s/stage%d-%d.json"
 }
 
 /// Start a new match.
@@ -40,26 +40,28 @@ class Battle : State!Game {
   Camera            camera;
 
   private {
-    Bitmap          _tileAtlas;
-    float           _animationTimer;
-    int             _numAnimationFrames;
-    int             _animationCounter;
-    Cursor          _cursor;
-    bool            _turboMode;
-    float           _screenShakeIntensity = 0f;
-    AudioStream     _music;
-    Transform!float _shakeTransform;
-    SaveData        _saveData;
+    Bitmap           _tileAtlas;
+    float            _animationTimer;
+    int              _numAnimationFrames;
+    int              _animationCounter;
+    Cursor           _cursor;
+    bool             _turboMode;
+    float            _screenShakeIntensity = 0f;
+    AudioStream      _music;
+    Transform!float  _shakeTransform;
+    SaveData         _saveData;
+    immutable string _mapDir;
   }
 
-  this(int worldNum, int stageNum, SaveData saveData) {
+  this(int worldNum, int stageNum, SaveData saveData, string mapDir) {
     this.worldNum = worldNum;
     this.stageNum = stageNum;
     _saveData     = saveData;
+    _mapDir       = mapDir;
   }
 
   this(Battle other) {
-    this(other.worldNum, other.stageNum, other._saveData);
+    this(other.worldNum, other.stageNum, other._saveData, other._mapDir);
   }
 
   @property auto animationOffset() {
@@ -75,7 +77,7 @@ class Battle : State!Game {
   override {
     void enter(Game game) {
       this.game = game;
-      auto mapData = MapData.load(mapPathFormat.format(worldNum, stageNum));
+      auto mapData = MapData.load(mapPathFormat.format(_mapDir, worldNum, stageNum));
       this.map = new TileMap(mapData);
       this.data = BattleData(mapData);
       _tileAtlas = game.graphics.bitmaps.get("tileset");

@@ -19,10 +19,12 @@ class Title : State!Game {
     SaveData                 _saveData;
     AudioStream              _music;
     StateStack!(Title, Game) _states;
+    immutable string         _mapDir;
   }
 
-  this(Game game, SaveData saveData) {
+  this(Game game, SaveData saveData, string mapDir) {
     _saveData = saveData;
+    _mapDir = mapDir;
   }
 
   void showCredits() { _states.push(new ShowCredits); }
@@ -30,7 +32,7 @@ class Title : State!Game {
 
 override:
   void enter(Game game) {
-    _states.push(new ShowMainMenu(game, this, _saveData));
+    _states.push(new ShowMainMenu(game, this, _saveData, _mapDir));
     _music = game.audio.loadStream(MusicPath.title);
     _music.playmode = AudioPlayMode.loop;
   }

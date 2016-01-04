@@ -28,13 +28,15 @@ class ShowMainMenu : State!(Title, Game) {
     InputHint          _hint;
     MenuStack          _menus;
     Array!EventHandler _handlers;
+    immutable string   _mapDir;
   }
 
-  this(Game game, Title title, SaveData saveData) {
+  this(Game game, Title title, SaveData saveData, string mapDir) {
     _menus       = new MenuStack(game, mainMenu(game, title));
     _saveData    = saveData;
     _titleFont   = game.graphics.fonts.get(FontSpec.title);
     _versionFont = game.graphics.fonts.get(FontSpec.versionTag);
+    _mapDir      = mapDir;
   }
 
   override {
@@ -111,7 +113,7 @@ class ShowMainMenu : State!(Title, Game) {
     auto stageEntry(int num) {
       auto score = _saveData.currentHighScore(worldNum, num);
       return MenuEntry("Stage %d (%d)".format(num, score),
-                       () => game.states.push(new Battle(worldNum, num, _saveData)));
+         () => game.states.push(new Battle(worldNum, num, _saveData, _mapDir)));
     }
 
     return new Menu(stageEntry(1), stageEntry(2), stageEntry(3));
