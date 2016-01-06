@@ -18,7 +18,7 @@ class OptionsMenu : Menu {
 
   private immutable _shakeLevels = [
     "None",      // 0
-    "Taseteful", // 1
+    "Tasteful",  // 1
     "Excessive", // 2
     "Obscene"    // 3
   ];
