@@ -8,7 +8,7 @@ license     "MIT"
 targetPath "bin"
 
 dependency "dtiled" version="~>0.3.0"
-dependency "allegro" version="==2.0.3+5.0.10"
+dependency "allegro" path="./DAllegro5"
 dependency "jsonizer" version="~>0.5.2"
 dependency "standardpaths" version="~>0.2.0"
 
