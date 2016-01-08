@@ -12,6 +12,9 @@ dependency "allegro" path="./DAllegro5"
 dependency "jsonizer" version="~>0.5.2"
 dependency "standardpaths" version="~>0.2.0"
 
+// look for allegro libs
+lflags "-Lbuild/lib"
+
 configuration "shared" {
   targetType "executable"
 
@@ -54,13 +57,19 @@ configuration "static" {
        "pthread"                   \
        "SM"                        \
        "ICE"                       \
+       "GL"                        \
+       "GLU"                       \
        "X11"                       \
        "Xext"                      \
        "Xcursor"                   \
+       "Xi"                        \
        "Xinerama"                  \
        "Xrandr"                    \
-       "GL"                        \
-       "GLU"
-
-  lflags "-Lbuild/lib"
+       "Xrender"                   \
+       "Xfixes"                    \
+       "Xdamage"                   \
+       "X11-xcb"                   \
+       "Xxf86vm"                   \
+       "Xau"                       \
+       "Xdmcp"
 }

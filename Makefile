@@ -12,11 +12,11 @@ MUSIC_SOURCE = $(RESOURCE_DIR)/music
 ALLEGRO_SOURCE = allegro5
 ALLEGRO_BUILD = build
 ALLEGRO_OPTS = \
-	-DSHARED=off \
 	-DWANT_DOCS=off \
 	-DWANT_MEMFILE=off \
 	-DWANT_PHYSFS=off \
 	-DWANT_NATIVE_DIALOG=off \
+	-DWANT_VIDEO=off \
 	-DWANT_DEMO=off \
 	-DWANT_EXAMPLES=off \
 	-DWANT_TESTS=off
@@ -55,10 +55,10 @@ all: debug-shared
 run: debug-shared
 	@dub run
 
-debug-shared: content
+debug-shared: content allegro-shared
 	@dub build --build=debug --config=shared
 
-release-shared: content
+release-shared: content allegro-shared
 	@dub build --build=release --config=shared
 
 debug-static: content allegro-static
@@ -74,9 +74,13 @@ clean:
 
 # --- Allegro ---
 
+allegro-shared:
+	@mkdir -p $(ALLEGRO_BUILD)
+	@cd $(ALLEGRO_BUILD) && cmake ../$(ALLEGRO_SOURCE) -DSHARED=on $(ALLEGRO_OPTS) && $(MAKE)
+
 allegro-static:
 	@mkdir -p $(ALLEGRO_BUILD)
-	@cd $(ALLEGRO_BUILD) && cmake ../$(ALLEGRO_SOURCE) $(ALLEGRO_OPTS) && $(MAKE)
+	@cd $(ALLEGRO_BUILD) && cmake ../$(ALLEGRO_SOURCE) -DSHARED=off $(ALLEGRO_OPTS) && $(MAKE)
 
 # --- Package ---
 
